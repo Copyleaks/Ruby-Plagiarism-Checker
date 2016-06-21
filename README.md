@@ -1,6 +1,6 @@
 ## Copyleaks Ruby SDK
 
-Copyleaks SDK is a simple framework that allows you to scan textual content for plagiarism and trace content distribution online, using the [Copyleaks plagiarism checker cloud](https://copyleaks.com/).
+Copyleaks SDK is a simple framework that allows you to scan textual content for plagiarism and trace content distribution online, using the [Copyleaks plagiarism checker](https://copyleaks.com/) cloud.
 
 Detect plagiarism using Copyleaks SDK in:
 - Online content and webpages
