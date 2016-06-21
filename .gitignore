@@ -8,3 +8,5 @@
 /spec/reports/
 /tmp/
 .idea
+/README.md
+/examples/test.rb

@@ -9,12 +9,14 @@ module CopyleaksApi
   class BadResponseError < BasicError
     attr_accessor :code
 
+    # constructor
     def initialize(code)
       @code = code.to_i
     end
   end
 
   class ManagedError < BadResponseError
+    # returns true if this error is internal server error
     def internal_error?
       code == 16
     end

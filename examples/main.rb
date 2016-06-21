@@ -6,13 +6,17 @@ email = 'your email'
 api_key = 'your api key'
 cloud = CopyleaksApi::CopyleaksCloud.new(email, api_key)
 
+# to check your balance just call balance
+
+puts "Your balance is #{cloud.balance} credits"
+
 # firstly we need to change work mode to sandbox
 
 CopyleaksApi::Config.sandbox_mode = true
 
-# now we can create new process by some url
+# now we can create new process by some url and custom callback
 
-url_process = cloud.create_by_url('http://python.org')
+url_process = cloud.create_by_url('http://python.org', http_callback: 'http://python.org')
 
 # or from picture with text
 
@@ -23,7 +27,7 @@ puts "Now process has state '#{ocr_process.status}'"
 
 # to update process information we can just do this
 
-ocr_process.reload
+# ocr_process.reload
 
 # and it automatically call cloud.status with his id
 # it need some time to process your request so we need to wait

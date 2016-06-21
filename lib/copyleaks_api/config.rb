@@ -12,6 +12,7 @@ module CopyleaksApi
       attr_writer :sandbox_mode, :http_callback, :email_callback, :custom_fields, :allow_partial_scan
 
       DEFAULTS.each do |attr, value|
+        # getters for all options
         define_method(attr) do
           var = instance_variable_get("@#{attr}")
           return var if var
@@ -19,14 +20,14 @@ module CopyleaksApi
         end
       end
 
+      # provide block syntax possibility for setting options
       def config
         yield(self)
       end
 
+      # reset all options to default
       def reset
-        DEFAULTS.each do |attr, value|
-          instance_variable_set("@#{attr}", value)
-        end
+        DEFAULTS.each { |attr, value| instance_variable_set("@#{attr}", value) }
       end
     end
   end

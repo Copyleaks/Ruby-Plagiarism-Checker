@@ -2,12 +2,13 @@ require 'spec_helper'
 require 'time'
 
 RSpec.describe CopyleaksApi::AccessToken do
-  subject { described_class.new(email, key) }
+  subject { cloud.access_token }
 
   before { stub_login }
 
   let(:email) { 'email@com.ua' }
   let(:key) { 'key' }
+  let(:cloud) { CopyleaksApi::CopyleaksCloud.new(email, key) }
 
   describe '#fresh?' do
     it 'returns true if now is less then expire_at' do

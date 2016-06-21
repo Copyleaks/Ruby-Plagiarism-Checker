@@ -20,5 +20,4 @@ require 'copyleaks_api/config'
 require 'copyleaks_api/copyleaks_process'
 
 module CopyleaksApi
-  API = Api.instance
 end

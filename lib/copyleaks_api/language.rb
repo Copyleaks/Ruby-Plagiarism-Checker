@@ -49,6 +49,8 @@ module CopyleaksApi
 
     ALLOWED.each_with_index do |lang, index|
       method = lang.downcase
+
+      # returns appropriate language name based on method name
       define_method(method) do
         ALLOWED[index]
       end

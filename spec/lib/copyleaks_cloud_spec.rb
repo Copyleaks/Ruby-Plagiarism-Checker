@@ -1,34 +1,6 @@
 require 'spec_helper'
 require 'json'
 
-def delete_json
-  @delete_json ||= File.read(File.join(fixture_path, 'responses', 'delete.json'))
-end
-
-def login_json
-  @login_json ||= File.read(File.join(fixture_path, 'responses', 'login.json'))
-end
-
-def amount_json
-  @amount_json ||= File.read(File.join(fixture_path, 'responses', 'balance.json'))
-end
-
-def created_json
-  @ocr_json ||= File.read(File.join(fixture_path, 'responses', 'create_by.json'))
-end
-
-def list_json
-  @list_json ||= File.read(File.join(fixture_path, 'responses', 'list.json'))
-end
-
-def result_json
-  @result_json ||= File.read(File.join(fixture_path, 'responses', 'result.json'))
-end
-
-def status_json
-  @status_json ||= File.read(File.join(fixture_path, 'responses', 'status.json'))
-end
-
 RSpec.describe CopyleaksApi::CopyleaksCloud do
   let(:email) { 'test@email.com' }
   let(:api_key) { 'test_key' }
@@ -131,6 +103,20 @@ RSpec.describe CopyleaksApi::CopyleaksCloud do
     it 'raises error if given language is not supported' do
       expect { subject.send(:url_with_language, 'action', language: 'asd') }
         .to raise_error CopyleaksApi::UnknownLanguageError
+    end
+  end
+
+  describe '#url' do
+    let(:action) { 'action' }
+
+    it 'returns correct url if is not given' do
+      cloud = CopyleaksApi::CopyleaksCloud.new(email, api_key)
+      expect(cloud.send(:url, action)).to eq("publisher/#{action}")
+    end
+
+    it 'returns correct url if cloud endpoint is switched to academic' do
+      cloud = CopyleaksApi::CopyleaksCloud.new(email, api_key, :academic)
+      expect(cloud.send(:url, action)).to eq("academic/#{action}")
     end
   end
 end

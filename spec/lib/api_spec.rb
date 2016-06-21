@@ -2,10 +2,16 @@ require 'spec_helper'
 require 'net/http'
 
 RSpec.describe CopyleaksApi::Api do
-  subject { CopyleaksApi::Api.instance }
+  subject { cloud.api }
 
   let(:config) { CopyleaksApi::Config }
   let(:token) { 'asd' }
+
+  let(:user_email) { 'email@com.ua' }
+  let(:key) { 'key' }
+  let(:cloud) { CopyleaksApi::CopyleaksCloud.new(user_email, key) }
+
+  before { stub_login }
 
   describe '#sandbox_header' do
     it 'sets headers if config is true' do
@@ -94,8 +100,8 @@ RSpec.describe CopyleaksApi::Api do
     end
 
     it 'does not set header if there is no_callback given' do
-      config.http_callback = email
-      expect(subject.send(:email_callback_header, no_callbak: true)).to be_empty
+      config.email_callback = email
+      expect(subject.send(:email_callback_header, no_callbacks: true)).to be_empty
     end
   end
 
