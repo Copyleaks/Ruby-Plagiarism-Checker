@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'copyleaks_api'
+
+require 'irb'
+IRB.start
