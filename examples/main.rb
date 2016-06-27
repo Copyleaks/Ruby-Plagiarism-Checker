@@ -2,9 +2,9 @@ require 'bundler/setup'
 require 'copyleaks_api'
 
 # firstly we need to create new Cloud entity
-email = 'your email'
-api_key = 'your api key'
-cloud = CopyleaksApi::CopyleaksCloud.new(email, api_key)
+email = '<YOUR-EMAIL>'
+api_key = '<YOUR-API-KEY>'
+cloud = CopyleaksApi::CopyleaksCloud.new(email, api_key, :publisher)
 
 # to check your balance just call balance
 
@@ -15,33 +15,39 @@ puts "Your balance is #{cloud.balance} credits"
 CopyleaksApi::Config.sandbox_mode = true
 
 # now we can create new process by some url and custom callback
+process = cloud.create_by_url('http://exmaple.com', http_callback: 'http://requestb.in/')
 
-url_process = cloud.create_by_url('http://python.org', http_callback: 'http://python.org')
+# Other scanning options
+# Text scan:
+#process = cloud.create_by_text("-Your text here-")
 
-# or from picture with text
+# Textual file scan:
+#path = File.join(File.dirname(__FILE__), '..', 'spec', 'fixtures', 'files', 'lorem.txt')
+#process = cloud.create_by_file(path)
 
-path = File.join(File.dirname(__FILE__), '..', 'spec', 'fixtures', 'files', 'lorem.jpg')
-ocr_process = cloud.create_by_ocr(path, language: CopyleaksApi::Language.latin)
+# Ocr scan:
+#path = File.join(File.dirname(__FILE__), '..', 'spec', 'fixtures', 'files', 'lorem.jpg')
+#process = cloud.create_by_ocr(path, language: CopyleaksApi::Language.latin)
 
-puts "Now process has state '#{ocr_process.status}'"
+puts "Now process has state '#{process.status}'"
 
 # to update process information we can just do this
 
-# ocr_process.reload
+# process.reload
 
 # and it automatically call cloud.status with his id
 # it need some time to process your request so we need to wait
 
-while ocr_process.processing?
+while process.processing?
   sleep(1)
-  ocr_process.reload
+  process.reload
 end
 
-puts "And after sleep - #{ocr_process.status}"
+puts "And after sleep - #{process.status}"
 # to get our results from processing we can just call correspond method
 
 puts 'And its results are:'
-puts ocr_process.result.inspect
+puts process.result.inspect
 
 # all results will be in array ow hashes with keys like Copyleaks API provides
 # to get list of all existing processes we can call list method
@@ -49,10 +55,6 @@ puts ocr_process.result.inspect
 processes = cloud.list
 puts "Overall you have #{processes.size} processes"
 
-# and delete any of them
-first = processes.first
-puts "Process #{first.process_id} is now #{first.delete}"
-
-# also we can just specify needed id to delete
-
-cloud.delete(processes[1].process_id)
+# Delete finished process by PID:
+#PID = '00000000-0000-0000-0000-000000000000'
+#cloud.delete(PID)

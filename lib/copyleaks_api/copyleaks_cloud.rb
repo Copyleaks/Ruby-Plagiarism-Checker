@@ -8,7 +8,7 @@ module CopyleaksApi
     attr_reader :endpoint_type
 
     # constructor
-    def initialize(email, api_key, type = :publisher)
+    def initialize(email, api_key, type)
       raise ArgumentError, "Endpoint type '#{type}' is invalid" unless ALLOWED_ENDPOINTS.include?(type.to_sym)
       @access_token = AccessToken.new(self, email, api_key)
       @endpoint_type = type
@@ -20,7 +20,8 @@ module CopyleaksApi
 
     # returns account balance from endpoint
     def balance
-      api.get('account/count-credits', token: @access_token.token)['Amount'].to_i
+      #api.get('account/count-credits', token: @access_token.token)['Amount'].to_i
+	  api.get(url('count-credits'), token: @access_token.token)['Amount'].to_i
     end
 
     # uses create-by-url endpoint to create process
