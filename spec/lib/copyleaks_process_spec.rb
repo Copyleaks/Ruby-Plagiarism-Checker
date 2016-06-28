@@ -9,7 +9,7 @@ RSpec.describe CopyleaksApi::CopyleaksProcess do
 
   let(:email) { 'email@com.ua' }
   let(:key) { 'key' }
-  let(:cloud) { CopyleaksApi::CopyleaksCloud.new(email, key) }
+  let(:cloud) { CopyleaksApi::CopyleaksCloud.new(email, key, :publisher) }
   let(:created_at) { DateTime.parse('19/06/2016 19:57:42') }
   let(:id) { '2fd7b9cc-bc8e-4dfd-b65d-61385dcaf941' }
 

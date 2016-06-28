@@ -16,7 +16,8 @@ def fixture_path
 end
 
 def stub_api_request(method, path, status, body)
-  stub_request(method, "https://api.copyleaks.com/v1/#{path}").
+  stub_request(method, "https://api.copyleaks.com/v1/#{path}")
+    .with(headers: { 'User-Agent' => "RUBYSDK/#{CopyleaksApi::VERSION}"}).
     to_return(status: status, body: body)
 end
 

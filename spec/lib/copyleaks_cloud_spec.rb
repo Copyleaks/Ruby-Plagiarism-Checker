@@ -6,12 +6,12 @@ RSpec.describe CopyleaksApi::CopyleaksCloud do
   let(:api_key) { 'test_key' }
   let(:config) { CopyleaksApi::Config }
 
-  subject { described_class.new(email, api_key) }
+  subject { described_class.new(email, api_key, :publisher) }
 
   before { stub_login }
 
   describe '#balance' do
-    before { stub_api_request(:get, 'account/count-credits', 200, amount_json) }
+    before { stub_api_request(:get, 'publisher/count-credits', 200, amount_json) }
 
     it 'returns account balance' do
       expect(subject.balance).to eq(3)
@@ -110,8 +110,7 @@ RSpec.describe CopyleaksApi::CopyleaksCloud do
     let(:action) { 'action' }
 
     it 'returns correct url if is not given' do
-      cloud = CopyleaksApi::CopyleaksCloud.new(email, api_key)
-      expect(cloud.send(:url, action)).to eq("publisher/#{action}")
+      expect(subject.send(:url, action)).to eq("publisher/#{action}")
     end
 
     it 'returns correct url if cloud endpoint is switched to academic' do

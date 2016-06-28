@@ -9,7 +9,7 @@ RSpec.describe CopyleaksApi::Api do
 
   let(:user_email) { 'email@com.ua' }
   let(:key) { 'key' }
-  let(:cloud) { CopyleaksApi::CopyleaksCloud.new(user_email, key) }
+  let(:cloud) { CopyleaksApi::CopyleaksCloud.new(user_email, key, :publisher) }
 
   before { stub_login }
 

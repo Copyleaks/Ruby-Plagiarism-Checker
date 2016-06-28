@@ -8,7 +8,7 @@ RSpec.describe CopyleaksApi::AccessToken do
 
   let(:email) { 'email@com.ua' }
   let(:key) { 'key' }
-  let(:cloud) { CopyleaksApi::CopyleaksCloud.new(email, key) }
+  let(:cloud) { CopyleaksApi::CopyleaksCloud.new(email, key, :publisher) }
 
   describe '#fresh?' do
     it 'returns true if now is less then expire_at' do

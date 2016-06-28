@@ -20,8 +20,7 @@ module CopyleaksApi
 
     # returns account balance from endpoint
     def balance
-      #api.get('account/count-credits', token: @access_token.token)['Amount'].to_i
-	  api.get(url('count-credits'), token: @access_token.token)['Amount'].to_i
+	    api.get(url('count-credits'), token: @access_token.token)['Amount'].to_i
     end
 
     # uses create-by-url endpoint to create process

@@ -10,8 +10,13 @@ module CopyleaksApi
     attr_accessor :code
 
     # constructor
-    def initialize(code)
+    def initialize(code, message)
       @code = code.to_i
+      @message = message
+    end
+
+    def to_s
+      "Error code: #{code}. #{@message}"
     end
   end
 

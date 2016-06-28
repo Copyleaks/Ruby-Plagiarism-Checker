@@ -88,7 +88,8 @@ module CopyleaksApi
         authentication_header(options),
         sandbox_header,
         content_type_header(options),
-        partial_scan_header(options)
+        partial_scan_header(options),
+        'User-Agent' => "RUBYSDK/#{CopyleaksApi::VERSION}"
       ].reduce({}, :merge).each do |header, value|
         request[header] = value
       end
