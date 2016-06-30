@@ -4,7 +4,7 @@ Copyleaks SDK is a simple framework that allows you to scan textual content for 
 
 Detect plagiarism using Copyleaks SDK in:
 - Online content and webpages
-- Local and cloud files ([see supported files](https://api.copyleaks.com/Documentation/TechnicalSpecifications/#non-textual-formats")
+- Local and cloud files ([see supported files](https://api.copyleaks.com/Documentation/TechnicalSpecifications/#non-textual-formats"))
 - Free text
 - OCR (Optical Character Recognition) - scanning pictures with textual content ([see supported files](https://api.copyleaks.com/Documentation/TechnicalSpecifications/#ocr-formats))
 
@@ -21,37 +21,37 @@ And then execute:
 $ bundle
 ```
 
-Or jsut using command:
+Or use the command:
 ```
 $ gem install copyleaks_api
 ```
 
 ## Requirements
 
-This gem tested on `ruby-1.9.3-p551`, `jruby-9.0.5.0` and `ruby-2.3.0`.
+This gem is tested on `ruby-1.9.3-p551`, `jruby-9.0.5.0` and `ruby-2.3.0`.
 
 ## Usage
 
-Firstly you need to crate connection with your api-key and email:
+First, login with your api-key and email:
 ```ruby
 cloud = CopyleaksApi::CopyleaksCloud.new(my_email, my_api_key)
 ```
 
-After this you can scan you image:
+Then you can start and scan content for plagiarism. For example, scan picture with textual content for plagirism:
 ```ruby
 process = cloud.create_by_ocr(path_to_image, language: Copyleaks::Language.english)
 ```
 
-Methods `create_by_url`, `create_by_file`, `create_by_text`, `status`, `result` and `list` returns `CopyleaksApi::CopyleaksProcess` objects. When you want to check changes of it's status you can just reload it:
+Methods `create_by_url`, `create_by_file`, `create_by_text`, `status`, `result` and `list` returns `CopyleaksApi::CopyleaksProcess` objects. When you want to check your process status you reload and check:
 ```ruby
 process.reload
 process.finished?
 ```
 
-This firstly get new data from Copyleaks and return true if this process now has status `Finished`.
+You will get back the satus `Finished` if the process finished running.
 ### Configuration
 
-You can specify all necessary configuration in one place just using:
+You can specify all the necessary configuration in one place:
 ```ruby
 CopyleaksApi::Config do |config|
     config.sanbox_mode = true
@@ -62,14 +62,14 @@ CopyleaksApi::Config do |config|
 end
 ```
 
-Or just call methods:
+Or by calling specific methods:
 ```ruby
 CopyleaksApi::Config.sandbox_mode = true
 ```
 
 Also some parameters can be specified in method arguments. 
 
-If you want to disable all callbacks you can pass `no_callbak: true ` optoin to any create method (`no_http_callback` or `no_email_callback` to disable only one). `no_custom_fields` works the same way.
+If you want to disable all callbacks you can add the header `no_callbak: true ` to any of the 'create' methods (`no_http_callback` or `no_email_callback` to disable only one). `no_custom_fields` works the same way.
 
 ### Errors
 
@@ -78,15 +78,15 @@ If you want to disable all callbacks you can pass `no_callbak: true ` optoin to 
 BasicError | Superclass error for all gem errors
 BadCustomFieldError | Given custom fields didnt pass validation (key/value/overall size is to large)
 BadFileError | Given file is too large
-BadEmailError | Given email for callback is invalid
+BadEmailError | Given call back email is invalid
 BadUrlError | Given callback url is invalid
-UnknownLanguageError | Given language for OCR is invalid
-BadResponseError | Reponse fro API has not 200 code
-ManagedError | Reponse contains manages Copyleaks error code (all list are given [here](https://api.copyleaks.com/Documentation/ErrorList))
+UnknownLanguageError | Given OCR language is invalid
+BadResponseError | Reponse from API is not 200 code
+ManagedError | Reponse contains Copyleaks managed error code (see list [here](https://api.copyleaks.com/Documentation/ErrorList))
 
 ##Examples
 
-For fast test you could launch `examples/main.rb` script. It has a lot of comments so there is no need in additional descriptions. You just need to change email and api_key values.
+For a fast testing, launch he script `examples/main.rb` and just change the email and api_key values to your own.
 
 ## Read more
 
