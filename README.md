@@ -37,7 +37,7 @@ First, login with your api-key and email:
 cloud = CopyleaksApi::CopyleaksCloud.new(my_email, my_api_key)
 ```
 
-Then you can start and scan content for plagiarism. For example, scan picture with textual content for plagirism:
+Then you can start to scan content for plagiarism. For example, scan picture with textual content for plagirism:
 ```ruby
 process = cloud.create_by_ocr(path_to_image, language: Copyleaks::Language.english)
 ```
@@ -48,10 +48,10 @@ process.reload
 process.finished?
 ```
 
-You will get back the satus `Finished` if the process finished running.
+You will get back the status `Finished` if the process finished running.
 ### Configuration
 
-You can specify all the necessary configuration in one place:
+You can include all of the necessary configurations in one place:
 ```ruby
 CopyleaksApi::Config do |config|
     config.sanbox_mode = true
@@ -86,7 +86,7 @@ ManagedError | Reponse contains Copyleaks managed error code (see list [here](ht
 
 ##Examples
 
-For a fast testing, launch he script `examples/main.rb` and just change the email and api_key values to your own.
+For a fast testing, launch the script `examples/main.rb` and just change the email and api_key values to your own.
 
 ## Read more
 
