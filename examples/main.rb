@@ -4,7 +4,7 @@ require 'copyleaks_api'
 # firstly we need to create new Cloud entity
 email = '<YOUR-EMAIL>'
 api_key = '<YOUR-API-KEY>'
-cloud = CopyleaksApi::CopyleaksCloud.new(email, api_key, :publisher)
+cloud = CopyleaksApi::CopyleaksCloud.new(email, api_key, :businesses)
 
 # to check your balance just call balance
 

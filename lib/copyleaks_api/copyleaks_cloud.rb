@@ -3,7 +3,7 @@ require 'copyleaks_api/api'
 
 module CopyleaksApi
   class CopyleaksCloud
-    ALLOWED_ENDPOINTS = [:publisher, :academic]
+    ALLOWED_ENDPOINTS = [:businesses, :academic]
     attr_accessor :access_token
     attr_reader :endpoint_type
 
