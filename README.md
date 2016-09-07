@@ -76,13 +76,13 @@ If you want to disable all callbacks you can add the header `no_callbak: true ` 
 | Class | Description |
 |-------|------------|
 BasicError | Superclass error for all gem errors
-BadCustomFieldError | Given custom fields didnt pass validation (key/value/overall size is to large)
+BadCustomFieldError | Given custom fields didn't pass validation (key/value/overall size is too large)
 BadFileError | Given file is too large
 BadEmailError | Given call back email is invalid
 BadUrlError | Given callback url is invalid
 UnknownLanguageError | Given OCR language is invalid
-BadResponseError | Reponse from API is not 200 code
-ManagedError | Reponse contains Copyleaks managed error code (see list [here](https://api.copyleaks.com/Documentation/ErrorList))
+BadResponseError | Response from API is not 200 code
+ManagedError | Response contains Copyleaks managed error code (see list [here](https://api.copyleaks.com/Documentation/ErrorList))
 
 ##Examples
 
