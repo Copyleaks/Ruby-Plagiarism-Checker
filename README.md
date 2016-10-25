@@ -91,4 +91,3 @@ For a fast testing, launch the script `examples/main.rb` and just change the ema
 ## Read more
 
 - [Copyleaks API guide](https://api.copyleaks.com/Guides/HowToUse)
-- [Copyleaks API documentation](https://api.copyleaks.com/Documentation)
