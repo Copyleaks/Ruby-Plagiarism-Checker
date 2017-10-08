@@ -44,13 +44,13 @@ module CopyleaksApi
     end
     
     def to_s
-      puts ""
+      puts "----------------------------------------------------------------"
+      puts "Title: #{@Title}"
+      puts "Introduction: #{@Introduction}"
       puts "Url: #{@URL}"
       puts "Percents: #{@Percents}%"
       puts "NumberOfCopiedWords: #{@NumberOfCopiedWords}"
       puts "CachedVersion: #{@CachedVersion}"
-      puts "Title: #{@Title}"
-      puts "Introduction: #{@Introduction}"
       puts "ComparisonReport: #{@ComparisonReport}"
       puts "EmbededComparison: #{@EmbededComparison}"
     end

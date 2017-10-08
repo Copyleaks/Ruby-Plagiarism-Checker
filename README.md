@@ -32,7 +32,7 @@ This gem is tested on `ruby-1.9.3-p551`, `jruby-9.0.5.0` and `ruby-2.3.0`.
 
 ## Examples
 
-For a fast testing, launch the script `get_started.rb` and just change the email and api_key values to your own.
+For a fast testing, launch the script `get_started_syncronized.rb` or `get_started_async.rb` and just change the email and api_key values to your own.
 
 ## Usage
 
@@ -41,7 +41,7 @@ First, import the Copyleaks API module:
 require 'copyleaks_api'
 ```
 Register to Copyleaks and get an api-key at: https://copyleaks.com/account/register
-Your api-key is available at your dashboard.
+Your api-key is available at your dashboard on https://api.copyleaks.com/
 
 Login to Copyleaks API with your api-key and email:
 ```ruby
@@ -58,7 +58,13 @@ process = cloud.create_by_file(file_path)
 ```
 
 Methods `create_by_url`, `create_by_file`, `create_by_files`, `create_by_text` and `create_by_ocr` returns `CopyleaksApi::CopyleaksProcess` objects.
-When you want to check your process status you reload and check:
+We highly recommend to use the http_callback in order to get a callback once the process is finished:
+```ruby
+    CopyleaksApi::Config.http_callback = 'http://yoursite.here/callback/{PID}'
+`
+For more information about callbacks take a look at `get_started_async.rb` file.
+
+If you want to check the status of the process programatically use `process.update_status`:
 ```ruby
 while process.processing?
     sleep(1)
@@ -66,8 +72,6 @@ while process.processing?
     puts "#"*(process.progress/2) + "-"*(50 - process.progress/2) + "#{process.progress}%"
 end
 ```
-
-We highly recommend to use the http_callback option at the config in order to get a callback once the process is finished.
 
 ### Configuration
 
@@ -81,15 +85,17 @@ Or can include all of the necessary configurations in one place:
 CopyleaksApi::Config do |config|
     config.sanbox_mode = true
     config.allow_partial_scan = true
-    config.http_callback = 'http://yoursite.here'
+    config.http_callback = 'http://yoursite.here/callback/{PID}'
+    config.in_progress_result = 'http://yoursite.here/callback/results/{PID}'
     config.email_callback = 'your@email.com'
     config.custom_fields = { some_field: 'and its value' }
-end
+    config.compare_only = true  # Only while using create-by-files
+#end
 ```
 
 Also some parameters can be specified in method arguments. 
 
-If you want to disable all callbacks you can add the header `no_callbak: true ` to any of the 'create' methods (`no_http_callback` or `no_email_callback` to disable only one). `no_custom_fields` works the same way.
+If you want to disable all callbacks you can add the header `no_callback: true ` to any of the 'create' methods (`no_http_callback` or `no_email_callback` to disable only one). `no_custom_fields` works the same way.
 
 ### Errors
 

@@ -113,7 +113,11 @@ module CopyleaksApi
       gather_headers(request, options)
       response = @http.request(request)
       Validators::ResponseValidator.validate!(response)
-      JSON.parse(response.body)
+      if not options.key?(:parse_json) or options[:parse_json]
+        JSON.parse(response.body)
+      else
+        response.body
+      end
     end
 
     # gather all headers
@@ -124,6 +128,7 @@ module CopyleaksApi
         authentication_header(options),
         sandbox_header,
         compare_only_header,
+        in_progress_result(options),
         content_type_header(options),
         partial_scan_header(options),
         'User-Agent' => "RUBYSDK/#{CopyleaksApi::VERSION}"
@@ -137,10 +142,20 @@ module CopyleaksApi
       return {} unless Config.sandbox_mode
       { 'copyleaks-sandbox-mode' => '' }
     end
-
+    
+    # Compare your files against each other only
     def compare_only_header
       return {} unless Config.compare_only
       { 'copyleaks-compare-documents-for-similarity' => '' }
+    end
+    
+    # Receive callback every time we find a new result without waiting for completion
+    def in_progress_result(options)
+      return {} if options[:no_http_callback] || options[:no_callbacks]
+      value = options[:in_progress_result] || CopyleaksApi::Config.in_progress_result
+      return {} unless value
+      Validators::UrlValidator.validate!(value)
+      { 'copyleaks-in-progress-new-result' => value }
     end
     # prepares header for content type
     def content_type_header(options)
@@ -166,7 +181,7 @@ module CopyleaksApi
       value = options[:http_callback] || CopyleaksApi::Config.http_callback
       return {} unless value
       Validators::UrlValidator.validate!(value)
-      { 'copyleaks-http-callback' => value }
+      { 'copyleaks-http-completion-callback' => value }
     end
 
     # prepares header for email callback

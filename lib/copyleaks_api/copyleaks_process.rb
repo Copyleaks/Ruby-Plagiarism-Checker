@@ -22,9 +22,9 @@ module CopyleaksApi
     # returns true if still processing data on server side
     def processing?
       if @progress == 100
-        return false
+        false
       else
-        return true
+        true
       end
     end
 
@@ -36,18 +36,19 @@ module CopyleaksApi
       response.each do |res|
         @results.push(CopyleaksApi::ResultRecord.new(res))
       end
-      return @results
+      @results
     end
     
     # retries status information of process with given id
     def update_status
       response = @api.get(@cloud.url(:status, @process_id), no_callbacks: true, token: @cloud.access_token.token)
       @progress = response['ProgressPercents'].to_i
+      @progress
     end
 
     # Returns the source text of this process
     def get_source_text
-      response = @api.get(@cloud.url("source-text?pid=#{@process_id}"), no_callbacks: true, token: @cloud.access_token.token)
+      response = @api.get(@cloud.url_downloads("source-text?pid=#{@process_id}"), parse_json: false, no_callbacks: true, token: @cloud.access_token.token)
       response
     end
 

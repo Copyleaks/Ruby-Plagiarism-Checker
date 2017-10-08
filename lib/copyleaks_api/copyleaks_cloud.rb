@@ -7,7 +7,7 @@ module CopyleaksApi
     ALLOWED_ENDPOINTS = [:businesses, :education, :websites]
     attr_accessor :access_token
     attr_reader :endpoint_type
-
+    
     # constructor
     def initialize(email, api_key, type)
       raise ArgumentError, "Endpoint type '#{type}' is invalid" unless ALLOWED_ENDPOINTS.include?(type.to_sym)
@@ -68,15 +68,26 @@ module CopyleaksApi
     
     # Returns the raw text of a given result
     def get_raw_text(result)
-      puts result.get_cached_version
-      puts @access_token.token
-      response = api.get_with_final_path(result.get_cached_version, token: @access_token.token)
-      puts response
+      response = api.get_with_final_path(result.get_cached_version, parse_json: false, token: @access_token.token)
+      response
     end
 
     # Returns the raw text of a given result
     def get_comparison_report(result)
       response = api.get_with_final_path(result.get_comparison_report, token: @access_token.token)
+      response
+    end
+    
+    # Returns a list of currently supported languages for ocr 
+    def get_ocr_languages
+      response = api.get(url_misc('ocr-languages-list'))
+      response
+    end
+    
+    # Returns a list of currently supported file types
+    def get_supported_file_types
+      response = api.get(url_misc('supported-file-types'))
+      response
     end
     
     # gather url for endpoints which need language in get parameters
@@ -90,6 +101,16 @@ module CopyleaksApi
     def url(action, id = nil)
       return "#{@endpoint_type}/#{action}" if id.nil?
       "#{@endpoint_type}/#{id}/#{action}"
+    end
+    
+    # gather path for download endpoint
+    def url_downloads(action, id = nil)
+      return "downloads/#{action}"
+    end
+    
+    # gather path for download endpoint
+    def url_misc(action, id = nil)
+      return "miscellaneous/#{action}"
     end
   end
 end

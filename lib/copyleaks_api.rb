@@ -3,8 +3,9 @@ unless $LOAD_PATH.include?(File.expand_path(File.dirname(__FILE__)))
 end
 require 'copyleaks_api/version'
 
-require 'copyleaks_api/language'
 require 'copyleaks_api/errors'
+
+require 'copyleaks_api/Models/ResultRecord'
 
 require 'copyleaks_api/validators/custom_fields_validator'
 require 'copyleaks_api/validators/email_validator'
