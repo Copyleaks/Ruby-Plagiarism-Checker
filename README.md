@@ -32,7 +32,7 @@ This gem is tested on `ruby-1.9.3-p551`, `jruby-9.0.5.0` and `ruby-2.3.0`.
 
 ## Examples
 
-For a fast testing, launch the script `get_started_syncronized.rb` or `get_started_async.rb` and just change the email and api_key values to your own.
+For a fast testing, launch the script `example_syncronized.rb` or `example_async.rb` and just change the `email` and `api_key` values to your own.
 
 ## Usage
 
@@ -58,10 +58,11 @@ process = cloud.create_by_file(file_path)
 ```
 
 Methods `create_by_url`, `create_by_file`, `create_by_files`, `create_by_text` and `create_by_ocr` returns `CopyleaksApi::CopyleaksProcess` objects.
-We highly recommend to use the http_callback in order to get a callback once the process is finished:
+
+We highly recommend you to use the `http_callback` header in order to get a callback once the process is finished with its results:
 ```ruby
     CopyleaksApi::Config.http_callback = 'http://yoursite.here/callback/{PID}'
-`
+```
 For more information about callbacks take a look at `get_started_async.rb` file.
 
 If you want to check the status of the process programatically use `process.update_status`:
