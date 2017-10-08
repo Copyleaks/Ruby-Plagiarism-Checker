@@ -1,81 +1,76 @@
 require 'time'
+require 'copyleaks_api/Models/ResultRecord'
+
 
 module CopyleaksApi
   class CopyleaksProcess
-    STATUSES = ['processing', 'ready', 'allocated', 'finished', 'error', 'deleted'].freeze
-
-    attr_accessor :status, :process_id, :status, :progress, :custom_fields, :created_at
+    attr_accessor :process_id, :progress, :custom_fields, :created_at
 
     # constructor
     def initialize(options)
       @cloud = options[:cloud]
-      [:cloud, :process_id, :custom_fields, :result, :status, :progress].each do |attr|
+      [:cloud, :api, :process_id, :custom_fields, :result, :progress].each do |attr|
         instance_variable_set("@#{attr}", options[attr]) if options[attr]
       end
-
       @created_at = DateTime.parse(options[:created_at]) if options[:created_at]
-      @status = STATUSES[options[:status_code].to_i + 1] if options[:status_code]
+    end
+    
+    def to_s
+      return "Created at: #{@created_at}"
     end
 
-    STATUSES[1..-1].each do |status|
-      # predicate methods for all statuses
-      define_method("#{status}?") do
-        reload if @status.nil?
-        @status == status
-      end
-    end
-
-    # returns true if process status means processing data on server side
+    # returns true if still processing data on server side
     def processing?
-      ['ready', 'allocated', 'processing'].include?(@status)
+      if @progress == 100
+        return false
+      else
+        return true
+      end
     end
 
     # return result data or retrieves from result endpoint if nothing specified
-    def result
-      @result ||= @cloud.result(process_id, raw: true)
+    # retries result information of process with given id
+    def get_results
+      response = @api.get(@cloud.url(:result, @process_id), no_callbacks: true, token: @cloud.access_token.token)
+      @results = []
+      response.each do |res|
+        @results.push(CopyleaksApi::ResultRecord.new(res))
+      end
+      return @results
+    end
+    
+    # retries status information of process with given id
+    def update_status
+      response = @api.get(@cloud.url(:status, @process_id), no_callbacks: true, token: @cloud.access_token.token)
+      @progress = response['ProgressPercents'].to_i
     end
 
-    # returns status information or reload if no data is specified
-    def status
-      reload if @status.nil?
-      @status
+    # Returns the source text of this process
+    def get_source_text
+      response = @api.get(@cloud.url("source-text?pid=#{@process_id}"), no_callbacks: true, token: @cloud.access_token.token)
+      response
     end
 
     # deletes process from API
     def delete
-      @cloud.delete(process_id)
-      @status = 'deleted'
-    end
-
-    # reload object attributes using status endpoint
-    def reload
-      response = @cloud.status(process_id, raw: true)
-      @status = response['Status'].downcase
-      @progress = response['ProgressPercents'].to_i
-      @result = nil
-      self
+      response = @api.delete(@cloud.url(:delete, @process_id), token: @cloud.access_token.token)
+      if response['StatusCode'] == 200
+        true
+      else
+        false
+      end
     end
 
     class << self
       # create CopyleaksProcess based on data got from any create endpoint
-      def create(cloud, hash)
-        new(cloud: cloud, process_id: hash['ProcessId'], created_at: hash['CreationTimeUTC'])
+      def create(cloud, api, hash)
+        new(cloud: cloud, api: api, process_id: hash['ProcessId'], created_at: hash['CreationTimeUTC'])
       end
-
-      # create CopyleaksProcess based on data got from status endpoint
-      def create_from_status(cloud, id, hash)
-        new(cloud: cloud, process_id: id, status: hash['Status'].downcase, progress: hash['ProgressPercents'])
-      end
-
-      # creates CopyleaksProcess based on data got from result endpoint
-      def create_from_result(cloud, id, result)
-        new(cloud: cloud, process_id: id, result: result)
-      end
-
+    
       # creates CopyleaksProcess based on data got from list endpoint
-      def create_from_list(cloud, hash)
-        new(cloud: cloud, process_id: hash['ProcessId'], created_at: hash['CreationTimeUTC'],
-            status: hash['Status'].downcase, custom_fields: hash['CustomFields'])
+      def create_from_list(cloud, api, hash)
+        new(cloud: cloud, api: api, process_id: hash['ProcessId'], created_at: hash['CreationTimeUTC'],
+            status_code: hash['Status'].downcase, custom_fields: hash['CustomFields'])
       end
     end
   end

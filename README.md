@@ -4,7 +4,7 @@ Copyleaks SDK is a simple framework that allows you to scan textual content for 
 
 Detect plagiarism using Copyleaks SDK in:
 - Online content and webpages
-- Local and cloud files ([see supported files](https://api.copyleaks.com/GeneralDocumentation/TechnicalSpecifications#supportedfiletypes"))
+- Local and cloud files ([see supported files](https://api.copyleaks.com/GeneralDocumentation/TechnicalSpecifications#supportedfiletypes))
 - Free text
 - OCR (Optical Character Recognition) - scanning pictures with textual content ([see supported files](https://api.copyleaks.com/GeneralDocumentation/TechnicalSpecifications#supportedfiletypes))
 
@@ -13,7 +13,7 @@ Detect plagiarism using Copyleaks SDK in:
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'copyleaks_api'
+gem 'plagiarism-checker'
 ```
 
 And then execute:
@@ -23,35 +23,60 @@ $ bundle
 
 Or use the command:
 ```
-$ gem install copyleaks_api
+$ gem install plagiarism-checker
 ```
 
 ## Requirements
 
 This gem is tested on `ruby-1.9.3-p551`, `jruby-9.0.5.0` and `ruby-2.3.0`.
 
+## Examples
+
+For a fast testing, launch the script `get_started.rb` and just change the email and api_key values to your own.
+
 ## Usage
 
-First, login with your api-key and email:
+First, import the Copyleaks API module:
 ```ruby
-cloud = CopyleaksApi::CopyleaksCloud.new(my_email, my_api_key)
+require 'copyleaks_api'
+```
+Register to Copyleaks and get an api-key at: https://copyleaks.com/account/register
+Your api-key is available at your dashboard.
+
+Login to Copyleaks API with your api-key and email:
+```ruby
+cloud = CopyleaksApi::CopyleaksCloud.new(my_email, my_api_key, :businesses)
+```
+Notice that the 3rd argument is the product that you wish to use. The available products are:
+[For Businesses](https://api.copyleaks.com/businessesdocumentation") - :businesses
+[For Education](https://api.copyleaks.com/academicdocumentation) - :education
+[For Websites](https://api.copyleaks.com/websitesdocumentation) - :websites
+
+Then you can start to scan your content for plagiarism:
+```ruby
+process = cloud.create_by_file(file_path)
 ```
 
-Then you can start to scan content for plagiarism. For example, scan picture with textual content for plagirism:
+Methods `create_by_url`, `create_by_file`, `create_by_files`, `create_by_text` and `create_by_ocr` returns `CopyleaksApi::CopyleaksProcess` objects.
+When you want to check your process status you reload and check:
 ```ruby
-process = cloud.create_by_ocr(path_to_image, language: Copyleaks::Language.english)
+while process.processing?
+    sleep(1)
+    process.update_status
+    puts "#"*(process.progress/2) + "-"*(50 - process.progress/2) + "#{process.progress}%"
+end
 ```
 
-Methods `create_by_url`, `create_by_file`, `create_by_text`, `status`, `result` and `list` returns `CopyleaksApi::CopyleaksProcess` objects. When you want to check your process status you reload and check:
-```ruby
-process.reload
-process.finished?
-```
+We highly recommend to use the http_callback option at the config in order to get a callback once the process is finished.
 
-You will get back the status `Finished` if the process finished running.
 ### Configuration
 
-You can include all of the necessary configurations in one place:
+You can set a specific header:
+```ruby
+CopyleaksApi::Config.sandbox_mode = true
+```
+
+Or can include all of the necessary configurations in one place:
 ```ruby
 CopyleaksApi::Config do |config|
     config.sanbox_mode = true
@@ -60,11 +85,6 @@ CopyleaksApi::Config do |config|
     config.email_callback = 'your@email.com'
     config.custom_fields = { some_field: 'and its value' }
 end
-```
-
-Or by calling specific methods:
-```ruby
-CopyleaksApi::Config.sandbox_mode = true
 ```
 
 Also some parameters can be specified in method arguments. 
@@ -83,10 +103,6 @@ BadUrlError | Given callback url is invalid
 UnknownLanguageError | Given OCR language is invalid
 BadResponseError | Response from API is not 200 code
 ManagedError | Response contains Copyleaks managed error code (see list [here](https://api.copyleaks.com/Documentation/ErrorList))
-
-##Examples
-
-For a fast testing, launch the script `examples/main.rb` and just change the email and api_key values to your own.
 
 ## Read more
 

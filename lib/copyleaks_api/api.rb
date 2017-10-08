@@ -3,12 +3,15 @@ require 'net/http'
 require 'mimemagic'
 require 'mimemagic/overlay'
 require 'openssl'
+require 'securerandom'
+
 
 module CopyleaksApi
   class Api
     BASE_URL = 'https://api.copyleaks.com'.freeze
-    API_VERSION = 'v1'.freeze
-
+    API_VERSION_V1 = 'v1'.freeze
+    API_VERSION_V2 = 'v2'.freeze
+  
     # constructor
     def initialize
       uri = URI(BASE_URL)
@@ -20,6 +23,12 @@ module CopyleaksApi
     # make get request without any callback header
     def get(path, options = {})
       request = Net::HTTP::Get.new(request_uri(path))
+      make_request(request, options.merge(no_callbacks: true))
+    end
+
+    # make get request without any callback header
+    def get_with_final_path(path, options = {})
+      request = Net::HTTP::Get.new(path)
       make_request(request, options.merge(no_callbacks: true))
     end
 
@@ -45,6 +54,15 @@ module CopyleaksApi
       make_request(request, options.merge(boundary: boundary))
     end
 
+    # makes post request with file inside
+    def post_files(path, files_paths, options = {})
+      request = Net::HTTP::Post.new(request_uri(path, api_version: API_VERSION_V2))
+      options[:partial_scan] ||= CopyleaksApi::Config.allow_partial_scan
+      options[:compare_only] ||= CopyleaksApi::Config.compare_only
+      boundary = "copyleaks_sdk_#{SecureRandom.hex(4)}"
+      request.body = files_body(files_paths, boundary)
+      make_request(request, options.merge(boundary: boundary))
+    end
     private
 
     # extracts mime type of given file
@@ -66,10 +84,28 @@ module CopyleaksApi
         "\r\n--#{boundary}--\r\n"
       ].join('')
     end
+    
+        # prepares post body with file inside
+    def files_body(paths, boundary)
+      body = "\r\n--#{boundary}\r\n"
+      counter = 1
+      paths.each do |path|
+        body += "content-disposition: form-data; name=\"file_#{counter}\"" +
+                "; filename=\"#{File.basename(path)}\"\r\n" +
+                "Content-Type: #{extract_mime_type(path)}\r\n" +
+                "Content-Transfer-Encoding: binary\r\n" +
+                "\r\n" +
+                File.open(path, 'rb') { |io| io.read } +
+                "\r\n--#{boundary}\r\n"
+        counter += 1
+      end
+      body += "\r\n--#{boundary}--\r\n"
+      body
+    end
 
     # gather all API path
-    def request_uri(path)
-      "/#{API_VERSION}/#{path}"
+    def request_uri(path, api_version: API_VERSION_V1)
+      "/#{api_version}/#{path}"
     end
 
     # gather headers, makes request and do validation
@@ -87,6 +123,7 @@ module CopyleaksApi
         email_callback_header(options),
         authentication_header(options),
         sandbox_header,
+        compare_only_header,
         content_type_header(options),
         partial_scan_header(options),
         'User-Agent' => "RUBYSDK/#{CopyleaksApi::VERSION}"
@@ -101,6 +138,10 @@ module CopyleaksApi
       { 'copyleaks-sandbox-mode' => '' }
     end
 
+    def compare_only_header
+      return {} unless Config.compare_only
+      { 'copyleaks-compare-documents-for-similarity' => '' }
+    end
     # prepares header for content type
     def content_type_header(options)
       { 'Content-Type' => options[:boundary] ? "multipart/form-data; boundary=\"#{options[:boundary]}\"" :
@@ -137,6 +178,7 @@ module CopyleaksApi
       { 'copyleaks-email-callback' => value }
     end
 
+    
     # prepares headers with custom fields
     def custom_field_headers(options)
       return {} if options[:no_custom_fields]
