@@ -63,7 +63,7 @@ We highly recommend you to use the `http_callback` header in order to get a call
 ```ruby
     CopyleaksApi::Config.http_callback = 'http://yoursite.here/callback/{PID}'
 ```
-For more information about callbacks take a look at `get_started_async.rb` file.
+For more information about callbacks take a look at `example_async.rb` file.
 
 If you want to check the status of the process programatically use `process.update_status`:
 ```ruby
