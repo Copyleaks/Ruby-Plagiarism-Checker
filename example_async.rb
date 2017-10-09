@@ -15,7 +15,7 @@ puts "You have #{cloud.get_credits_balance} credits"
 
 # Process Configuration
 CopyleaksApi::Config.sandbox_mode = true  # Sandbox mode will not consume any credits while returning dummy results
-CopyleaksApi::Config.http_callback = 'http://yoursite.here/callback/completion/{PID}'
+CopyleaksApi::Config.http_callback = 'http://yoursite.here/callback/completion/'
 # For testing purposes you can use http://requestb.in
 
 #CopyleaksApi::Config
@@ -24,8 +24,8 @@ CopyleaksApi::Config.http_callback = 'http://yoursite.here/callback/completion/{
 #CopyleaksApi::Config do |config|
 #    config.sanbox_mode = true
 #    config.allow_partial_scan = true
-#    config.http_callback = 'http://yoursite.here/callback/{PID}'
-#    config.in_progress_result = 'http://yoursite.here/callback/results/{PID}'
+#    config.http_callback = 'http://yoursite.here/callback/completion/'
+#    config.in_progress_result = 'http://yoursite.here/callback/results/'
 #    config.email_callback = 'your@email.com'
 #    config.custom_fields = { some_field: 'and its value' }
 #    config.compare_only = true  # Only while using create-by-files
