@@ -26,6 +26,12 @@ Or use the command:
 $ gem install plagiarism-checker
 ```
 
+Or git clone this repository and install the required dependency:
+```
+$ git clone https://github.com/Copyleaks/Ruby-Plagiarism-Checker.git
+$ gem install mimemagic
+```
+
 ## Requirements
 
 This gem is tested on `ruby-1.9.3-p551`, `jruby-9.0.5.0` and `ruby-2.3.0`.
@@ -61,7 +67,7 @@ Methods `create_by_url`, `create_by_file`, `create_by_files`, `create_by_text` a
 
 We highly recommend you to use the `http_callback` header in order to get a callback once the process is finished with its results:
 ```ruby
-    CopyleaksApi::Config.http_callback = 'http://yoursite.here/callback/{PID}'
+    CopyleaksApi::Config.http_callback = 'http://yoursite.here/callback'
 ```
 For more information about callbacks take a look at `example_async.rb` file.
 
@@ -86,8 +92,8 @@ Or can include all of the necessary configurations in one place:
 CopyleaksApi::Config do |config|
     config.sanbox_mode = true
     config.allow_partial_scan = true
-    config.http_callback = 'http://yoursite.here/callback/{PID}'
-    config.in_progress_result = 'http://yoursite.here/callback/results/{PID}'
+    config.http_callback = 'http://yoursite.here/callback'
+    config.in_progress_result = 'http://yoursite.here/callback/results'
     config.email_callback = 'your@email.com'
     config.custom_fields = { some_field: 'and its value' }
     config.compare_only = true  # Only while using create-by-files
