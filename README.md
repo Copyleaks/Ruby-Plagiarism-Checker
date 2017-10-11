@@ -40,7 +40,7 @@ This gem is tested on `ruby-1.9.3-p551`, `jruby-9.0.5.0` and `ruby-2.3.0`.
 
 For a fast testing, launch the script `example_syncronized.rb` or `example_async.rb` and just change the `email` and `api_key` values to your own.
 
-You can also watch the ([Get Started YouTube video](https://www.youtube.com/watch?v=ShPltkKf9QA))
+You can also watch the [Get Started YouTube video](https://www.youtube.com/watch?v=ShPltkKf9QA)
 
 ## Usage
 
