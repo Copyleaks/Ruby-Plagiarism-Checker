@@ -40,6 +40,8 @@ This gem is tested on `ruby-1.9.3-p551`, `jruby-9.0.5.0` and `ruby-2.3.0`.
 
 For a fast testing, launch the script `example_syncronized.rb` or `example_async.rb` and just change the `email` and `api_key` values to your own.
 
+You can also watch the [Get Started YouTube video](https://www.youtube.com/watch?v=ShPltkKf9QA).
+
 ## Usage
 
 First, import the Copyleaks API module:
@@ -54,8 +56,11 @@ Login to Copyleaks API with your api-key and email:
 cloud = CopyleaksApi::CopyleaksCloud.new(my_email, my_api_key, :businesses)
 ```
 Notice that the 3rd argument is the product that you wish to use. The available products are:
-[For Businesses](https://api.copyleaks.com/businessesdocumentation") - :businesses
+
+[For Businesses](https://api.copyleaks.com/businessesdocumentation) - :businesses
+
 [For Education](https://api.copyleaks.com/academicdocumentation) - :education
+
 [For Websites](https://api.copyleaks.com/websitesdocumentation) - :websites
 
 Then you can start to scan your content for plagiarism:
@@ -118,5 +123,6 @@ BadResponseError | Response from API is not 200 code
 ManagedError | Response contains Copyleaks managed error code (see list [here](https://api.copyleaks.com/Documentation/ErrorList))
 
 ## Read more
-
+- [Copyleaks API Homepage](https://api.copyleaks.com/)
 - [Copyleaks API guide](https://api.copyleaks.com/Guides/HowToUse)
+- [Copyleaks Homepage](https://copyleaks.com/)
