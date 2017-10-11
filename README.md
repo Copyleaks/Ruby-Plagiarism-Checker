@@ -56,8 +56,11 @@ Login to Copyleaks API with your api-key and email:
 cloud = CopyleaksApi::CopyleaksCloud.new(my_email, my_api_key, :businesses)
 ```
 Notice that the 3rd argument is the product that you wish to use. The available products are:
-[For Businesses](https://api.copyleaks.com/businessesdocumentation") - :businesses
+
+[For Businesses](https://api.copyleaks.com/businessesdocumentation) - :businesses
+
 [For Education](https://api.copyleaks.com/academicdocumentation) - :education
+
 [For Websites](https://api.copyleaks.com/websitesdocumentation) - :websites
 
 Then you can start to scan your content for plagiarism:
