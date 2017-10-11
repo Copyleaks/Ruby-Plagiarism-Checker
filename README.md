@@ -120,5 +120,6 @@ BadResponseError | Response from API is not 200 code
 ManagedError | Response contains Copyleaks managed error code (see list [here](https://api.copyleaks.com/Documentation/ErrorList))
 
 ## Read more
-
+- [Copyleaks API Homepage](https://api.copyleaks.com/)
 - [Copyleaks API guide](https://api.copyleaks.com/Guides/HowToUse)
+- [Copyleaks Homepage](https://copyleaks.com/)
