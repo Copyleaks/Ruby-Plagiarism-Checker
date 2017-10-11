@@ -26,6 +26,7 @@ CopyleaksApi::Config.sandbox_mode = true  # Sandbox mode will not consume any cr
 #    config.email_callback = 'your@email.com'
 #    config.custom_fields = { some_field: 'and its value' }
 #    config.compare_only = true  # Only while using create-by-files
+#    config.import_to_database_only = true  # To only upload your file to our database, will not consume any credits.
 #end
 
 

@@ -128,6 +128,7 @@ module CopyleaksApi
         authentication_header(options),
         sandbox_header,
         compare_only_header,
+        import_to_database_only_header,
         in_progress_result(options),
         content_type_header(options),
         partial_scan_header(options),
@@ -147,6 +148,11 @@ module CopyleaksApi
     def compare_only_header
       return {} unless Config.compare_only
       { 'copyleaks-compare-documents-for-similarity' => '' }
+    end
+    
+    def import_to_database_only_header
+      return {} unless Config.import_to_database_only
+      { 'copyleaks-index-only' => '' }
     end
     
     # Receive callback every time we find a new result without waiting for completion

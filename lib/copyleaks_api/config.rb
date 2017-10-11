@@ -7,11 +7,12 @@ module CopyleaksApi
       email_callback: nil,
       custom_fields: {},
       compare_only: false,
+      import_to_database_only: false,
       in_progress_result: nil,
     }.freeze
 
     class << self
-      attr_writer :sandbox_mode, :compare_only, :http_callback, :email_callback, :custom_fields, :allow_partial_scan, :in_progress_result
+      attr_writer :sandbox_mode, :compare_only, :http_callback, :email_callback, :custom_fields, :allow_partial_scan, :import_to_database_only, :in_progress_result
 
       DEFAULTS.each do |attr, value|
         # getters for all options

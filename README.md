@@ -48,7 +48,8 @@ First, import the Copyleaks API module:
 ```ruby
 require 'copyleaks_api'
 ```
-Register to Copyleaks and get an api-key at: https://copyleaks.com/account/register
+Register to Copyleaks and get an api-key at: https://copyleaks.com/account/register.
+
 Your api-key is available at your dashboard on https://api.copyleaks.com/
 
 Login to Copyleaks API with your api-key and email:
@@ -57,11 +58,11 @@ cloud = CopyleaksApi::CopyleaksCloud.new(my_email, my_api_key, :businesses)
 ```
 Notice that the 3rd argument is the product that you wish to use. The available products are:
 
-[For Businesses](https://api.copyleaks.com/businessesdocumentation) - :businesses
+[For Businesses](https://api.copyleaks.com/businessesdocumentation) - :businesses - Media Publishers, Consulting Firms, Law Firms, Scientific Journals, SMBs etc.
 
-[For Education](https://api.copyleaks.com/academicdocumentation) - :education
+[For Education](https://api.copyleaks.com/academicdocumentation) - :education - Universities, Schools, LMS etc.
 
-[For Websites](https://api.copyleaks.com/websitesdocumentation) - :websites
+[For Websites](https://api.copyleaks.com/websitesdocumentation) - :websites - Website Owners, SEO Agencies, Bloggers, Online Magazines and Journals etc.
 
 Then you can start to scan your content for plagiarism:
 ```ruby
@@ -72,9 +73,9 @@ Methods `create_by_url`, `create_by_file`, `create_by_files`, `create_by_text` a
 
 We highly recommend you to use the `http_callback` header in order to get a callback once the process is finished with its results:
 ```ruby
-    CopyleaksApi::Config.http_callback = 'http://yoursite.here/callback'
+CopyleaksApi::Config.http_callback = 'http://yoursite.here/callback'
 ```
-For more information about callbacks take a look at `example_async.rb` file.
+For more information about callbacks take a look at [`example_asynchronous.rb`](https://github.com/Copyleaks/Ruby-Plagiarism-Checker/blob/master/example_asynchronous.rb) file.
 
 If you want to check the status of the process programatically use `process.update_status`:
 ```ruby
@@ -82,6 +83,16 @@ while process.processing?
     sleep(1)
     process.update_status
     puts "#"*(process.progress/2) + "-"*(50 - process.progress/2) + "#{process.progress}%"
+end
+```
+
+And get the results programatically:
+```ruby
+results = process.get_results
+
+puts "#{results.size} Results: "
+results.each do |res|
+  puts res.to_s
 end
 ```
 
@@ -102,6 +113,7 @@ CopyleaksApi::Config do |config|
     config.email_callback = 'your@email.com'
     config.custom_fields = { some_field: 'and its value' }
     config.compare_only = true  # Only while using create-by-files
+    config.import_to_database_only = true  # To only upload your file to our database, will not consume any credits.
 #end
 ```
 
