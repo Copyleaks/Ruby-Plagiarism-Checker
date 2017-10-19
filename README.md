@@ -10,6 +10,8 @@ Detect plagiarism using Copyleaks SDK in:
 
 ## Installation
 
+We recommend to install this SDK using the [RubyGems](https://rubygems.org/gems/plagiarism-checker) package.
+
 Add this line to your application's Gemfile:
 
 ```ruby
