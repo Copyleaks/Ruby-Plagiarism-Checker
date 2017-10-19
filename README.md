@@ -38,7 +38,7 @@ This gem is tested on `ruby-1.9.3-p551`, `jruby-9.0.5.0` and `ruby-2.3.0`.
 
 ## Examples
 
-For a fast testing, launch the script `example_syncronized.rb` or `example_async.rb` and just change the `email` and `api_key` values to your own.
+For a fast testing use the usage example files. Update you credentials and launch the script [`example_asynchronous.rb`](https://github.com/Copyleaks/Ruby-Plagiarism-Checker/blob/master/example_asynchronous.rb) for an example usage using callbacks. Try [`example_syncronized.rb`](https://github.com/Copyleaks/Ruby-Plagiarism-Checker/blob/master/example_synchronous.rb) to see an example usage of creating a process and recieving the results programmatically.
 
 You can also watch the [Get Started YouTube video](https://www.youtube.com/watch?v=ShPltkKf9QA).
 
@@ -135,6 +135,7 @@ BadResponseError | Response from API is not 200 code
 ManagedError | Response contains Copyleaks managed error code (see list [here](https://api.copyleaks.com/Documentation/ErrorList))
 
 ## Read more
-- [Copyleaks API Homepage](https://api.copyleaks.com/)
+- [API Homepage](https://api.copyleaks.com/)
+- [API Documentation](https://api.copyleaks.com/documentation)
 - [Copyleaks API guide](https://api.copyleaks.com/Guides/HowToUse)
-- [Copyleaks Homepage](https://copyleaks.com/)
+- [Copyleaks Plagiarism Checker Homepage](https://copyleaks.com/)
