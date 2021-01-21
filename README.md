@@ -1,39 +1,39 @@
-# Plagiarism::Checker
+# Copyleaks Ruby SDK
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/plagiarism/checker`. To experiment with that code, run `bin/console` for an interactive prompt.
+Copyleaks SDK is a simple framework that allows you to scan text for plagiarism and detect content distribution online, using the Copyleaks plagiarism checker cloud.
 
-TODO: Delete this and the text above, and describe your gem
+Using Copyleaks SDK you can check for plagiarism in:
+* Online content and webpages
+* Local and cloud files (see [supported files](https://api.copyleaks.com/documentation/specifications#2-supported-file-types))
+* Free text
+* OCR (Optical Character Recognition) - scanning pictures with textual content (see [supported files](https://api.copyleaks.com/documentation/specifications#6-supported-image-types-ocr))
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Install using [RubyGems](https://rubygems.org/gems/plagiarism-checker)
 
-```ruby
-gem 'plagiarism-checker'
+```bash
+gem install plagiarism-checker
 ```
 
-And then execute:
+## Register and Get Your API Key
+To use the Copyleaks API you need to first be a registered user. The registration to Copyleaks takes a minute and is free of charge. [Signup](https://api.copyleaks.com/?register=true) and make sure to confirm your account.
 
-    $ bundle install
+As a signed user you can generate your personal API key. Do so on your [dashboard home](https://api.copyleaks.com/dashboard/:product) under 'API Access Credentials'.
 
-Or install it yourself as:
-
-    $ gem install plagiarism-checker
+For more information check out our [API guide](https://api.copyleaks.com/documentation/v3).
 
 ## Usage
+```rb
+require 'copyleaks'
+copyleaks = Copyleaks::API.new
+res = copyleaks.login(<your email>,<your api key>)
+puts res.to_json
+```
 
-TODO: Write usage instructions here
-
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/plagiarism-checker.
-
-## License
-
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+## Demo
+See [demo.rb](./demo/demo.rb) under demo folder for an example.
+## Read More
+* [API Homepage](https://api.copyleaks.com/)
+* [API Documentation](https://api.copyleaks.com/documentation)
+* [Plagiarism Report](https://github.com/Copyleaks/plagiarism-report)
