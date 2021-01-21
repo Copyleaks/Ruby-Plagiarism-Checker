@@ -1,4 +1,4 @@
-require '../lib/index'
+require 'plagiarism-checker'
 require 'json'
 require 'date'
 module CopyleaksDemo

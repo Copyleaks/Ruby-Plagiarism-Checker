@@ -24,7 +24,12 @@
 
 $LOAD_PATH.unshift(__dir__) unless $LOAD_PATH.include?(__dir__)
 
-require 'copyleaks'
+require 'copyleaks/version'
+
+require 'copyleaks/models/index'
+require 'copyleaks/utils/status-code.utils'
+require 'copyleaks/app.config'
+require 'copyleaks/api'
 
 module Copyleaks
 end
