@@ -1,4 +1,6 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in copyleaks_api.gemspec
+# Specify your gem's dependencies in plagiarism-checker.gemspec
 gemspec
