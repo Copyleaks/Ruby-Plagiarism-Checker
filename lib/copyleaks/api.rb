@@ -87,28 +87,25 @@ module Copyleaks
 
     # Starting a new process by providing a file to scan.
     # For more info:
-    # https://api.copyleaks.com/documentation/v3/education/submit/file
-    # https://api.copyleaks.com/documentation/v3/businesses/submit/file
+    # https://api.copyleaks.com/documentation/v3/scans/submit/file
     # * Exceptions:
     # * * CommandExceptions: Server reject the request. See response status code,
     #     headers and content for more info.
     # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
     #     We recommend to implement exponential backoff algorithm as described here:
     #     https://api.copyleaks.com/documentation/v3/exponential-backoff
-    # @param [String] product Which product (education or businesses) is being use.
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     # @param [String] scanId Attach your own scan Id
     # @param [CopyleaksFileSubmissionModel] submission Submission properties
-    def submit_file(product, authToken, scanId, submission)
+    def submit_file(authToken, scanId, submission)
       raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
       if submission.nil? || !submission.instance_of?(CopyleaksFileSubmissionModel)
         raise 'submission is Invalid, must be instance of type CopyleaksFileSubmissionModel'
       end
 
-      validate_product(product)
       verify_auth_token(authToken)
 
-      path = "/v3/#{product}/submit/file/#{scanId}"
+      path = "/v3/scans/submit/file/#{scanId}"
 
       headers = {
         'Content-Type' => 'application/json',
@@ -124,28 +121,25 @@ module Copyleaks
 
     # Starting a new process by providing a OCR image file to scan.
     # For more info:
-    # https://api.copyleaks.com/documentation/v3/education/submit/ocr
-    # https://api.copyleaks.com/documentation/v3/businesses/submit/ocr
+    # https://api.copyleaks.com/documentation/v3/scans/submit/ocr
     # * Exceptions:
     # * * CommandExceptions: Server reject the request. See response status code,
     #     headers and content for more info.
     # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
     #     We recommend to implement exponential backoff algorithm as described here:
     #     https://api.copyleaks.com/documentation/v3/exponential-backoff
-    # @param [String] product Which product (education or businesses) is being use.
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     # @param [String] scanId Attach your own scan Id
     # @param [CopyleaksFileOcrSubmissionModel] submission Submission properties
-    def submit_file_ocr(product, authToken, scanId, submission)
+    def submit_file_ocr(authToken, scanId, submission)
       raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
       if submission.nil? || !submission.instance_of?(CopyleaksFileOcrSubmissionModel)
         raise 'submission is Invalid, must be instance of type CopyleaksFileOcrSubmissionModel'
       end
 
-      validate_product(product)
       verify_auth_token(authToken)
 
-      path = "/v3/#{product}/submit/ocr/#{scanId}"
+      path = "/v3/scans/submit/ocr/#{scanId}"
 
       headers = {
         'Content-Type' => 'application/json',
@@ -161,28 +155,25 @@ module Copyleaks
 
     # Starting a new process by providing a URL to scan.
     # For more info:
-    # https://api.copyleaks.com/documentation/v3/education/submit/url
-    # https://api.copyleaks.com/documentation/v3/businesses/submit/url
+    # https://api.copyleaks.com/documentation/v3/scans/submit/url
     # * Exceptions:
     # * * CommandExceptions: Server reject the request. See response status code,
     #     headers and content for more info.
     # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
     #     We recommend to implement exponential backoff algorithm as described here:
     #     https://api.copyleaks.com/documentation/v3/exponential-backoff
-    # @param [String] product Which product (education or businesses) is being use.
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     # @param [String] scanId Attach your own scan Id
     # @param [CopyleaksURLSubmissionModel] submission Submission properties
-    def submit_url(product, authToken, scanId, submission)
+    def submit_url(authToken, scanId, submission)
       raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
       if submission.nil? || !submission.instance_of?(CopyleaksURLSubmissionModel)
         raise 'submission is Invalid, must be instance of CopyleaksURLSubmissionModel'
       end
 
-      validate_product(product)
       verify_auth_token(authToken)
 
-      path = "/v3/#{product}/submit/url/#{scanId}"
+      path = "/v3/scans/submit/url/#{scanId}"
 
       headers = {
         'Content-Type' => 'application/json',
@@ -233,26 +224,23 @@ module Copyleaks
 
     # Start scanning all the files you submitted for a price-check.
     # For more info:
-    # https://api.copyleaks.com/documentation/v3/education/start
-    # https://api.copyleaks.com/documentation/v3/businesses/start
+    # https://api.copyleaks.com/documentation/v3/scans/start
     # * Exceptions:
     # * * CommandExceptions: Server reject the request. See response status code,
     #     headers and content for more info.
     # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
     #     We recommend to implement exponential backoff algorithm as described here:
     #     https://api.copyleaks.com/documentation/v3/exponential-backoff
-    # @param [String] product Which product (education or businesses) is being use.
     # @param [CopyleaksAuthToken] authToken Your login token to Copyleaks server.
     # @param [CopyleaksStartRequestModel] data Include information about which scans should be started.
-    def start(product, authToken, data)
+    def start(authToken, data)
       if data.nil? || !data.instance_of?(CopyleaksStartRequestModel)
         raise 'data is Invalid, must be instance of type CopyleaksStartRequestModel'
       end
 
-      validate_product(product)
       verify_auth_token(authToken)
 
-      path =  "/v3/#{product}/start"
+      path =  "/v3/scans/start"
 
       headers = {
         'Content-Type' => 'application/json',
@@ -269,26 +257,23 @@ module Copyleaks
 
     # Delete the specific process from the server.
     # For more info:
-    # https://api.copyleaks.com/documentation/v3/education/delete
-    # https://api.copyleaks.com/documentation/v3/businesses/delete
+    # https://api.copyleaks.com/documentation/v3/scans/delete
     # * Exceptions:
     # * * CommandExceptions: Server reject the request. See response status code,
     #     headers and content for more info.
     # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
     #     We recommend to implement exponential backoff algorithm as described here:
     #     https://api.copyleaks.com/documentation/v3/exponential-backoff
-    # @param [String] product Which product (education or businesses) is being use.
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     # @param [CopyleaksDeleteRequestModel] data
-    def delete(product, authToken, data)
+    def delete(authToken, data)
       if data.nil? || !data.instance_of?(CopyleaksDeleteRequestModel)
         raise 'data is Invalid, must be instance of CopyleaksDeleteRequestModel'
       end
 
-      validate_product(product)
       verify_auth_token(authToken)
 
-      path = "/v3.1/#{product}/delete"
+      path = "/v3.1/scans/delete"
 
       headers = {
         'Content-Type' => 'application/json',
@@ -304,24 +289,21 @@ module Copyleaks
 
     # Resend status webhooks for existing scans.
     # For more info:
-    # https://api.copyleaks.com/documentation/v3/education/webhook-resend
-    # https://api.copyleaks.com/documentation/v3/businesses/webhook-resend
+    # https://api.copyleaks.com/documentation/v3/scans/webhook-resend
     # * Exceptions:
     # * * CommandExceptions: Server reject the request. See response status code,
     #     headers and content for more info.
     # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
     #     We recommend to implement exponential backoff algorithm as described here:
     #     https://api.copyleaks.com/documentation/v3/exponential-backoff
-    # @param [String] product Which product (education or businesses) is being use.
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     # @param [String] scanId Copyleaks scan Id
-    def resend_webhook(product, authToken, scanId)
+    def resend_webhook(authToken, scanId)
       raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
 
-      validate_product(product)
       verify_auth_token(authToken)
 
-      path =  "/v3/#{product}/scans/#{scanId}/webhooks/resend"
+      path =  "/v3/scans/#{scanId}/webhooks/resend"
 
       headers = {
         'Content-Type' => 'application/json',
@@ -335,8 +317,7 @@ module Copyleaks
 
     # Get current credits balance for the Copyleaks account.
     # For more info:
-    # https://api.copyleaks.com/documentation/v3/education/credits
-    # https://api.copyleaks.com/documentation/v3/businesses/credits
+    # https://api.copyleaks.com/documentation/v3/scans/credits
     # * Exceptions:
     # * * CommandExceptions: Server reject the request. See response status code,
     #     headers and content for more info.
@@ -344,13 +325,11 @@ module Copyleaks
     #     We recommend to implement exponential backoff algorithm as described here:
     #     https://api.copyleaks.com/documentation/v3/exponential-backoff
     # * * RateLimitException: Too many requests. Please wait before calling again.
-    # @param [String] product Which product (education or businesses) is being use.
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
-    def get_credits_balance(product, authToken)
-      validate_product(product)
+    def get_credits_balance(authToken)
       verify_auth_token(authToken)
 
-      path = "/v3/#{product}/credits"
+      path = "/v3/scans/credits"
 
       headers = {
         'Content-Type' => 'application/json',
@@ -365,8 +344,7 @@ module Copyleaks
     # This endpoint allows you to export your usage history between two dates.
     # The output results will be exported to a csv file and it will be attached to the response.
     # For more info:
-    # https://api.copyleaks.com/documentation/v3/education/usages/history
-    # https://api.copyleaks.com/documentation/v3/businesses/usages/history
+    # https://api.copyleaks.com/documentation/v3/scans/usages/history
     # * Exceptions:
     # * * CommandExceptions: Server reject the request. See response status code,
     #     headers and content for more info.
@@ -374,18 +352,16 @@ module Copyleaks
     #     We recommend to implement exponential backoff algorithm as described here:
     #     https://api.copyleaks.com/documentation/v3/exponential-backoff
     # * * RateLimitException: Too many requests. Please wait before calling again.
-    # @param [String] product Which product (education or businesses) is being use.
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token.
     # @param [String] startDate The start date to collect usage history from. Date Format: `dd-MM-yyyy`.
     # @param [String] endDate The end date to collect usage history from. Date Format: `dd-MM-yyyy`.
-    def get_usages_history_csv(product, authToken, startDate, endDate)
+    def get_usages_history_csv(authToken, startDate, endDate)
       raise 'startDate is Invalid, must be instance of String' if startDate.nil? || !startDate.instance_of?(String)
       raise 'endDate is Invalid, must be instance of String' if endDate.nil? || !endDate.instance_of?(String)
 
-      validate_product(product)
       verify_auth_token(authToken)
 
-      path =  "/v3/#{product}/usages/history?start=#{startDate}&end=#{endDate}"
+      path =  "/v3/scans/usages/history?start=#{startDate}&end=#{endDate}"
 
       headers = {
         'Content-Type' => 'application/json',
@@ -459,12 +435,6 @@ module Copyleaks
       }
       request = Net::HTTP::Get.new(path, header)
       handle_response(@api_client.request(request), 'get_release_notes')
-    end
-
-    def validate_product(product)
-      if product.nil? || (product != 'education' && product != 'businesses')
-        raise "Invalid product, product must be set to 'education' or 'businesses'"
-      end
     end
 
     # this methods is a helper for hanlding reponse data and exceptions.
