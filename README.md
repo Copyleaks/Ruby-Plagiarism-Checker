@@ -30,11 +30,11 @@ copyleaks = Copyleaks::API.new
 res = copyleaks.login(<your email>,<your api key>)
 puts res.to_json
 ```
-* To change the Identity server URI (default:"https://id.copyleaks.com"):
+* (Option) To change the Identity server URI (default:"https://id.copyleaks.com"):
 ```rb
 Copyleaks::Config.identity_server_uri = "<your identity server uri>"
 ```
-* To change the API server URI (default:"https://api.copyleaks.com"):
+* (Option) To change the API server URI (default:"https://api.copyleaks.com"):
 ```rb
 Copyleaks::Config.api_server_uri = "<your api server uri>"
 ```
