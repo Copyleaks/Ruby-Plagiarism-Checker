@@ -1,4 +1,4 @@
-require 'plagiarism-checker'
+require_relative '../lib/index'
 require 'json'
 require 'date'
 module CopyleaksDemo
@@ -7,8 +7,7 @@ module CopyleaksDemo
   WEBHOOK_URL = '<WEBHOOK URL>'
 
   def self.run
-    @copyleaks = Copyleaks::API.new
-
+    @copyleaks = Copyleaks::API.new    
     # test_misc
 
     loginResponse = @copyleaks.login(USER_EMAIL, USER_API_KEY)
@@ -55,14 +54,14 @@ module CopyleaksDemo
         60,
         1,
         true,
-        Copyleaks::SubmissionActions::CHECKCREDITS,
-        Copyleaks::SubmissionAuthor.new('Bayan'),
+        Copyleaks::SubmissionActions::SCAN,
+        Copyleaks::SubmissionAuthor.new('Avichai'),
         Copyleaks::SubmissionFilter.new(true, true, true),
         Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
         Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
         Copyleaks::SubmissionExclude.new(true, true, true, true, true),
         Copyleaks::SubmissionPDF.new(true, 'pdf-title', 'https://lti.copyleaks.com/images/copyleaks50x50.png', false),
-        Copyleaks::SubmissionSensitiveData.new(true)
+        Copyleaks::SubmissionSensitiveData.new(false)
       )
     )
 
@@ -83,14 +82,14 @@ module CopyleaksDemo
         60,
         1,
         true,
-        Copyleaks::SubmissionActions::CHECKCREDITS,
-        Copyleaks::SubmissionAuthor.new('Bayan'),
+        Copyleaks::SubmissionActions::SCAN,
+        Copyleaks::SubmissionAuthor.new('Avichai'),
         Copyleaks::SubmissionFilter.new(true, true, true),
         Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
         Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
         Copyleaks::SubmissionExclude.new(true, true, true, true, true),
         Copyleaks::SubmissionPDF.new(true, 'pdf-title', 'https://lti.copyleaks.com/images/copyleaks50x50.png', false),
-        Copyleaks::SubmissionSensitiveData.new(true)
+        Copyleaks::SubmissionSensitiveData.new(false)
       )
     )
 
@@ -110,14 +109,14 @@ module CopyleaksDemo
         60,
         1,
         true,
-        Copyleaks::SubmissionActions::CHECKCREDITS,
-        Copyleaks::SubmissionAuthor.new('Bayan'),
+        Copyleaks::SubmissionActions::SCAN,
+        Copyleaks::SubmissionAuthor.new('Avichai'),
         Copyleaks::SubmissionFilter.new(true, true, true),
         Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
         Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
         Copyleaks::SubmissionExclude.new(true, true, true, true, true),
         Copyleaks::SubmissionPDF.new(true, 'pdf-title', 'https://lti.copyleaks.com/images/copyleaks50x50.png', false),
-        Copyleaks::SubmissionSensitiveData.new(true)
+        Copyleaks::SubmissionSensitiveData.new(false)
       )
     )
 

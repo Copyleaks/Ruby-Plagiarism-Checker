@@ -40,6 +40,14 @@ module Copyleaks
       @@api_server_uri
     end
 
+    def self.identity_server_uri=(uri)
+      @@identity_server_uri = uri
+    end
+
+    def self.api_server_uri=(uri)
+      @@api_server_uri = uri
+    end
+
     def self.user_agent
       @@user_agent
     end
