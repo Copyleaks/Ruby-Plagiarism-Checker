@@ -23,9 +23,9 @@
 # =
 module Copyleaks
   class SubmissionScanningRepository < SubmissionRepository
-    # @param [String] Id of a repository to add the scanned document to.
-    # @param [Boolean] includeMySubmissions Compare the scanned document against MY submittions in the repository.
-    # @param [Boolean] includeOthersSubmissions Compare the scanned document against OTHER users submittions in the repository.
+    # @param [String] ID of a repository to add the scanned document to.
+    # @param [Boolean] includeMySubmissions Compare the scanned document against MY submissions in the repository.
+    # @param [Boolean] includeOthersSubmissions Compare the scanned document against OTHER users submissions in the repository.
     def initialize(id, includeMySubmissions, includeOthersSubmissions)
       super(id)
       @includeMySubmissions = includeMySubmissions
