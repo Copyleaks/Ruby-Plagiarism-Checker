@@ -46,15 +46,15 @@ module Copyleaks
         raise 'Copyleaks::CopyleaksExportModel - crawledVersion - crawledVersion must be of type Copyleaks::ExportCrawledVersion'
       end
 
-      if !pdfReport.nil? && pdfReport.instance_of?(ExportPdfReport)
+      if !pdfReport.nil? && !pdfReport.instance_of?(ExportPdfReport)
         raise 'Copyleaks::CopyleaksExportModel - pdfReport - pdfReport must be of type Copyleaks::ExportPdfReport'
       end
 
-      if !maxRetries.nil? && maxRetries.instance_of?(Integer)
+      if !maxRetries.nil? && !maxRetries.instance_of?(Integer)
         raise 'Copyleaks::CopyleaksExportModel - maxRetries - maxRetries must be of type Integer'
       end
 
-      if !developerPayload.nil? && developerPayload.instance_of?(String)
+      if !developerPayload.nil? && !developerPayload.instance_of?(String)
         raise 'Copyleaks::CopyleaksExportModel - developerPayload - developerPayload must be of type String'
       end
 

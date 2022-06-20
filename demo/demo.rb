@@ -1,4 +1,4 @@
-require 'plagiarism-checker'
+require_relative '../lib/index'
 require 'json'
 require 'date'
 module CopyleaksDemo
@@ -7,8 +7,7 @@ module CopyleaksDemo
   WEBHOOK_URL = '<WEBHOOK URL>'
 
   def self.run
-    @copyleaks = Copyleaks::API.new
-
+    @copyleaks = Copyleaks::API.new    
     # test_misc
 
     loginResponse = @copyleaks.login(USER_EMAIL, USER_API_KEY)
@@ -55,18 +54,18 @@ module CopyleaksDemo
         60,
         1,
         true,
-        Copyleaks::SubmissionActions::CHECKCREDITS,
-        Copyleaks::SubmissionAuthor.new('Bayan'),
+        Copyleaks::SubmissionActions::SCAN,
+        Copyleaks::SubmissionAuthor.new('Author_name'),
         Copyleaks::SubmissionFilter.new(true, true, true),
         Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
         Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
         Copyleaks::SubmissionExclude.new(true, true, true, true, true),
         Copyleaks::SubmissionPDF.new(true, 'pdf-title', 'https://lti.copyleaks.com/images/copyleaks50x50.png', false),
-        Copyleaks::SubmissionSensitiveData.new(true)
+        Copyleaks::SubmissionSensitiveData.new(false)
       )
     )
 
-    @copyleaks.submit_file_ocr('education', _authToken, scanId, submisson)
+    @copyleaks.submit_file_ocr(_authToken, scanId, submisson)
     logInfo('submit_file_ocr')
   end
 
@@ -83,18 +82,18 @@ module CopyleaksDemo
         60,
         1,
         true,
-        Copyleaks::SubmissionActions::CHECKCREDITS,
-        Copyleaks::SubmissionAuthor.new('Bayan'),
+        Copyleaks::SubmissionActions::SCAN,
+        Copyleaks::SubmissionAuthor.new('Author_name'),
         Copyleaks::SubmissionFilter.new(true, true, true),
         Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
         Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
         Copyleaks::SubmissionExclude.new(true, true, true, true, true),
         Copyleaks::SubmissionPDF.new(true, 'pdf-title', 'https://lti.copyleaks.com/images/copyleaks50x50.png', false),
-        Copyleaks::SubmissionSensitiveData.new(true)
+        Copyleaks::SubmissionSensitiveData.new(false)
       )
     )
 
-    @copyleaks.submit_file('education', _authToken, scanId, submisson)
+    @copyleaks.submit_file(_authToken, scanId, submisson)
     logInfo('submit_file')
   end
 
@@ -110,25 +109,25 @@ module CopyleaksDemo
         60,
         1,
         true,
-        Copyleaks::SubmissionActions::CHECKCREDITS,
-        Copyleaks::SubmissionAuthor.new('Bayan'),
+        Copyleaks::SubmissionActions::SCAN,
+        Copyleaks::SubmissionAuthor.new('Author_name'),
         Copyleaks::SubmissionFilter.new(true, true, true),
         Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
         Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
         Copyleaks::SubmissionExclude.new(true, true, true, true, true),
         Copyleaks::SubmissionPDF.new(true, 'pdf-title', 'https://lti.copyleaks.com/images/copyleaks50x50.png', false),
-        Copyleaks::SubmissionSensitiveData.new(true)
+        Copyleaks::SubmissionSensitiveData.new(false)
       )
     )
 
-    @copyleaks.submit_url('education', _authToken, scanId, submisson)
+    @copyleaks.submit_url(_authToken, scanId, submisson)
     logInfo('submit_url')
   end
 
   def self.test_start(_authToken)
     data = Copyleaks::CopyleaksStartRequestModel.new(['1611225876017'],
                                                      Copyleaks::CopyleaksStartErrorHandlings::IGNORE)
-    @copyleaks.start('education', _authToken, data)
+    @copyleaks.start(_authToken, data)
     logInfo('start')
   end
 
@@ -148,8 +147,8 @@ module CopyleaksDemo
   end
 
   def self.test_resend_webhook(authToken)
-    @copyleaks.resend_webhook('education', authToken, 'gzs55hrpefsaplcp')
-    logInfo('resend_webhook:education')
+    @copyleaks.resend_webhook(authToken, 'gzs55hrpefsaplcp')
+    logInfo('resend_webhook')
   end
 
   def self.test_delete(authToken)
@@ -160,20 +159,18 @@ module CopyleaksDemo
       true,
       "#{WEBHOOK_URL}/delete"
     )
-    @copyleaks.delete('education', authToken, model)
-    logInfo('delete:education')
+    @copyleaks.delete(authToken, model)
+    logInfo('delete')
   end
 
   def self.test_usages_history(authToken)
-    res = @copyleaks.get_usages_history_csv('education', authToken, '01-01-2021', '02-02-2021')
-    logInfo('get_usages_history_csv:education', res)
+    res = @copyleaks.get_usages_history_csv(authToken, '01-01-2021', '02-02-2021')
+    logInfo('get_usages_history_csv', res)
   end
 
   def self.test_credit_balance(authToken)
-    education_res = @copyleaks.get_credits_balance('education', authToken)
-    logInfo('get_credits_balance:education', education_res)
-    businesses_res = @copyleaks.get_credits_balance('businesses', authToken)
-    logInfo('get_credits_balance:businesses', businesses_res)
+    res = @copyleaks.get_credits_balance(authToken)
+    logInfo('get_credits_balance', res)
   end
 
   def self.test_misc
