@@ -21,12 +21,11 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-$LOAD_PATH.unshift(__dir__) unless $LOAD_PATH.include?(__dir__)
 
-require 'export_model'
-require 'export_crawled_version'
-require 'export_pdf_report'
-require 'export_results'
+require_relative 'export_model.rb'
+require_relative 'export_crawled_version.rb'
+require_relative 'export_pdf_report.rb'
+require_relative 'export_results.rb'
 
 module Copyleaks
 end

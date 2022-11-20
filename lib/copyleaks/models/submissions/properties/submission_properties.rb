@@ -24,7 +24,7 @@
 module Copyleaks
   class SubmissionProperties
     attr_reader :webhooks, :includeHtml, :developerPayload, :sandbox, :expiration, :sensitivityLevel, :cheatDetection,
-                :action, :author, :filters, :scanning, :indexing, :exclude, :pdf, :sensitiveDataProtection
+                :action, :author, :filters, :scanning, :indexing, :exclude, :pdf, :sensitiveDataProtection, :scanMethodAlgorithm
 
     # @param [SubmissionWebhooks] webhooks - Check inner properties for more details.
     # @param [Boolean] includeHtml - By default, Copyleaks will present the report in text format. If set to true, Copyleaks will also include html format.
@@ -41,10 +41,11 @@ module Copyleaks
     # @param [SubmissionExclude] exclude - Check inner properties for more details.
     # @param [SubmissionPDF] pdf - Check inner properties for more details.
     # @param [SubmissionSensitiveData] sensitiveDataProtection - Check inner properties for more details.
+    # @param [SubmissionScanMethodAlgorithm] scanMethodAlgorithm - Check inner properties for more details.
     def initialize(
       webhooks, includeHtml = nil, developerPayload = nil, sandbox = nil, expiration = nil,
       sensitivityLevel = nil, cheatDetection = nil, action = nil, author = nil, filters = nil,
-      scanning = nil, indexing = nil, exclude = nil, pdf = nil, sensitiveDataProtection = nil
+      scanning = nil, indexing = nil, exclude = nil, pdf = nil, sensitiveDataProtection = nil, scanMethodAlgorithm = nil
     )
       unless webhooks.instance_of?(SubmissionWebhooks)
         raise 'Copyleaks::SubmissionProperties - webhooks - webhooks must be of type SubmissionWebhooks'
@@ -91,6 +92,9 @@ module Copyleaks
       if !sensitiveDataProtection.nil? && !sensitiveDataProtection.instance_of?(SubmissionSensitiveData)
         raise 'Copyleaks::SubmissionProperties - sensitiveDataProtection - sensitiveDataProtection must be of type SubmissionSensitiveData'
       end
+      if !scanMethodAlgorithm.nil? && ![0, 1].include?(scanMethodAlgorithm)
+        raise 'Copyleaks::SubmissionProperties - scanMethodAlgorithm - action must be of type SubmissionScanMethodAlgorithm consts'
+      end
 
       @webhooks = webhooks
       @includeHtml = includeHtml
@@ -107,6 +111,7 @@ module Copyleaks
       @exclude = exclude
       @pdf = pdf
       @sensitiveDataProtection = sensitiveDataProtection
+      @scanMethodAlgorithm = scanMethodAlgorithm
     end
 
     def as_json(*_args)
@@ -125,7 +130,8 @@ module Copyleaks
         indexing: @indexing,
         exclude: @exclude,
         pdf: @pdf,
-        sensitiveDataProtection: @sensitiveDataProtection
+        sensitiveDataProtection: @sensitiveDataProtection,
+        scanMethodAlgorithm: @scanMethodAlgorithm
       }.select { |_k, v| !v.nil? }
     end
 
