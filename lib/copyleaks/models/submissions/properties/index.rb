@@ -21,25 +21,25 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-$LOAD_PATH.unshift(__dir__) unless $LOAD_PATH.include?(__dir__)
 
-require 'submission_properties'
+require_relative 'submission_properties.rb'
 
-require 'actions'
-require 'author'
-require 'copyleaks_db'
-require 'domains_mode'
-require 'exclude'
-require 'filter'
-require 'indexing'
-require 'pdf_properties'
-require 'repository'
-require 'scanning'
-require 'scanning_exclude'
-require 'scanning_repository'
-require 'sensitive_data_protection'
-require 'submission_properties'
-require 'webhooks'
+require_relative 'actions.rb'
+require_relative 'author.rb'
+require_relative 'copyleaks_db.rb'
+require_relative 'domains_mode.rb'
+require_relative 'exclude.rb'
+require_relative 'filter.rb'
+require_relative 'scan_method_algorithm.rb'
+require_relative 'indexing.rb'
+require_relative 'pdf_properties.rb'
+require_relative 'repository.rb'
+require_relative 'scanning.rb'
+require_relative 'scanning_exclude.rb'
+require_relative 'scanning_repository.rb'
+require_relative 'sensitive_data_protection.rb'
+require_relative 'submission_properties.rb'
+require_relative 'webhooks.rb'
 
 module Copyleaks
 end

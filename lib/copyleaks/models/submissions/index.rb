@@ -21,13 +21,12 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-$LOAD_PATH.unshift(__dir__) unless $LOAD_PATH.include?(__dir__)
-require 'properties/index'
+require_relative 'properties/index.rb'
 
-require 'submission_model'
-require 'file_submission_model'
-require 'file_ocr_submission_model'
-require 'url_submission_model'
+require_relative 'submission_model.rb'
+require_relative 'file_submission_model.rb'
+require_relative 'file_ocr_submission_model.rb'
+require_relative 'url_submission_model.rb'
 
 module Copyleaks
 end

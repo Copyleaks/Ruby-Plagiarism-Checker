@@ -21,12 +21,11 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-
-require_relative  './copyleaks/api.rb'
-require_relative  './copyleaks/version.rb'
-require_relative  './copyleaks/app.config.rb'
-require_relative  './copyleaks/models/index.rb'
-require_relative  './copyleaks/utils/status-code.utils.rb'
-
 module Copyleaks
+  class SubmissionScanMethodAlgorithm
+    # prioritize higher similarity
+    MAXIMUM_COVERAGE = 0
+    # prioritize finding more sources.
+    MAXIMUM_RESULTS = 1
+  end
 end

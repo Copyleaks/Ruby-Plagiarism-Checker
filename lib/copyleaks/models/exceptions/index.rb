@@ -21,12 +21,11 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-$LOAD_PATH.unshift(__dir__) unless $LOAD_PATH.include?(__dir__)
 
-require 'auth_exipred_exception'
-require 'command_exception'
-require 'rate_limit_exception'
-require 'under_maintenance_exception'
+require_relative 'auth_exipred_exception.rb'
+require_relative 'command_exception.rb'
+require_relative 'rate_limit_exception.rb'
+require_relative 'under_maintenance_exception.rb'
 
 module Copyleaks
 end

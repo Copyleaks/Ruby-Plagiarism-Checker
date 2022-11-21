@@ -21,15 +21,15 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-$LOAD_PATH.unshift(__dir__) unless $LOAD_PATH.include?(__dir__)
-require 'exceptions/index'
-require 'exports/index'
-require 'submissions/index'
-require 'auth_token'
 
-require 'id_object'
-require 'delete_request_model'
-require 'start_request_model'
+require_relative 'exceptions/index.rb'
+require_relative 'exports/index.rb'
+require_relative 'submissions/index.rb'
+require_relative 'auth_token.rb'
+
+require_relative 'id_object.rb'
+require_relative 'delete_request_model.rb'
+require_relative 'start_request_model.rb'
 
 module Copyleaks
 end
