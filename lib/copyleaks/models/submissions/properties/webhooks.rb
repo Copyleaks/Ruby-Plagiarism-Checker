@@ -25,20 +25,50 @@ module Copyleaks
   class SubmissionWebhooks
     # @param [String] status This webhook event is triggered once the scan status changes. Use the special token {STATUS} to track the current scan status. This special token will automatically be replaced by the Copyleaks servers with the optional values: completed, error, creditsChecked and indexed. Read more about webhooks: https://api.copyleaks.com/documentation/v3/webhooks
     # @param [String] newResult Http endpoint to be triggered while the scan is still running and a new result is found. This is useful when the report is being viewed by the user in real time so the results will load gradually as they are found.
-    def initialize(status, newResult = nil)
+    # @param [Array] statusHeaders Adds headers to the webhook.
+    # @param [Array] newResultHeaders Adds headers to the webhook.
+    def initialize(status, newResult = nil, statusHeaders = nil, newResultHeaders = nil)
+      unless status.instance_of? String
+        raise 'Copyleaks::SubmissionWebhooks - status - status must be of type String'
+      end
+      unless newResult.nil? || newResult.instance_of?(String)
+        raise 'Copyleaks::SubmissionWebhooks - newResult - newResult must be of type String'
+      end
+      unless header_format_valid?(statusHeaders)
+        raise 'Copyleaks::SubmissionWebhooks - statusHeaders - statusHeaders must be an Array of String Array pairs'
+      end
+      unless header_format_valid?(newResultHeaders)
+        raise 'Copyleaks::SubmissionWebhooks - newResultHeaders - newResultHeaders must be an Array of String Array pairs'
+      end
+
       @newResult = newResult
       @status = status
+      @statusHeaders = statusHeaders
+      @newResultHeaders = newResultHeaders
     end
 
     def as_json(*_args)
       {
         newResult: @newResult,
-        status: @status
+        status: @status,
+        statusHeaders: @statusHeaders,
+        newResultHeaders: @newResultHeaders
       }.select { |_k, v| !v.nil? }
     end
 
     def to_json(*options)
       as_json(*options).to_json(*options)
+    end
+
+    private
+
+    def header_format_valid?(header)
+      return true if header.nil?
+      return false unless header.instance_of?(Array)
+
+      header.all? do |pair|
+        pair.instance_of?(Array) && pair.length == 2 && pair[0].instance_of?(String) && pair[1].instance_of?(String)
+      end
     end
   end
 end
