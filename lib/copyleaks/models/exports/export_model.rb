@@ -23,17 +23,22 @@
 # =
 module Copyleaks
   class CopyleaksExportModel
-    attr_reader :completionWebhook, :results, :crawledVersion, :pdfReport, :maxRetries, :developerPayload
+    attr_reader :completionWebhook, :completionWebhookHeaders, :results, :crawledVersion, :pdfReport, :maxRetries, :developerPayload
 
     # @param [String] completionWebhook This webhook event is triggered once the export is completed.
     # @param [ExportResults[]] results An array of results to be exported. The equivalent of downloading results manually.
     # @param [ExportCrawledVersion crawledVersion Download the crawled version of the submitted text. The equivalent of downloading crawled version manually.
-    # @param [ExportPdfReport] pdfReport Download the PDF report. Allowed only when `properties.pdf.create` was set to true on the scan submittion.
+    # @param [ExportPdfReport] pdfReport Download the PDF report. Allowed only when `properties.pdf.create` was set to true on the scan submission.
     # @param [Integer] maxRetries How many retries to send before giving up. Using high value (12) may lead to a longer time until the completionWebhook being executed. A low value (1) may lead to errors while your service is temporary having problems.
     # @param [String] developerPayload Add a custom developer payload that will then be provided on the Export-Completed webhook. https://api.copyleaks.com/documentation/v3/webhooks/export-completed
-    def initialize(completionWebhook, results, crawledVersion, pdfReport = nil, maxRetries = nil, developerPayload = nil)
+    # @param [Array] completionWebhookHeaders Adds headers to the completion webhook.
+    def initialize(completionWebhook, results, crawledVersion, pdfReport = nil, maxRetries = nil, developerPayload = nil, completionWebhookHeaders = nil)
       unless completionWebhook.instance_of?(String)
         raise 'Copyleaks::CopyleaksExportModel - completionWebhook - completionWebhook must be of type String'
+      end
+
+      unless header_format_valid?(completionWebhookHeaders)
+        raise 'Copyleaks::CopyleaksExportModel - completionWebhookHeaders - completionWebhookHeaders must be an Array of String Array pairs'
       end
 
       results.each do |item|
@@ -59,6 +64,7 @@ module Copyleaks
       end
 
       @completionWebhook = completionWebhook
+      @completionWebhookHeaders = completionWebhookHeaders
       @results = results
       @crawledVersion = crawledVersion
       @pdfReport = pdfReport
@@ -69,6 +75,7 @@ module Copyleaks
     def as_json(*_args)
       {
         completionWebhook: @completionWebhook,
+        completionWebhookHeaders: @completionWebhookHeaders,
         results: @results,
         crawledVersion: @crawledVersion,
         pdfReport: @pdfReport,
@@ -79,6 +86,17 @@ module Copyleaks
 
     def to_json(*options)
       as_json(*options).to_json(*options)
+    end
+
+    private
+
+    def header_format_valid?(header)
+      return true if header.nil?
+      return false unless header.instance_of?(Array)
+
+      header.all? do |pair|
+        pair.instance_of?(Array) && pair.length == 2 && pair[0].instance_of?(String) && pair[1].instance_of?(String)
+      end
     end
   end
 end
