@@ -45,7 +45,8 @@ module Copyleaks
     def initialize(
       webhooks, includeHtml = nil, developerPayload = nil, sandbox = nil, expiration = nil,
       sensitivityLevel = nil, cheatDetection = nil, action = nil, author = nil, filters = nil,
-      scanning = nil, indexing = nil, exclude = nil, pdf = nil, sensitiveDataProtection = nil, scanMethodAlgorithm = nil
+      scanning = nil, indexing = nil, exclude = nil, pdf = nil, sensitiveDataProtection = nil,
+      scanMethodAlgorithm = nil, aiGeneratedText = nil
     )
       unless webhooks.instance_of?(SubmissionWebhooks)
         raise 'Copyleaks::SubmissionProperties - webhooks - webhooks must be of type SubmissionWebhooks'
@@ -93,7 +94,10 @@ module Copyleaks
         raise 'Copyleaks::SubmissionProperties - sensitiveDataProtection - sensitiveDataProtection must be of type SubmissionSensitiveData'
       end
       if !scanMethodAlgorithm.nil? && ![0, 1].include?(scanMethodAlgorithm)
-        raise 'Copyleaks::SubmissionProperties - scanMethodAlgorithm - action must be of type SubmissionScanMethodAlgorithm consts'
+        raise 'Copyleaks::SubmissionProperties - scanMethodAlgorithm - scanMethodAlgorithm must be of type SubmissionScanMethodAlgorithm'
+      end
+      if !aiGeneratedText.nil? && !aiGeneratedText.instance_of?(SubmissionAiGeneratedText)
+        raise 'Copyleaks::SubmissionProperties - aiGeneratedText - aiGeneratedText must be of type SubmissionAiGeneratedText'
       end
 
       @webhooks = webhooks
@@ -103,6 +107,7 @@ module Copyleaks
       @expiration = expiration
       @sensitivityLevel = sensitivityLevel
       @cheatDetection = cheatDetection
+      @aiGeneratedText = aiGeneratedText
       @action = action
       @author = author
       @filters = filters
@@ -123,6 +128,7 @@ module Copyleaks
         expiration: @expiration,
         sensitivityLevel: @sensitivityLevel,
         cheatDetection: @cheatDetection,
+        aiGeneratedText: @aiGeneratedText,
         action: @action,
         author: @author,
         filters: @filters,

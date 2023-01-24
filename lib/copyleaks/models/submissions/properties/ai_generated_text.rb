@@ -1,7 +1,7 @@
 #
 #  The MIT License(MIT)
 #
-#  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
+#  Copyright(c) 2023 Copyleaks LTD (https://copyleaks.com)
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -21,26 +21,23 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-
-require_relative 'submission_properties.rb'
-
-require_relative 'actions.rb'
-require_relative 'ai_generated_text.rb'
-require_relative 'author.rb'
-require_relative 'copyleaks_db.rb'
-require_relative 'domains_mode.rb'
-require_relative 'exclude.rb'
-require_relative 'filter.rb'
-require_relative 'scan_method_algorithm.rb'
-require_relative 'indexing.rb'
-require_relative 'pdf_properties.rb'
-require_relative 'repository.rb'
-require_relative 'scanning.rb'
-require_relative 'scanning_exclude.rb'
-require_relative 'scanning_repository.rb'
-require_relative 'sensitive_data_protection.rb'
-require_relative 'submission_properties.rb'
-require_relative 'webhooks.rb'
-
 module Copyleaks
+  class SubmissionAiGeneratedText
+    # @param [Boolean] detect Detects whether the text was written by an AI.
+    def initialize(
+      detect = false
+    )
+      @detect = detect
+    end
+
+    def as_json(*_args)
+      {
+        detect: @detect
+      }.select { |_k, v| !v.nil? }
+    end
+
+    def to_json(*options)
+      as_json(*options).to_json(*options)
+    end
+  end
 end
