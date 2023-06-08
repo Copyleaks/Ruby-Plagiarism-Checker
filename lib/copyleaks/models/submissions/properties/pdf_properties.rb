@@ -27,16 +27,28 @@ module Copyleaks
     # @param [String] title Customize the title for the PDF report.
     # @param [String] largeLogo Customize the logo image in the PDF report.
     # @param [Boolean] rtl When set to true the text in the report will be aligned from right to left.
+    # @param [SubmissionPdfVersion] verion  - PDF version to generate.
+    # @param [SubmissionPdfColors] colors - Customizable colors.
+
     def initialize(
       create,
       title,
       largeLogo,
-      rtl
+      rtl,
+      version = nil,
+      colors = nil
     )
+
+      if !colors.nil? && !colors.instance_of?(SubmissionPdfColors)
+        raise 'Copyleaks::SubmissionPDF - colors - colors must be of type SubmissionPdfColors'
+      end
+
       @create = create
       @title = title
       @largeLogo = largeLogo
       @rtl = rtl
+      @version = version
+      @colors = colors
     end
 
     def as_json(*_args)
@@ -44,7 +56,9 @@ module Copyleaks
         create: @create,
         title: @title,
         largeLogo: @largeLogo,
-        rtl: @rtl
+        rtl: @rtl,
+        version: @version,
+        colors: @colors
       }.select { |_k, v| !v.nil? }
     end
 

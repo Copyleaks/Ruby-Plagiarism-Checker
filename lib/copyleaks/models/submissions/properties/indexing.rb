@@ -23,7 +23,7 @@
 # =
 module Copyleaks
   class SubmissionIndexing
-    # @param [SubmissionRepository[]] repositories - Check inner properties of SubmissionRepository for more details.
+    # @param [SubmissionIndexingRepository[]] repositories - Check inner properties of SubmissionRepository for more details.
     def initialize(repositories)
       @repositories = repositories
     end

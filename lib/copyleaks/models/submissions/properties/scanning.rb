@@ -27,16 +27,19 @@ module Copyleaks
     # @param [SubmissionScanningExclude] exclude Check inner properties of SubmissionScanningExclude for more details.
     # @param [SubmissionScanningRepository[]] repositories - Check inner properties of SubmissionScanningRepository for more details.
     # @param [SubmissionScanningCopyleaksDB] copyleaksDb Check inner properties for more details.
+    # @param [SubmissionCrossLanguages] crossLanguages
     def initialize(
       internet = false,
       exclude = nil,
       repositories = nil,
-      copyleaksDb = nil
+      copyleaksDb = nil,
+      crossLanguages = nil
     )
       @internet = internet
       @exclude = exclude
       @repositories = repositories
       @copyleaksDb = copyleaksDb
+      @crossLanguages = crossLanguages
     end
 
     def as_json(*_args)
@@ -44,7 +47,8 @@ module Copyleaks
         internet: @internet,
         exclude: @exclude,
         repositories: @repositories,
-        copyleaksDb: @copyleaksDb
+        copyleaksDb: @copyleaksDb,
+        crossLanguages: @crossLanguages
       }.select { |_k, v| !v.nil? }
     end
 

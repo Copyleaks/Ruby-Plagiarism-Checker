@@ -24,7 +24,8 @@
 module Copyleaks
   class SubmissionProperties
     attr_reader :webhooks, :includeHtml, :developerPayload, :sandbox, :expiration, :sensitivityLevel, :cheatDetection,
-                :action, :author, :filters, :scanning, :indexing, :exclude, :pdf, :sensitiveDataProtection, :scanMethodAlgorithm
+                :action, :author, :filters, :scanning, :indexing, :exclude, :pdf, :sensitiveDataProtection, :scanMethodAlgorithm,
+                :aiGeneratedText, :customMetadata
 
     # @param [SubmissionWebhooks] webhooks - Check inner properties for more details.
     # @param [Boolean] includeHtml - By default, Copyleaks will present the report in text format. If set to true, Copyleaks will also include html format.
@@ -42,11 +43,13 @@ module Copyleaks
     # @param [SubmissionPDF] pdf - Check inner properties for more details.
     # @param [SubmissionSensitiveData] sensitiveDataProtection - Check inner properties for more details.
     # @param [SubmissionScanMethodAlgorithm] scanMethodAlgorithm - Check inner properties for more details.
+    # @param [SubmissionAiGeneratedText] aiGeneratedText - Check inner properties for more details.
+    # @param [SubmissionCustomMetadata] customMetadata - Add custom properties that will be attached to your document in a Copyleaks repository.
     def initialize(
       webhooks, includeHtml = nil, developerPayload = nil, sandbox = nil, expiration = nil,
       sensitivityLevel = nil, cheatDetection = nil, action = nil, author = nil, filters = nil,
       scanning = nil, indexing = nil, exclude = nil, pdf = nil, sensitiveDataProtection = nil,
-      scanMethodAlgorithm = nil, aiGeneratedText = nil
+      scanMethodAlgorithm = nil, aiGeneratedText = nil, customMetadata = nil
     )
       unless webhooks.instance_of?(SubmissionWebhooks)
         raise 'Copyleaks::SubmissionProperties - webhooks - webhooks must be of type SubmissionWebhooks'
@@ -99,6 +102,9 @@ module Copyleaks
       if !aiGeneratedText.nil? && !aiGeneratedText.instance_of?(SubmissionAiGeneratedText)
         raise 'Copyleaks::SubmissionProperties - aiGeneratedText - aiGeneratedText must be of type SubmissionAiGeneratedText'
       end
+      if !customMetadata.nil? && !(customMetadata.is_a?(Array) && customMetadata.all? { |element| element.is_a?(SubmissionCustomMetadata) })
+        raise 'Copyleaks::SubmissionProperties - customMetadata - customMetadata must be of type SubmissionCustomMetadata[]'
+      end
 
       @webhooks = webhooks
       @includeHtml = includeHtml
@@ -117,6 +123,7 @@ module Copyleaks
       @pdf = pdf
       @sensitiveDataProtection = sensitiveDataProtection
       @scanMethodAlgorithm = scanMethodAlgorithm
+      @customMetadata = customMetadata
     end
 
     def as_json(*_args)
@@ -137,7 +144,8 @@ module Copyleaks
         exclude: @exclude,
         pdf: @pdf,
         sensitiveDataProtection: @sensitiveDataProtection,
-        scanMethodAlgorithm: @scanMethodAlgorithm
+        scanMethodAlgorithm: @scanMethodAlgorithm,
+        customMetadata: @customMetadata
       }.select { |_k, v| !v.nil? }
     end
 

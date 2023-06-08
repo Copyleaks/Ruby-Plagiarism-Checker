@@ -28,18 +28,41 @@ module Copyleaks
     # @param [Boolean] tableOfContents Exclude table of contents from the scan.
     # @param [Boolean] titles Exclude titles from the scan.
     # @param [Boolean] htmlTemplate When the scanned document is an HTML document, exclude irrelevant text that appears across the site like the website footer or header.
+    # @param [Boolean] citations - Exclude citations from the scan.
+    # @param [String[]] documentTemplateIds - Exclude text based on text found within other documents.
+    # @param [SubmissionExcludeCode] code - Exclude sections of source code
+
     def initialize(
       quotes = false,
       references = false,
       tableOfContents = false,
       titles = false,
-      htmlTemplate = false
+      htmlTemplate = false,
+      citations = nil,
+      documentTemplateIds = nil,
+      code = nil
     )
+      if !citations.nil? && ![true, false].include?(citations)
+        raise 'Copyleaks::SubmissionExclude - citations - citations must be of type Boolean'
+      end
+
+      if !documentTemplateIds.nil? && !(documentTemplateIds.is_a?(Array) && documentTemplateIds.all? { |element| element.is_a?(String) })
+        raise 'Copyleaks::SubmissionExclude - documentTemplateIds - documentTemplateIds must be of type String[]'
+      end
+
+      if !code.nil? && !code.instance_of?(SubmissionExcludeCode)
+        raise 'Copyleaks::SubmissionExclude - code - code must be of type SubmissionExcludeCode'
+      end
+
       @quotes = quotes
       @references = references
       @tableOfContents = tableOfContents
       @titles = titles
       @htmlTemplate = htmlTemplate
+      @citations = citations
+      @documentTemplateIds = documentTemplateIds
+      @code = code
+
     end
 
     def as_json(*_args)
@@ -48,7 +71,10 @@ module Copyleaks
         references: @references,
         tableOfContents: @tableOfContents,
         titles: @titles,
-        htmlTemplate: @htmlTemplate
+        htmlTemplate: @htmlTemplate,
+        citations: @citations,
+        documentTemplateIds: @documentTemplateIds,
+        code: @code
       }.select { |_k, v| !v.nil? }
     end
 
