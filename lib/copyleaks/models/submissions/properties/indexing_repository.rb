@@ -22,26 +22,26 @@
 #  SOFTWARE.
 # =
 module Copyleaks
-  class SubmissionScanningRepository < SubmissionRepository
-    # @param [String] ID of a repository to add the scanned document to.
-    # @param [Boolean] includeMySubmissions Compare the scanned document against MY submissions in the repository.
-    # @param [Boolean] includeOthersSubmissions Compare the scanned document against OTHER users submissions in the repository.
-    def initialize(id, includeMySubmissions, includeOthersSubmissions)
-      super(id)
-      @includeMySubmissions = includeMySubmissions
-      @includeOthersSubmissions = includeOthersSubmissions
-    end
-
-    def as_json(*_args)
-      {
-        id: @id,
-        includeMySubmissions: @includeMySubmissions,
-        includeOthersSubmissions: @includeOthersSubmissions
-      }.select { |_k, v| !v.nil? }
-    end
-
-    def to_json(*options)
-      as_json(*options).to_json(*options)
+    class SubmissionIndexingRepository < SubmissionRepository
+      # @param [String] ID of a repository to add the scanned document to.
+      # @param [SubmissionMaskingPolicy] maskingPolicy specify the document maskig ploicy.
+      def initialize(id, maskingPolicy = nil)
+        super(id)
+        if !maskingPolicy.nil? && ![0, 1, 2].include?(maskingPolicy)
+            raise 'Copyleaks::SubmissionIndexingRepository - maskingPolicy - maskingPolicy must be of type SubmissionMaskingPolicy'
+        end
+        @maskingPolicy = maskingPolicy
+      end
+  
+      def as_json(*_args)
+        {
+            id: @id,
+            maskingPolicy: @maskingPolicy,
+        }.select { |_k, v| !v.nil? }
+      end
+  
+      def to_json(*options)
+        as_json(*options).to_json(*options)
+      end
     end
   end
-end

@@ -22,26 +22,23 @@
 #  SOFTWARE.
 # =
 module Copyleaks
-  class SubmissionScanningRepository < SubmissionRepository
-    # @param [String] ID of a repository to add the scanned document to.
-    # @param [Boolean] includeMySubmissions Compare the scanned document against MY submissions in the repository.
-    # @param [Boolean] includeOthersSubmissions Compare the scanned document against OTHER users submissions in the repository.
-    def initialize(id, includeMySubmissions, includeOthersSubmissions)
-      super(id)
-      @includeMySubmissions = includeMySubmissions
-      @includeOthersSubmissions = includeOthersSubmissions
-    end
-
-    def as_json(*_args)
-      {
-        id: @id,
-        includeMySubmissions: @includeMySubmissions,
-        includeOthersSubmissions: @includeOthersSubmissions
-      }.select { |_k, v| !v.nil? }
-    end
-
-    def to_json(*options)
-      as_json(*options).to_json(*options)
+    class SubmissionCrossLanguages
+      # @param [Language[]] languages - Languages to scan your content against.
+      def initialize(languages = nil)
+        if !languages.nil? && !(languages.is_a?(Array) && languages.all? { |element| element.is_a?(SubmissionLanguage) })
+            raise 'Copyleaks::SubmissionCrossLanguages - languages - languages must be of type SubmissionLanguage[]'
+        end
+        @languages = languages
+      end
+  
+      def as_json(*_args)
+        {
+            languages: @languages,
+        }.select { |_k, v| !v.nil? }
+      end
+  
+      def to_json(*options)
+        as_json(*options).to_json(*options)
+      end
     end
   end
-end

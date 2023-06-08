@@ -23,17 +23,24 @@
 # =
 
 require_relative 'submission_properties.rb'
-
 require_relative 'actions.rb'
 require_relative 'ai_generated_text.rb'
 require_relative 'author.rb'
 require_relative 'copyleaks_db.rb'
+require_relative 'cross_languages.rb'
+require_relative 'custom_metadata.rb'
 require_relative 'domains_mode.rb'
+require_relative 'exclude_code.rb'
 require_relative 'exclude.rb'
 require_relative 'filter.rb'
+require_relative 'indexing_repository.rb'
 require_relative 'scan_method_algorithm.rb'
 require_relative 'indexing.rb'
+require_relative 'language.rb'
+require_relative 'masking_policy.rb'
+require_relative 'pdf_colors.rb'
 require_relative 'pdf_properties.rb'
+require_relative 'pdf_version.rb'
 require_relative 'repository.rb'
 require_relative 'scanning.rb'
 require_relative 'scanning_exclude.rb'
@@ -41,6 +48,8 @@ require_relative 'scanning_repository.rb'
 require_relative 'sensitive_data_protection.rb'
 require_relative 'submission_properties.rb'
 require_relative 'webhooks.rb'
+
+
 
 module Copyleaks
 end

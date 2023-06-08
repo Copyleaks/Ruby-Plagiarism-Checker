@@ -22,26 +22,20 @@
 #  SOFTWARE.
 # =
 module Copyleaks
-  class SubmissionScanningRepository < SubmissionRepository
-    # @param [String] ID of a repository to add the scanned document to.
-    # @param [Boolean] includeMySubmissions Compare the scanned document against MY submissions in the repository.
-    # @param [Boolean] includeOthersSubmissions Compare the scanned document against OTHER users submissions in the repository.
-    def initialize(id, includeMySubmissions, includeOthersSubmissions)
-      super(id)
-      @includeMySubmissions = includeMySubmissions
-      @includeOthersSubmissions = includeOthersSubmissions
-    end
-
-    def as_json(*_args)
-      {
-        id: @id,
-        includeMySubmissions: @includeMySubmissions,
-        includeOthersSubmissions: @includeOthersSubmissions
-      }.select { |_k, v| !v.nil? }
-    end
-
-    def to_json(*options)
-      as_json(*options).to_json(*options)
+    class SubmissionLanguage
+      # @param [String] code - Language code for cross language plagiarism detection.
+      def initialize(code)
+        @code = code
+      end
+  
+      def as_json(*_args)
+        {
+            code: @code,
+        }.select { |_k, v| !v.nil? }
+      end
+  
+      def to_json(*options)
+        as_json(*options).to_json(*options)
+      end
     end
   end
-end
