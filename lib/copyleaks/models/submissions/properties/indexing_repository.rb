@@ -21,6 +21,9 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
+
+require_relative  './repository.rb'
+
 module Copyleaks
     class SubmissionIndexingRepository < SubmissionRepository
       # @param [String] ID of a repository to add the scanned document to.
