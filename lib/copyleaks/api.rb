@@ -24,6 +24,8 @@
 require 'net/http'
 require 'json'
 require 'date'
+require_relative 'ai_detection_client.rb'
+require_relative 'writing_assistant_client.rb'
 
 module Copyleaks
   class API
@@ -36,6 +38,10 @@ module Copyleaks
       _api_server_uri = URI.parse(Config.api_server_uri)
       @api_client = Net::HTTP.new(_api_server_uri.host, _api_server_uri.port)
       @api_client.use_ssl = true
+
+      # Initialize clients
+      @ai_detection_client = AIDetectionClient.new(@api_client)
+      @writing_assistant_client = WritingAssistantClient.new(@api_client)
     end
 
     # Login to Copyleaks authentication server.
@@ -458,6 +464,14 @@ module Copyleaks
         _err_message += '-------------------------------------'
         raise CommandException.new(_err_message).reason + "\n"
       end
+    end
+
+    def ai_detection_client
+      @ai_detection_client
+    end
+
+    def writing_assistant_client
+      @writing_assistant_client
     end
   end
 end

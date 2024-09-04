@@ -22,12 +22,31 @@
 #  SOFTWARE.
 # =
 
-require_relative  './copyleaks/api.rb'
-require_relative  './copyleaks/version.rb'
-require_relative  './copyleaks/app.config.rb'
-require_relative  './copyleaks/models/index.rb'
-require_relative  './copyleaks/utils/status-code.utils.rb'
-require_relative  './copyleaks/utils/copyleaks_client.utils.rb'
-
 module Copyleaks
+  class NaturalLanguageSubmissionModel < AIDetectionSubmissionModel
+    attr_accessor :language
+
+    # @param [String] A text string.
+    # @param [String] The language code of your content. The selected language should be on the Supported Languages list above. If the 'language' field is not supplied , our system will automatically detect the language of the content.
+    # @param [Boolean] Use sandbox mode to test your integration with the Copyleaks API for free.
+    def initialize(text, language = nil, sandbox = false)
+      unless text.instance_of?(String)
+        raise 'Copyleaks::NaturalLanguageSubmissionModel - text - text must be of type String'
+      end
+      super(text, sandbox)
+      @language = language
+    end
+
+    def as_json(*_args)
+      {
+        text: @text,
+        sandbox: @sandbox,
+        language: @language
+      }.select { |_k, v| !v.nil? }
+    end
+
+    def to_json(*options)
+      as_json(*options).to_json(*options)
+    end
+  end
 end
