@@ -1,6 +1,7 @@
 require_relative '../lib/index'
 require 'json'
 require 'date'
+require_relative 'base64logo.rb'
 module CopyleaksDemo
   USER_EMAIL = '<YOUR EMAIL>'
   USER_API_KEY = '<YOUR KEY>'
@@ -66,7 +67,7 @@ module CopyleaksDemo
         Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
         Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
         Copyleaks::SubmissionExclude.new(true, true, true, true, true),
-        Copyleaks::SubmissionPDF.new(true, 'pdf-title', 'https://lti.copyleaks.com/images/copyleaks50x50.png', false),
+        Copyleaks::SubmissionPDF.new(true, 'pdf-title', BASE64_LOGO, false),
         Copyleaks::SubmissionSensitiveData.new(false)
       )
     )
@@ -94,7 +95,7 @@ module CopyleaksDemo
         Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
         Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
         Copyleaks::SubmissionExclude.new(true, true, true, true, true),
-        Copyleaks::SubmissionPDF.new(true, 'pdf-title', 'https://lti.copyleaks.com/images/copyleaks50x50.png', false),
+        Copyleaks::SubmissionPDF.new(true, 'pdf-title', BASE64_LOGO, false),
         Copyleaks::SubmissionSensitiveData.new(false)
       )
     )
@@ -121,7 +122,7 @@ module CopyleaksDemo
         Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
         Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
         Copyleaks::SubmissionExclude.new(true, true, true, true, true),
-        Copyleaks::SubmissionPDF.new(true, 'pdf-title', 'https://lti.copyleaks.com/images/copyleaks50x50.png', false),
+        Copyleaks::SubmissionPDF.new(true, 'pdf-title', BASE64_LOGO, false),
         Copyleaks::SubmissionSensitiveData.new(false)
       )
     )
