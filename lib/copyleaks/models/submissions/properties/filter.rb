@@ -30,6 +30,7 @@ module Copyleaks
     # @param [Boolean] safeSearch Block explicit adult content from the scan results such as web pages containing inappropriate images and videos. SafeSearch is not 100% effective with all websites.
     # @param [String[]] domains list of domains to either include or exclude from the scan - depending on the value of domainsMode.
     # @param [SubmissionFilterDomainsMode] domainsMode Include or Exclude the list of domains you specified under the domains property
+    # @param [Boolean] allowSameDomain when set to true it will allow results from the same domain as the submitted url.
     def initialize(
       identicalEnabled = true,
       minorChangesEnabled = false,
@@ -37,7 +38,8 @@ module Copyleaks
       minCopiedWords = nil,
       safeSearch = false,
       domains = [],
-      domainsMode = SubmissionFilterDomainsMode::EXCLUDE
+      domainsMode = SubmissionFilterDomainsMode::EXCLUDE,
+      allowSameDomain = false
     )
       @identicalEnabled = identicalEnabled
       @minorChangesEnabled = minorChangesEnabled
@@ -46,6 +48,7 @@ module Copyleaks
       @safeSearch = safeSearch
       @domains = domains
       @domainsMode = domainsMode
+      @allowSameDomain = allowSameDomain
     end
 
     def as_json(*_args)
@@ -56,7 +59,8 @@ module Copyleaks
         minCopiedWords: @minCopiedWords,
         safeSearch: @safeSearch,
         domains: @domains,
-        domainsMode: @domainsMode
+        domainsMode: @domainsMode,
+        allowSameDomain: @allowSameDomain
       }.select { |_k, v| !v.nil? }
     end
 
