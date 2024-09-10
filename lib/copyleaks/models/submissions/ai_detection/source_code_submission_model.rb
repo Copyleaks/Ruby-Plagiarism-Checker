@@ -22,12 +22,34 @@
 #  SOFTWARE.
 # =
 
-require_relative  './copyleaks/api.rb'
-require_relative  './copyleaks/version.rb'
-require_relative  './copyleaks/app.config.rb'
-require_relative  './copyleaks/models/index.rb'
-require_relative  './copyleaks/utils/status-code.utils.rb'
-require_relative  './copyleaks/utils/copyleaks_client.utils.rb'
-
 module Copyleaks
+  class SourceCodeSubmissionModel < AIDetectionSubmissionModel
+    attr_accessor :filename
+
+    # @param [String] A text string.
+    # @param [String] The name of the file. Make sure to include the right extension for your file type.
+    # @param [Boolean] Use sandbox mode to test your integration with the Copyleaks API for free.
+    def initialize(text, filename, sandbox = false)
+      unless text.instance_of?(String)
+        raise 'Copyleaks::SourceCodeSubmissionModel - text - text must be of type String'
+      end
+      unless filename.instance_of?(String)
+        raise 'Copyleaks::SourceCodeSubmissionModel - filename - filename must be of type String'
+      end
+      super(text, sandbox)
+      @filename = filename
+    end
+
+    def as_json(*_args)
+      {
+        text: @text,
+        sandbox: @sandbox,
+        filename: @filename
+      }.select { |_k, v| !v.nil? }
+    end
+
+    def to_json(*options)
+      as_json(*options).to_json(*options)
+    end
+  end
 end

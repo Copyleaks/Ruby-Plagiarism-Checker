@@ -1,6 +1,7 @@
 require_relative '../lib/index'
 require 'json'
 require 'date'
+require_relative 'base64logo.rb'
 module CopyleaksDemo
   USER_EMAIL = '<YOUR EMAIL>'
   USER_API_KEY = '<YOUR KEY>'
@@ -32,6 +33,12 @@ module CopyleaksDemo
     # test_submit_file(loginResponse)
 
     # test_submit_ocr_file(loginResponse)
+
+    # test_ai_detection_natural_language(loginResponse)
+
+    # test_ai_detection_source_code(loginResponse)
+
+    # test_writing_assistant(loginResponse)
   rescue StandardError => e
     puts '--------ERROR-------'
     puts
@@ -60,7 +67,7 @@ module CopyleaksDemo
         Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
         Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
         Copyleaks::SubmissionExclude.new(true, true, true, true, true),
-        Copyleaks::SubmissionPDF.new(true, 'pdf-title', 'https://lti.copyleaks.com/images/copyleaks50x50.png', false),
+        Copyleaks::SubmissionPDF.new(true, 'pdf-title', BASE64_LOGO, false),
         Copyleaks::SubmissionSensitiveData.new(false)
       )
     )
@@ -88,7 +95,7 @@ module CopyleaksDemo
         Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
         Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
         Copyleaks::SubmissionExclude.new(true, true, true, true, true),
-        Copyleaks::SubmissionPDF.new(true, 'pdf-title', 'https://lti.copyleaks.com/images/copyleaks50x50.png', false),
+        Copyleaks::SubmissionPDF.new(true, 'pdf-title', BASE64_LOGO, false),
         Copyleaks::SubmissionSensitiveData.new(false)
       )
     )
@@ -115,7 +122,7 @@ module CopyleaksDemo
         Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
         Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
         Copyleaks::SubmissionExclude.new(true, true, true, true, true),
-        Copyleaks::SubmissionPDF.new(true, 'pdf-title', 'https://lti.copyleaks.com/images/copyleaks50x50.png', false),
+        Copyleaks::SubmissionPDF.new(true, 'pdf-title', BASE64_LOGO, false),
         Copyleaks::SubmissionSensitiveData.new(false)
       )
     )
@@ -182,6 +189,59 @@ module CopyleaksDemo
 
     release_notes = @copyleaks.get_release_notes
     logInfo('get_release_notes', release_notes)
+  end
+
+  def self.test_ai_detection_natural_language(_authToken)
+    scanId = DateTime.now.strftime('%Q').to_s
+    text = "Lions are social animals, living in groups called prides, typically consisting of several females, their offspring, and a few males. Female lions are the primary hunters, working together to catch prey. Lions are known for their strength, teamwork, and complex social structures."
+    submission = Copyleaks::NaturalLanguageSubmissionModel.new(
+      text,
+    )
+    submission.sandbox = true
+    
+    res = @copyleaks.ai_detection_client.submit_natural_language(_authToken, scanId, submission)
+    logInfo('AI Detection - submit_natural_language', res)
+  end
+
+  def self.test_ai_detection_source_code(_authToken)
+    scanId = DateTime.now.strftime('%Q').to_s
+    sample_code = 
+    """def add(a, b):
+        return a + b
+
+      def multiply(a, b):
+          return a * b
+
+      def main():
+          x = 5
+          y = 10
+          sum_result = add(x, y)
+          product_result = multiply(x, y)
+          print(f'Sum: {sum_result}')
+          print(f'Product: {product_result}')
+
+      if __name__ == '__main__':
+          main()"""
+      submission = Copyleaks::SourceCodeSubmissionModel.new(
+        sample_code,
+        "sample.py"
+      )
+      submission.sandbox = true
+    res = @copyleaks.ai_detection_client.submit_source_code(_authToken, scanId, submission)
+    logInfo('AI Detection - submit_source_code', res)
+  end
+
+  def self.test_writing_assistant(_authToken)
+    text = "Lions are the only cat that live in groups, called pride. A prides typically consists of a few adult males, several feales, and their offspring. This social structure is essential for hunting and raising young cubs. Female lions, or lionesses are the primary hunters of the prid. They work together in cordinated groups to take down prey usually targeting large herbiores like zbras, wildebeest and buffalo. Their teamwork and strategy during hunts highlight the intelligence and coperation that are key to their survival."
+    scanId = DateTime.now.strftime('%Q').to_s
+    score_weights = Copyleaks::ScoreWeights.new(0.1, 0.2, 0.3, 0.4)
+    submission = Copyleaks::WritingAssistantSubmissionModel.new(
+      text,
+    )
+    submission.sandbox = true
+    submission.score = score_weights
+    res = @copyleaks.writing_assistant_client.submit_text(_authToken, scanId, submission)
+    logInfo('Writing Assistant - submit_text', res)
   end
 
   def self.logInfo(title, info = nil)
