@@ -22,11 +22,9 @@
 #  SOFTWARE.
 # =
 module Copyleaks
-  class UnderMaintenanceException < StandardError
-    attr_reader :reason
-
+  class UnderMaintenanceException < RuntimeError
     def initialize
-      @reason = 'Copyleaks is Under Maintenance, please visit https://status.copyleaks.com'
+      super 'Copyleaks is Under Maintenance, please visit https://status.copyleaks.com'
     end
   end
 end

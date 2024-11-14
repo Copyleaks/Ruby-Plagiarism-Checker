@@ -29,22 +29,14 @@ module Copyleaks
         if response.body.nil? || response.body == ''
           nil
         else
-          parsed_response = JSON.parse(response.body)
-          puts "Parsed response: #{parsed_response.inspect}"
-          parsed_response
+          JSON.parse(response.body)
         end
       elsif Utils.is_under_maintenance_response(response.code)
-        raise UnderMaintenanceException.new.reason
+        raise UnderMaintenanceException
       elsif Utils.is_rate_limit_response(response.code)
-        raise RateLimitException.new.reason
+        raise RateLimitException
       else
-        _err_message = '---------Copyleaks SDK Error (' + used_by + ')---------' + "\n\n"
-        _err_message += 'status code: ' + response.code + "\n\n"
-
-        _err_message += 'response body:' + "\n" + response.body.to_json + "\n\n" unless response.body.nil?
-
-        _err_message += '-------------------------------------'
-        raise CommandException.new(_err_message).reason + "\n"
+        raise CommandException.new(response: response, used_by: used_by)
       end
     end
 
@@ -57,7 +49,7 @@ module Copyleaks
       _expiresTime = DateTime.parse(authToken.expires)
 
       if _expiresTime <= _time
-        raise AuthExipredException.new.reason # expired
+        raise AuthExpiredException # expired
       end
     end
   end
