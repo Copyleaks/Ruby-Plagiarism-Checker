@@ -26,6 +26,7 @@ require 'json'
 require 'date'
 require_relative 'ai_detection_client.rb'
 require_relative 'writing_assistant_client.rb'
+require_relative 'utils/copyleaks_client.utils'
 
 module Copyleaks
   class API
@@ -75,7 +76,7 @@ module Copyleaks
 
     # Verify that Copyleaks authentication token is exists and not exipired.
     # * Exceptions:
-    # * * AuthExipredException: authentication expired. Need to login again.
+    # * * AuthExpiredException: authentication expired. Need to login again.
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     def verify_auth_token(authToken)
       if authToken.nil? || !authToken.instance_of?(CopyleaksAuthToken)
@@ -86,7 +87,7 @@ module Copyleaks
       _expiresTime = DateTime.parse(authToken.expires)
 
       if _expiresTime <= _time
-        raise AuthExipredException.new.reason # expired
+        raise AuthExpiredException # expired
       end
     end
 
@@ -445,25 +446,7 @@ module Copyleaks
 
     # this methods is a helper for hanlding reponse data and exceptions.
     def handle_response(response, used_by)
-      if Utils.is_success_status_code(response.code)
-        if response.body.nil? || response.body == ''
-          nil
-        else
-          JSON.parse(response.body)
-        end
-      elsif Utils.is_under_maintenance_response(response.code)
-        raise UnderMaintenanceException.new.reason
-      elsif Utils.is_rate_limit_response(response.code)
-        raise RateLimitException.new.reason
-      else
-        _err_message = '---------Copyleaks SDK Error (' + used_by + ')---------' + "\n\n"
-        _err_message += 'status code: ' + response.code + "\n\n"
-
-        _err_message += 'response body:' + "\n" + response.body.to_json + "\n\n" unless response.body.nil?
-
-        _err_message += '-------------------------------------'
-        raise CommandException.new(_err_message).reason + "\n"
-      end
+      Copyleaks::ClientUtils.handle_response(response, used_by)
     end
 
     def ai_detection_client
