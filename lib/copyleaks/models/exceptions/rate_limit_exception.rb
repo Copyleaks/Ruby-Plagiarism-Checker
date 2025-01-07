@@ -22,11 +22,9 @@
 #  SOFTWARE.
 # =
 module Copyleaks
-  class RateLimitException < StandardError
-    attr_reader :reason
-
+  class RateLimitException < RuntimeError
     def initialize
-      @reason = 'Too many requests. Please wait before calling again.'
+      super 'Too many requests. Please wait before calling again.'
     end
   end
 end

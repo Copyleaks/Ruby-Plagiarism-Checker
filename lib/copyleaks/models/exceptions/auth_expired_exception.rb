@@ -22,11 +22,9 @@
 #  SOFTWARE.
 # =
 module Copyleaks
-  class AuthExipredException < StandardError
-    attr_reader :reason
-
+  class AuthExpiredException < RuntimeError
     def initialize
-      @reason = 'Authentication Expired. Need to login again'
+      super 'Authentication Expired. Need to login again'
     end
   end
 end
