@@ -19,21 +19,21 @@
 
 module Copyleaks
   class SharedResultsModel
-    attr_reader :id, :title, :introduction, :matched_words, :scan_id, :metadata
+    attr_reader :id, :title, :introduction, :matchedWords, :scanId, :metadata
 
     def initialize(
       id: nil,
       title: nil,
       introduction: nil,
-      matched_words: nil,
-      scan_id: nil,
+      matchedWords: nil,
+      scanId: nil,
       metadata: nil
     )
       @id = id
       @title = title
       @introduction = introduction
-      @matched_words = matched_words
-      @scan_id = scan_id
+      @matchedWords = matchedWords
+      @scanId = scanId
       @metadata = metadata
     end
   end

@@ -19,26 +19,26 @@
 
 module Copyleaks
   class Task
-    attr_reader :endpoint, :is_healthy, :http_status_code
+    attr_reader :endpoint, :isHealthy, :httpStatusCode
 
     # @param [String] endpoint - The API endpoint being checked.
-    # @param [Boolean] is_healthy - Whether the task/endpoint is healthy.
-    # @param [Integer] http_status_code - The returned HTTP status code.
-    def initialize(endpoint:, is_healthy:, http_status_code:)
+    # @param [Boolean] isHealthy - Whether the task/endpoint is healthy.
+    # @param [Integer] httpStatusCode - The returned HTTP status code.
+    def initialize(endpoint:, isHealthy:, httpStatusCode:)
       raise 'Copyleaks::Task - endpoint must be a String' unless endpoint.is_a?(String)
-      raise 'Copyleaks::Task - is_healthy must be a Boolean' unless [true, false].include?(is_healthy)
-      raise 'Copyleaks::Task - http_status_code must be an Integer' unless http_status_code.is_a?(Integer)
+      raise 'Copyleaks::Task - isHealthy must be a Boolean' unless [true, false].include?(isHealthy)
+      raise 'Copyleaks::Task - httpStatusCode must be an Integer' unless httpStatusCode.is_a?(Integer)
 
       @endpoint = endpoint
-      @is_healthy = is_healthy
-      @http_status_code = http_status_code
+      @isHealthy = isHealthy
+      @httpStatusCode = httpStatusCode
     end
 
     def as_json(*_args)
       {
         endpoint: @endpoint,
-        isHealthy: @is_healthy,
-        httpStatusCode: @http_status_code
+        isHealthy: @isHealthy,
+        httpStatusCode: @httpStatusCode
       }
     end
 

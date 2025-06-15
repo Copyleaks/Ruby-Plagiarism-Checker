@@ -19,18 +19,18 @@
 
 module Copyleaks
   class Score
-    attr_reader :identical_words, :minor_changed_words, :related_meaning_words, :aggregated_score
+    attr_reader :identicalWords, :minorChangedWords, :relatedMeaningWords, :aggregatedScore
 
     def initialize(
-      identical_words: nil,
-      minor_changed_words: nil,
-      related_meaning_words: nil,
-      aggregated_score: nil
+      identicalWords: nil,
+      minorChangedWords: nil,
+      relatedMeaningWords: nil,
+      aggregatedScore: nil
     )
-      @identical_words = identical_words
-      @minor_changed_words = minor_changed_words
-      @related_meaning_words = related_meaning_words
-      @aggregated_score = aggregated_score
+      @identicalWords = identicalWords
+      @minorChangedWords = minorChangedWords
+      @relatedMeaningWords = relatedMeaningWords
+      @aggregatedScore = aggregatedScore
     end
   end
 end

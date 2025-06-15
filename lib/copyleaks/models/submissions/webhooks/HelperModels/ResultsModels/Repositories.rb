@@ -20,14 +20,14 @@
 
 module Copyleaks
   class Repositories < SharedResultsModel
-    attr_reader :repository_id, :tags
+    attr_reader :repositoryId, :tags
 
-    # @param [String] repository_id
+    # @param [String] repositoryId
     # @param [Array<Tags>] tags
     # @param [Hash] options - for parent class initialization if needed
-    def initialize(repository_id:, tags:, **options)
-      unless repository_id.is_a?(String)
-        raise 'Copyleaks::Repositories - repository_id must be a String'
+    def initialize(repositoryId:, tags:, **options)
+      unless repositoryId.is_a?(String)
+        raise 'Copyleaks::Repositories - repositoryId must be a String'
       end
 
       unless tags.is_a?(Array) && tags.all? { |tag| tag.is_a?(Tags) }
@@ -36,7 +36,7 @@ module Copyleaks
 
       super(**options) 
 
-      @repository_id = repository_id
+      @repositoryId = repositoryId
       @tags = tags
     end
 
@@ -46,7 +46,7 @@ module Copyleaks
 
     def as_json(*_args)
       {
-        repositoryId: @repository_id,
+        repositoryId: @repositoryId,
         tags: @tags
       }
     end

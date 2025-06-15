@@ -19,15 +19,15 @@
 
 module Copyleaks
   class NewResultsRepositories < SharedResultsModel
-    attr_reader :repository_id
+    attr_reader :repositoryId
 
-    # @param [String] repository_id
+    # @param [String] repositoryId
     # @param [RepositoryMetadata] metadata
-    def initialize(repository_id:, metadata:)
-      raise 'Copyleaks::NewResultsRepositories - repository_id must be a String' unless repository_id.is_a?(String)
+    def initialize(repositoryId:, metadata:)
+      raise 'Copyleaks::NewResultsRepositories - repositoryId must be a String' unless repositoryId.is_a?(String)
       super(metadata: metadata)
 
-      @repository_id = repository_id
+      @repositoryId = repositoryId
     end
 
     # Override metadata getter to return a RepositoryMetadata type explicitly
@@ -37,7 +37,7 @@ module Copyleaks
 
     def as_json(*_args)
       {
-        repositoryId: @repository_id,
+        repositoryId: @repositoryId,
         metadata: metadata
       }
     end

@@ -19,19 +19,19 @@
 
 module Copyleaks
   class CreditsCheckedWebhook < StatusWebhook
-    attr_reader :credits, :scanned_document
+    attr_reader :credits, :scannedDocument
 
-    def initialize(credits: nil, scanned_document: nil, **args)
+    def initialize(credits: nil, scannedDocument: nil, **args)
       super(**args)
       @credits = credits
-      @scanned_document = scanned_document
+      @scannedDocument = scannedDocument
     end
 
     def as_json(*_args)
       super.merge(
         {
           credits: @credits,
-          scanned_document: @scanned_document.respond_to?(:as_json) ? @scanned_document.as_json : @scanned_document
+          scannedDocument: @scannedDocument.respond_to?(:as_json) ? @scannedDocument.as_json : @scannedDocument
         }
       )
     end

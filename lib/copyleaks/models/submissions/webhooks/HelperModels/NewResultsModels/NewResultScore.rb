@@ -20,18 +20,18 @@
 
 module Copyleaks
   class NewResultScore
-    attr_reader :aggregated_score
+    attr_reader :aggregatedScore
 
-    # @param [Float] aggregated_score - The aggregated score value.
-    def initialize(aggregated_score:)
-      raise 'Copyleaks::NewResultScore - aggregated_score must be a Float' unless aggregated_score.is_a?(Float) || aggregated_score.is_a?(Integer)
+    # @param [Float] aggregatedScore - The aggregated score value.
+    def initialize(aggregatedScore:)
+      raise 'Copyleaks::NewResultScore - aggregatedScore must be a Float' unless aggregatedScore.is_a?(Float) || aggregatedScore.is_a?(Integer)
       
-      @aggregated_score = aggregated_score.to_f
+      @aggregatedScore = aggregatedScore.to_f
     end
 
     def as_json(*_args)
       {
-        aggregatedScore: @aggregated_score
+        aggregatedScore: @aggregatedScore
       }
     end
 

@@ -19,13 +19,14 @@
 
 module Copyleaks
   class CompletedWebhook < StatusWebhook
-    attr_reader :results, :notifications, :scanned_document
+    attr_reader :results, :notifications, :scannedDocument
 
-    def initialize(results: nil, notifications: nil, scanned_document: nil, **args)
+    def initialize(results: nil, notifications: nil, scannedDocument: nil, **args)
       super(**args)
       @results = results
       @notifications = notifications
-      @scanned_document = scanned_document
+      @scannedDocument = scannedDocument
+      @extra_fields = args # Store any additional fields here
     end
 
     def as_json(*_args)
@@ -33,9 +34,9 @@ module Copyleaks
         {
           results: @results.respond_to?(:as_json) ? @results.as_json : @results,
           notifications: @notifications.respond_to?(:as_json) ? @notifications.as_json : @notifications,
-          scanned_document: @scanned_document.respond_to?(:as_json) ? @scanned_document.as_json : @scanned_document
+          scannedDocument: @scannedDocument.respond_to?(:as_json) ? @scannedDocument.as_json : @scannedDocument
         }
-      )
+      ).merge(@extra_fields)
     end
 
     def to_json(*options)

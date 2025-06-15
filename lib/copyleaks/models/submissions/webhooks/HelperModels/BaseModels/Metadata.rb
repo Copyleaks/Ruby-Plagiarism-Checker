@@ -20,34 +20,34 @@
 
 module Copyleaks
   class Metadata
-    attr_reader :final_url, :canonical_url, :publish_date, :creation_date,
-                :last_modification_date, :author, :organization, :filename
+    attr_reader :finalUrl, :canonicalUrl, :publishDate, :creationDate,
+                :lastModificationDate, :author, :organization, :filename
 
-    # @param [String] final_url - The final URL of the document.
-    # @param [String] canonical_url - The canonical URL if available.
-    # @param [String] publish_date - The date the content was published.
-    # @param [String] creation_date - The date the content was created.
-    # @param [String] last_modification_date - The last time the content was modified.
+    # @param [String] finalUrl - The final URL of the document.
+    # @param [String] canonicalUrl - The canonical URL if available.
+    # @param [String] publishDate - The date the content was published.
+    # @param [String] creationDate - The date the content was created.
+    # @param [String] lastModificationDate - The last time the content was modified.
     # @param [String] author - The author of the content.
     # @param [String] organization - The organization associated with the content.
     # @param [String] filename - The original filename of the content.
-    def initialize(final_url: nil, canonical_url: nil, publish_date: nil, creation_date: nil,
-                   last_modification_date: nil, author: nil, organization: nil, filename: nil)
+    def initialize(finalUrl: nil, canonicalUrl: nil, publishDate: nil, creationDate: nil,
+                   lastModificationDate: nil, author: nil, organization: nil, filename: nil)
 
-      if !final_url.nil? && !final_url.is_a?(String)
-        raise 'Copyleaks::Metadata - final_url must be a String'
+      if !finalUrl.nil? && !finalUrl.is_a?(String)
+        raise 'Copyleaks::Metadata - finalUrl must be a String'
       end
-      if !canonical_url.nil? && !canonical_url.is_a?(String)
-        raise 'Copyleaks::Metadata - canonical_url must be a String'
+      if !canonicalUrl.nil? && !canonicalUrl.is_a?(String)
+        raise 'Copyleaks::Metadata - canonicalUrl must be a String'
       end
-      if !publish_date.nil? && !publish_date.is_a?(String)
-        raise 'Copyleaks::Metadata - publish_date must be a String'
+      if !publishDate.nil? && !publishDate.is_a?(String)
+        raise 'Copyleaks::Metadata - publishDate must be a String'
       end
-      if !creation_date.nil? && !creation_date.is_a?(String)
-        raise 'Copyleaks::Metadata - creation_date must be a String'
+      if !creationDate.nil? && !creationDate.is_a?(String)
+        raise 'Copyleaks::Metadata - creationDate must be a String'
       end
-      if !last_modification_date.nil? && !last_modification_date.is_a?(String)
-        raise 'Copyleaks::Metadata - last_modification_date must be a String'
+      if !lastModificationDate.nil? && !lastModificationDate.is_a?(String)
+        raise 'Copyleaks::Metadata - lastModificationDate must be a String'
       end
       if !author.nil? && !author.is_a?(String)
         raise 'Copyleaks::Metadata - author must be a String'
@@ -59,11 +59,11 @@ module Copyleaks
         raise 'Copyleaks::Metadata - filename must be a String'
       end
 
-      @final_url = final_url
-      @canonical_url = canonical_url
-      @publish_date = publish_date
-      @creation_date = creation_date
-      @last_modification_date = last_modification_date
+      @finalUrl = finalUrl
+      @canonicalUrl = canonicalUrl
+      @publishDate = publishDate
+      @creationDate = creationDate
+      @lastModificationDate = lastModificationDate
       @author = author
       @organization = organization
       @filename = filename
@@ -71,11 +71,11 @@ module Copyleaks
 
     def as_json(*_args)
       {
-        finalUrl: @final_url,
-        canonicalUrl: @canonical_url,
-        publishDate: @publish_date,
-        creationDate: @creation_date,
-        lastModificationDate: @last_modification_date,
+        finalUrl: @finalUrl,
+        canonicalUrl: @canonicalUrl,
+        publishDate: @publishDate,
+        creationDate: @creationDate,
+        lastModificationDate: @lastModificationDate,
         author: @author,
         organization: @organization,
         filename: @filename

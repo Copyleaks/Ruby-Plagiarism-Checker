@@ -18,29 +18,29 @@
  #=
 module Copyleaks
   class NewResultsInternet
-    attr_reader :id, :title, :introduction, :matched_words, :scan_id, :metadata, :url
+    attr_reader :id, :title, :introduction, :matchedWords, :scanId, :metadata, :url
 
     # @param [String] id
     # @param [String] title
     # @param [String] introduction
-    # @param [Integer] matched_words
-    # @param [String] scan_id
+    # @param [Integer] matchedWords
+    # @param [String] scanId
     # @param [Metadata] metadata
     # @param [String] url
-    def initialize(id:, title:, introduction:, matched_words:, scan_id:, metadata:, url:)
+    def initialize(id:, title:, introduction:, matchedWords:, scanId:, metadata:, url:)
       raise 'Copyleaks::NewResultsInternet - id must be a String' unless id.is_a?(String)
       raise 'Copyleaks::NewResultsInternet - title must be a String' unless title.is_a?(String)
       raise 'Copyleaks::NewResultsInternet - introduction must be a String' unless introduction.is_a?(String)
-      raise 'Copyleaks::NewResultsInternet - matched_words must be an Integer' unless matched_words.is_a?(Integer)
-      raise 'Copyleaks::NewResultsInternet - scan_id must be a String' unless scan_id.is_a?(String)
+      raise 'Copyleaks::NewResultsInternet - matchedWords must be an Integer' unless matchedWords.is_a?(Integer)
+      raise 'Copyleaks::NewResultsInternet - scanId must be a String' unless scanId.is_a?(String)
       raise 'Copyleaks::NewResultsInternet - metadata must be a Metadata' unless metadata.is_a?(Metadata)
       raise 'Copyleaks::NewResultsInternet - url must be a String' unless url.is_a?(String)
 
       @id = id
       @title = title
       @introduction = introduction
-      @matched_words = matched_words
-      @scan_id = scan_id
+      @matchedWords = matchedWords
+      @scanId = scanId
       @metadata = metadata
       @url = url
     end
@@ -50,8 +50,8 @@ module Copyleaks
         id: @id,
         title: @title,
         introduction: @introduction,
-        matchedWords: @matched_words,
-        scanId: @scan_id,
+        matchedWords: @matchedWords,
+        scanId: @scanId,
         metadata: @metadata,
         url: @url
       }

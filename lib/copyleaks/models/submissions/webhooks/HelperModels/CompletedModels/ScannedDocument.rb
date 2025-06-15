@@ -19,37 +19,37 @@
 
 module Copyleaks
   class ScannedDocument
-    attr_reader :scan_id, :total_words, :total_excluded, :credits, :creation_time, :metadata
+    attr_reader :scanId, :totalWords, :totalExcluded, :credits, :creationTime, :metadata
 
-    # @param [String] scan_id - The scan ID.
-    # @param [Integer] total_words - Total number of words in the document.
-    # @param [Integer] total_excluded - Total number of excluded words.
+    # @param [String] scanId - The scan ID.
+    # @param [Integer] totalWords - Total number of words in the document.
+    # @param [Integer] totalExcluded - Total number of excluded words.
     # @param [Integer] credits - Number of credits used for the scan.
-    # @param [String] creation_time - The time the scan was created.
+    # @param [String] creationTime - The time the scan was created.
     # @param [Metadata] metadata - Metadata associated with the document.
-    def initialize(scan_id:, total_words:, total_excluded:, credits:, creation_time:, metadata:)
-      raise 'scan_id must be a String' unless scan_id.is_a?(String)
-      raise 'total_words must be an Integer' unless total_words.is_a?(Integer)
-      raise 'total_excluded must be an Integer' unless total_excluded.is_a?(Integer)
+    def initialize(scanId:, totalWords:, totalExcluded:, credits:, creationTime:, metadata:)
+      raise 'scanId must be a String' unless scanId.is_a?(String)
+      raise 'totalWords must be an Integer' unless totalWords.is_a?(Integer)
+      raise 'totalExcluded must be an Integer' unless totalExcluded.is_a?(Integer)
       raise 'credits must be an Integer' unless credits.is_a?(Integer)
-      raise 'creation_time must be a String' unless creation_time.is_a?(String)
+      raise 'creationTime must be a String' unless creationTime.is_a?(String)
       raise 'metadata must be a Metadata object' unless metadata.is_a?(Metadata)
 
-      @scan_id = scan_id
-      @total_words = total_words
-      @total_excluded = total_excluded
+      @scanId = scanId
+      @totalWords = totalWords
+      @totalExcluded = totalExcluded
       @credits = credits
-      @creation_time = creation_time
+      @creationTime = creationTime
       @metadata = metadata
     end
 
     def as_json(*_args)
       {
-        scanId: @scan_id,
-        totalWords: @total_words,
-        totalExcluded: @total_excluded,
+        scanId: @scanId,
+        totalWords: @totalWords,
+        totalExcluded: @totalExcluded,
         credits: @credits,
-        creationTime: @creation_time,
+        creationTime: @creationTime,
         metadata: @metadata
       }.select { |_k, v| !v.nil? }
     end

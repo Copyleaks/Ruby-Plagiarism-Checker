@@ -19,11 +19,11 @@
 
 module Copyleaks
   class RepositoryMetadata < Metadata
-    attr_reader :submitted_by
+    attr_reader :submittedBy
 
-    def initialize(submitted_by: nil, **args)
+    def initialize(submittedBy: nil, **args)
       super(**args)
-      @submitted_by = submitted_by
+      @submittedBy = submittedBy
     end
   end
 end

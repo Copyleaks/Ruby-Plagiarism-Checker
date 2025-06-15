@@ -18,18 +18,19 @@
  #=
 module Copyleaks
   class Webhook
-    attr_reader :developer_payload
+    attr_reader :developerPayload
 
-    def initialize(developer_payload: nil)
-      if !developer_payload.nil? && !developer_payload.is_a?(String)
-        raise 'Copyleaks::Webhook - developer_payload must be a String'
+    def initialize(developerPayload: nil,**args)
+      if !developerPayload.nil? && !developerPayload.is_a?(String)
+        raise 'Copyleaks::Webhook - developerPayload must be a String'
       end
-      @developer_payload = developer_payload
+      @developerPayload = developerPayload
+      @extra_fields = args # Store any additional fields here
     end
 
     def as_json(*_args)
       {
-        developerPayload: @developer_payload
+        developerPayload: @developerPayload
       }.compact
     end
 

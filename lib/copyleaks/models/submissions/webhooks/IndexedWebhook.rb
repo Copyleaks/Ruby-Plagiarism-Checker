@@ -18,12 +18,12 @@
  #=
 module Copyleaks
   class IndexedWebhook < StatusWebhook
-    # No new attr_reader needed — inherited developer_payload
+    # No new attr_reader needed — inherited developerPayload
 
-    def initialize(status:, developer_payload: nil, **args)
-      super(status: status, developer_payload: developer_payload, **args)
+    def initialize(status:, developerPayload: nil, **args)
+      super(status: status, developerPayload: developerPayload, **args)
     end
 
-    # Use parent's as_json, no override needed unless adding more fields
+    
   end
 end

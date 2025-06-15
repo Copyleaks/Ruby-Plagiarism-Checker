@@ -19,24 +19,24 @@
 
 module Copyleaks
   class Alerts
-    attr_reader :category, :code, :title, :message, :help_link, :severity, :additional_data
+    attr_reader :category, :code, :title, :message, :helpLink, :severity, :additionalData
 
-    def initialize(category:, code:, title:, message:, help_link:, severity:, additional_data:)
+    def initialize(category:, code:, title:, message:, helpLink:, severity:, additionalData:)
       raise 'Copyleaks::Alerts - category must be a String' unless category.is_a?(String)
       raise 'Copyleaks::Alerts - code must be a String' unless code.is_a?(String)
       raise 'Copyleaks::Alerts - title must be a String' unless title.is_a?(String)
       raise 'Copyleaks::Alerts - message must be a String' unless message.is_a?(String)
-      raise 'Copyleaks::Alerts - help_link must be a String' unless help_link.is_a?(String)
+      raise 'Copyleaks::Alerts - helpLink must be a String' unless helpLink.is_a?(String)
       raise 'Copyleaks::Alerts - severity must be a String' unless severity.is_a?(String)
-      raise 'Copyleaks::Alerts - additional_data must be a String' unless additional_data.is_a?(String)
+      raise 'Copyleaks::Alerts - additionalData must be a String' unless additionalData.is_a?(String)
 
       @category = category
       @code = code
       @title = title
       @message = message
-      @help_link = help_link
+      @helpLink = helpLink
       @severity = severity
-      @additional_data = additional_data
+      @additionalData = additionalData
     end
 
     def as_json(*_args)
@@ -45,9 +45,9 @@ module Copyleaks
         code: @code,
         title: @title,
         message: @message,
-        helpLink: @help_link,
+        helpLink: @helpLink,
         severity: @severity,
-        additionalData: @additional_data
+        additionalData: @additionalData
       }
     end
 
