@@ -39,6 +39,8 @@ module CopyleaksDemo
     # test_ai_detection_source_code(loginResponse)
 
     # test_writing_assistant(loginResponse)
+
+    test_text_moderation(loginResponse)
   rescue StandardError => e
     puts '--------ERROR-------'
     puts
@@ -242,6 +244,23 @@ module CopyleaksDemo
     submission.score = score_weights
     res = @copyleaks.writing_assistant_client.submit_text(_authToken, scanId, submission)
     logInfo('Writing Assistant - submit_text', res)
+  end
+
+  def self.test_text_moderation(_authToken)
+    scanId = DateTime.now.strftime('%Q').to_s
+    text_moderation_request = CopyleaksTextModerationRequestModel.new(
+      text: "This is a sample text for moderation.",  # text
+      sandbox: true,                                  # sandbox mode (optional, defaults to false)
+      language: "en",                                 # language (optional, can be nil for auto-detection)
+      labels: ["violence", "toxic"]               # labels
+    )
+    res = @copyleaks.text_moderation_client.submit_text(_authToken, scanId, submission)
+    payload = JSON.parse(res.body)
+
+    # Convert to OpenStruct
+    textModerationResponse = Copyleaks::CopyleaksTextModerationResponseModel.new(**payload.transform_keys(&:to_sym))
+    logInfo('Text Moderation - submit_text', textModerationResponse)
+
   end
 
   def self.logInfo(title, info = nil)
