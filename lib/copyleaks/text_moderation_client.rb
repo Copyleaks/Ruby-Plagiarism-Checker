@@ -22,23 +22,30 @@
 #  SOFTWARE.
 # =
 
-require_relative 'exceptions/index.rb'
-require_relative 'exports/index.rb'
-require_relative 'submissions/index.rb'
-require_relative 'auth_token.rb'
-
-require_relative 'id_object.rb'
-require_relative 'delete_request_model.rb'
-require_relative 'start_request_model.rb'
-
-require_relative 'textModeration/requests/CopyleaksTextModerationRequestModel.rb'
-require_relative 'textModeration/responses/submodules/ModerationsModel.rb'
-require_relative 'textModeration/responses/submodules/Text.rb'
-require_relative 'textModeration/responses/submodules/TextModerationChars.rb'
-require_relative 'textModeration/responses/submodules/TextModerationScannedDocument.rb'
-require_relative 'textModeration/responses/submodules/TextModerationsLegend.rb'
-
-require_relative 'textModeration/responses/CopyleaksTextModerationResponseModel.rb'
-
 module Copyleaks
+  class TextModerationClient
+    def initialize(api_client)
+      @api_client = api_client
+    end
+
+    def submit_text(authToken, scanId, submission)
+      raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
+      raise 'submission is invalid, must be an instance of CopyleaksTextModerationRequestModel' if submission.nil? || !submission.instance_of?(Copyleaks::CopyleaksTextModerationRequestModel)
+
+      ClientUtils.verify_auth_token(authToken)
+
+      path = "/v1/text-moderation/#{scanId}/check"
+
+      headers = {
+        'Content-Type' => 'application/json',
+        'User-Agent' => Config.user_agent,
+        'Authorization' => "Bearer #{authToken.accessToken}"
+      }
+
+      request = Net::HTTP::Post.new(path, headers)
+      request.body = submission.to_json
+
+      ClientUtils.handle_response(@api_client.request(request), 'submit_text_moderation')
+    end
+  end
 end
