@@ -22,8 +22,8 @@ module Copyleaks
   class Error
     attr_reader :code, :message
 
-    # @param [Integer] code - The error code
-    # @param [String] message - The error message
+    # @param [Integer] code - Error code that represents the reason for failure. 
+    # @param [String] message - Error message that represents the reason for failure.
     def initialize(code:, message:)
       raise 'Copyleaks::Error - code must be an Integer' unless code.is_a?(Integer)
       raise 'Copyleaks::Error - message must be a String' unless message.is_a?(String)

@@ -21,7 +21,7 @@ module Copyleaks
   class Notifications
     attr_reader :alerts
 
-    # @param [Array<Alerts>] alerts - An array of alert objects
+    # @param [Array<Alerts>] alerts - A list of scan alerts that were detected in the scan.
     def initialize(alerts: nil)
       if !alerts.nil? && !(alerts.is_a?(Array) && alerts.all? { |a| a.is_a?(Alerts) })
         raise 'Copyleaks::Notifications - alerts must be an array of Alerts objects'

@@ -18,21 +18,19 @@
  #=
 module Copyleaks
   class NewResultsInternet
-    attr_reader :id, :title, :introduction, :matchedWords, :scanId, :metadata, :url
+    attr_reader :id, :title, :introduction, :matchedWords, :metadata, :url
 
-    # @param [String] id
-    # @param [String] title
-    # @param [String] introduction
-    # @param [Integer] matchedWords
-    # @param [String] scanId
-    # @param [Metadata] metadata
-    # @param [String] url
+    # @param [String] id - Unique result ID to identify the result.
+    # @param [String] title - Document title. Mostly extracted from the document content.
+    # @param [String] introduction - Document brief introduction. Mostly extracted from the document content.
+    # @param [Integer] matchedWords - Total matched words between this result and the scanned document.
+    # @param [Metadata] metadata - Metadata object
+    # @param [String] url - Public URL of the resource.
     def initialize(id:, title:, introduction:, matchedWords:, scanId:, metadata:, url:)
       raise 'Copyleaks::NewResultsInternet - id must be a String' unless id.is_a?(String)
       raise 'Copyleaks::NewResultsInternet - title must be a String' unless title.is_a?(String)
       raise 'Copyleaks::NewResultsInternet - introduction must be a String' unless introduction.is_a?(String)
       raise 'Copyleaks::NewResultsInternet - matchedWords must be an Integer' unless matchedWords.is_a?(Integer)
-      raise 'Copyleaks::NewResultsInternet - scanId must be a String' unless scanId.is_a?(String)
       raise 'Copyleaks::NewResultsInternet - metadata must be a Metadata' unless metadata.is_a?(Metadata)
       raise 'Copyleaks::NewResultsInternet - url must be a String' unless url.is_a?(String)
 
@@ -40,7 +38,6 @@ module Copyleaks
       @title = title
       @introduction = introduction
       @matchedWords = matchedWords
-      @scanId = scanId
       @metadata = metadata
       @url = url
     end
@@ -51,7 +48,6 @@ module Copyleaks
         title: @title,
         introduction: @introduction,
         matchedWords: @matchedWords,
-        scanId: @scanId,
         metadata: @metadata,
         url: @url
       }

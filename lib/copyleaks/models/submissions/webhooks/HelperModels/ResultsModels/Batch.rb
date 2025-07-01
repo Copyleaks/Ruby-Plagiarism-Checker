@@ -22,7 +22,7 @@ module Copyleaks
   class Batch < SharedResultsModel
     attr_reader :tags
 
-    # @param [Array<Tags>] tags
+    # @param [Array<Tags>] tags - Tags object array
     def initialize(tags:, **options)
       unless tags.is_a?(Array) && tags.all? { |tag| tag.is_a?(Tags) }
         raise 'Copyleaks::Batch - tags must be an Array of Tags'

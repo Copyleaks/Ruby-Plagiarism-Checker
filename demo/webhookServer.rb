@@ -1,7 +1,7 @@
 require 'webrick'
 require 'json'
 
-
+## if you are using ngrok then expose your local host to port 3001
 class ScanWebhookServlet < WEBrick::HTTPServlet::AbstractServlet
 
   # This method handles POST requests to paths mounted to this servlet
@@ -55,7 +55,7 @@ class ScanWebhookServlet < WEBrick::HTTPServlet::AbstractServlet
     pp completed.scannedDocument 
 
     res.status = 200
-    res.body = "completed received"
+    res.body = "completed received #{completed.to_json()}"
   end
 
   # Helper method for handling ERROR webhooks
@@ -65,7 +65,7 @@ class ScanWebhookServlet < WEBrick::HTTPServlet::AbstractServlet
     puts "[ERROR WEBHOOK] scan_id: #{scan_id}"
     pp error.error
     res.status = 200
-    res.body = "Error received"
+    res.body = "Error received #{error.to_json()}"
   end
 
   # Helper method for handling CREDITS CHECKED webhooks
@@ -81,7 +81,7 @@ class ScanWebhookServlet < WEBrick::HTTPServlet::AbstractServlet
     pp credits_checked.scannedDocument 
 
     res.status = 200
-    res.body = "CREDITS CHECKED received"
+    res.body = "CREDITS CHECKED received #{credits_checked.to_json()}"
   end
 
   # Helper method for handling INDEXED webhooks
@@ -91,13 +91,13 @@ class ScanWebhookServlet < WEBrick::HTTPServlet::AbstractServlet
     payload_hash = JSON.parse(req.body).transform_keys(&:to_sym)
 
     # Convert to OpenStruct
-    credits_checked = Copyleaks::IndexedWebhook.new(**payload.transform_keys(&:to_sym))
+    indexed = Copyleaks::IndexedWebhook.new(**payload.transform_keys(&:to_sym))
 
     puts "[INDEXED] scan_id: #{scan_id}"
-    pp credits_checked.developerPayload 
+    pp indexed.developerPayload 
 
     res.status = 200
-    res.body = "INDEXED received"
+    res.body = "INDEXED received #{indexed.to_json()}"
   end
 
   # Helper method for handling NEW-RESULT webhooks
@@ -107,13 +107,13 @@ class ScanWebhookServlet < WEBrick::HTTPServlet::AbstractServlet
     payload_hash = JSON.parse(req.body).transform_keys(&:to_sym)
 
     # Convert to OpenStruct
-    credits_checked = Copyleaks::NewResultWebhook.new(**payload.transform_keys(&:to_sym))
+    new_result = Copyleaks::NewResultWebhook.new(**payload.transform_keys(&:to_sym))
 
     puts "[New Result Webhook] scan_id: #{scan_id}"
-    pp credits_checked.to_json() 
+    json_string= new_result.to_json() 
 
     res.status = 200
-    res.body = "New Result Webhook received"
+    res.body = "New Result Webhook received #{json_string}"
   end
 end
 

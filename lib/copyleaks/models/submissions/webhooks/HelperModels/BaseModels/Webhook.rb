@@ -18,6 +18,8 @@
  #=
 module Copyleaks
   class Webhook
+
+    # @param [String] developerPayload - The developer payload that was provided in the submit method.
     attr_reader :developerPayload
 
     def initialize(developerPayload: nil,**args)
@@ -25,7 +27,7 @@ module Copyleaks
         raise 'Copyleaks::Webhook - developerPayload must be a String'
       end
       @developerPayload = developerPayload
-      @extra_fields = args # Store any additional fields here
+      @extra_fields = args
     end
 
     def as_json(*_args)

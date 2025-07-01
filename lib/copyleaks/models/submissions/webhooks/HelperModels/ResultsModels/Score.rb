@@ -21,6 +21,10 @@ module Copyleaks
   class Score
     attr_reader :identicalWords, :minorChangedWords, :relatedMeaningWords, :aggregatedScore
 
+     # @param [int] $identicalWords - Number of words which matched exactly.
+     # @param [int] $relatedMeaningWords - Number of paraphrased words showing similar ideas with different words.
+     # @param [float] $aggregatedScore - The percentage of similar words from all results. The calculation does not include excluded references, quotations, etc.
+     # @param [int] $minorChangedWords - Number of nearly identical words with small differences like 'slow' and 'slowly'.
     def initialize(
       identicalWords: nil,
       minorChangedWords: nil,

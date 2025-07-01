@@ -21,6 +21,12 @@ module Copyleaks
   class SharedResultsModel
     attr_reader :id, :title, :introduction, :matchedWords, :scanId, :metadata
 
+     # @param [string] $id - Unique result ID to identify this result.
+     # @param [string] $introduction - Document brief introduction. Mostly extracted from the document content.
+     # @param [int] $matchedWords - Total matched words between this result and the scanned document.
+     # @param [string|null] $scanId - In case a result was found in the Copyleaks internal database and was submitted by you, this will show the scan id of the specific result. Otherwise, this field will remain empty.
+     # @param [Metadata] $metadata - Metadata object.
+     # @param [string] $title - Document title. Mostly extracted from the document content.
     def initialize(
       id: nil,
       title: nil,

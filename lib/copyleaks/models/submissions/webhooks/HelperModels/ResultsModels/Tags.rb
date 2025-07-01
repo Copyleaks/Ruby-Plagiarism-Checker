@@ -21,7 +21,10 @@ module Copyleaks
   class Tags
     attr_reader :code, :title, :description
 
-    def initialize(code: nil, title: nil, description: nil)
+     # @param [string] $code - Unique ID that signifies the type of result tag.
+     # @param [string] $description - Short text describing this tag.
+     # @param [string] $title - A simple name for this tag.
+     def initialize(code: nil, title: nil, description: nil)
       @code = code
       @title = title
       @description = description

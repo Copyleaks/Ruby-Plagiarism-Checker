@@ -21,6 +21,13 @@ module Copyleaks
   class Alerts
     attr_reader :category, :code, :title, :message, :helpLink, :severity, :additionalData
 
+     # @param [int] $category - Scan alert category.
+     # @param [string] $title - Scan alert human-readable title.
+     # @param [string] $message - Provides human-readable information about the scan alert.
+     # @param [string|null] $helpLink - URL to a resource describing the specific scan alert.
+     # @param [int] $severity - Specifies the importance of the scan alert.
+     # @param [string] $additionalData - Additional data about the scan alert. Supplied as a JSON string.
+     # @param [string] $code - Scan alert code. The code is unique for each scan alert.
     def initialize(category:, code:, title:, message:, helpLink:, severity:, additionalData:)
       raise 'Copyleaks::Alerts - category must be a String' unless category.is_a?(String)
       raise 'Copyleaks::Alerts - code must be a String' unless code.is_a?(String)

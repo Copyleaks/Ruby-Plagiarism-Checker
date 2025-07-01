@@ -19,6 +19,7 @@
 
 module Copyleaks
   class RepositoryMetadata < Metadata
+    # @param [String] submittedBy - Email of the user which added this document to the repository.
     attr_reader :submittedBy
 
     def initialize(submittedBy: nil, **args)

@@ -21,8 +21,7 @@ module Copyleaks
   class Internet < NewResultsInternet
     attr_reader :tags
 
-    # @param [Array<Tags>] tags
-    # @param [Hash] options - options for NewResultsInternet initialization
+    # @param [Array<Tags>] tags - Tags object array
     def initialize(tags:, **options)
       unless tags.is_a?(Array) && tags.all? { |tag| tag.is_a?(Tags) }
         raise 'Copyleaks::Internet - tags must be an Array of Tags'

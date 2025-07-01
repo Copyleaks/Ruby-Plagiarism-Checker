@@ -21,8 +21,8 @@ module Copyleaks
   class NewResultsRepositories < SharedResultsModel
     attr_reader :repositoryId
 
-    # @param [String] repositoryId
-    # @param [RepositoryMetadata] metadata
+    # @param [String] repositoryId - The repository Id that has the result.
+    # @param [RepositoryMetadata] metadata - Metadata object
     def initialize(repositoryId:, metadata:)
       raise 'Copyleaks::NewResultsRepositories - repositoryId must be a String' unless repositoryId.is_a?(String)
       super(metadata: metadata)

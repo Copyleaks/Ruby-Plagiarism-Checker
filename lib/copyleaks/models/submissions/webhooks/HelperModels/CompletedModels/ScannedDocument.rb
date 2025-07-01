@@ -21,12 +21,12 @@ module Copyleaks
   class ScannedDocument
     attr_reader :scanId, :totalWords, :totalExcluded, :credits, :creationTime, :metadata
 
-    # @param [String] scanId - The scan ID.
-    # @param [Integer] totalWords - Total number of words in the document.
-    # @param [Integer] totalExcluded - Total number of excluded words.
-    # @param [Integer] credits - Number of credits used for the scan.
-    # @param [String] creationTime - The time the scan was created.
-    # @param [Metadata] metadata - Metadata associated with the document.
+    # @param [String] scanId - The unique scan id provided by you.
+    # @param [Integer] totalWords - Total number of words found in the scanned text.
+    # @param [Integer] totalExcluded - Number of excluded words in the submitted content.
+    # @param [Integer] credits - Overall credits used for the scan.
+    # @param [String] creationTime - The creation time of the scan.
+    # @param [Metadata] metadata - Metadata object
     def initialize(scanId:, totalWords:, totalExcluded:, credits:, creationTime:, metadata:)
       raise 'scanId must be a String' unless scanId.is_a?(String)
       raise 'totalWords must be an Integer' unless totalWords.is_a?(Integer)

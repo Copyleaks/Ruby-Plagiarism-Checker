@@ -22,7 +22,7 @@ module Copyleaks
   class NewResultScore
     attr_reader :aggregatedScore
 
-    # @param [Float] aggregatedScore - The aggregated score value.
+    # @param [Float] aggregatedScore - The percentage of similar words from all results. The calculation does not include excluded references, quotations, etc...
     def initialize(aggregatedScore:)
       raise 'Copyleaks::NewResultScore - aggregatedScore must be a Float' unless aggregatedScore.is_a?(Float) || aggregatedScore.is_a?(Integer)
       

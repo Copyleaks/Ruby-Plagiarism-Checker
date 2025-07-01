@@ -22,9 +22,8 @@ module Copyleaks
   class Repositories < SharedResultsModel
     attr_reader :repositoryId, :tags
 
-    # @param [String] repositoryId
-    # @param [Array<Tags>] tags
-    # @param [Hash] options - for parent class initialization if needed
+    # @param [String] repositoryId - The repository Id that has the result.
+    # @param [Array<Tags>] tags - Tags object array
     def initialize(repositoryId:, tags:, **options)
       unless repositoryId.is_a?(String)
         raise 'Copyleaks::Repositories - repositoryId must be a String'

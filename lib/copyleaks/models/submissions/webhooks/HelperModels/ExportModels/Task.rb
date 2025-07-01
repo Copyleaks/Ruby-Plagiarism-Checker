@@ -21,9 +21,9 @@ module Copyleaks
   class Task
     attr_reader :endpoint, :isHealthy, :httpStatusCode
 
-    # @param [String] endpoint - The API endpoint being checked.
-    # @param [Boolean] isHealthy - Whether the task/endpoint is healthy.
-    # @param [Integer] httpStatusCode - The returned HTTP status code.
+    # @param [String] endpoint - The endpoint address of the export task.
+    # @param [Boolean] isHealthy - This flag gives an indication whether the scan was completed without internal errors on the Copyleaks side.
+    # @param [Integer] httpStatusCode - The status code reported by the customer servers. If the tasks.isHealthy is equal to false - this field will be null.
     def initialize(endpoint:, isHealthy:, httpStatusCode:)
       raise 'Copyleaks::Task - endpoint must be a String' unless endpoint.is_a?(String)
       raise 'Copyleaks::Task - isHealthy must be a Boolean' unless [true, false].include?(isHealthy)
