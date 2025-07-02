@@ -2,11 +2,16 @@ require_relative '../lib/index'
 require 'json'
 require 'date'
 require_relative 'base64logo.rb'
+require_relative './webhookServer'
 module CopyleaksDemo
   USER_EMAIL = '<YOUR EMAIL>'
   USER_API_KEY = '<YOUR KEY>'
   WEBHOOK_URL = '<WEBHOOK URL>'
 
+  # Start the webhook server in a background thread
+  puts "Starting webhook server..."
+  WebhookServer.start
+  
   def self.run
     @copyleaks = Copyleaks::API.new    
     # test_misc
@@ -30,7 +35,7 @@ module CopyleaksDemo
 
     # test_submit_url(loginResponse)
 
-    # test_submit_file(loginResponse)
+    test_submit_file(loginResponse)
 
     # test_submit_ocr_file(loginResponse)
 
@@ -82,7 +87,7 @@ module CopyleaksDemo
       'aGVsbG8gd29ybGQ=',
       'ruby.txt',
       Copyleaks::SubmissionProperties.new(
-        Copyleaks::SubmissionWebhooks.new("#{WEBHOOK_URL}/url-webhook/scan/#{scanId}/{STATUS}"),
+        Copyleaks::SubmissionWebhooks.new("#{WEBHOOK_URL}/url-webhook/scan/#{scanId}/{STATUS}","#{WEBHOOK_URL}/url-webhook/new-result"),
         true,
         'developer_payloads_test',
         true,
@@ -255,3 +260,4 @@ module CopyleaksDemo
 end
 
 CopyleaksDemo.run
+sleep 
