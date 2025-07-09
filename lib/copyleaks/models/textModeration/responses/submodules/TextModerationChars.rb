@@ -4,9 +4,12 @@ module Copyleaks
 class TextModerationChars
   attr_accessor :labels, :starts, :lengths
 
-  def initialize(labels: [], starts: [], lengths: [])
-    @labels = labels
+  # @param starts [Array<Integer>] Start character position of the labelled segment.
+  # @param labels [Array<Integer>] Predicted label index for the corresponding segment. The index can be resolved to its ID using the supplied legend.
+  # @param lengths [Array<Integer>] Labelled segment character length.
+  def initialize( starts: [],labels: [], lengths: [])
     @starts = starts
+    @labels = labels
     @lengths = lengths
   end
 

@@ -4,6 +4,7 @@ module Copyleaks
 class Text
   attr_accessor :chars
 
+  # @param chars [TextModerationChars] An object that groups together several arrays detailing the properties of labelled segments.
   def initialize(chars: TextModerationChars.new)
     @chars = chars
   end

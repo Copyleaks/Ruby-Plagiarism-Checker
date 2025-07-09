@@ -4,6 +4,7 @@ module Copyleaks
 class ModerationsModel
   attr_accessor :text
 
+  # @param text [Text] Moderated text segments corresponding to the submitted text. Each position in the inner arrays corresponds to a single segment in the textual version.
   def initialize(text: Text.new)
     @text = text
   end

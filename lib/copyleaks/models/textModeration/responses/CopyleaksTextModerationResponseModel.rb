@@ -4,6 +4,9 @@ module Copyleaks
 class CopyleaksTextModerationResponseModel
   attr_accessor :moderations, :legend, :scanned_document
 
+  # @param moderations [ModerationsModel] Moderated text segments detected in the input text.
+  # @param legend [Array<TextModerationsLegend>] An array that provides a lookup for the labels referenced by their numerical indices in the `text.chars.labels` array. Each object within this legend array defines a specific label that was used in the scan.
+  # @param scanned_document [TextModerationScannedDocument] General information about the scanned document.
   def initialize(moderations: ModerationsModel.new, legend: [], scanned_document: TextModerationScannedDocument.new, **_ignored)
     @moderations = moderations
     @legend = legend

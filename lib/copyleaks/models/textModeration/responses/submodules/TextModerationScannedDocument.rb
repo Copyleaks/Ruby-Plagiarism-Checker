@@ -5,6 +5,9 @@ module Copyleaks
 class TextModerationScannedDocument
   attr_accessor :scan_id, :total_words, :total_excluded, :actual_credits, :expected_credits, :creation_time
 
+  # @param starts [Array<Integer>] Start character position of the labelled segment.
+  # @param labels [Array<Integer>] Predicted label index for the corresponding segment. The index can be resolved to its ID using the supplied legend.
+  # @param lengths [Array<Integer>] Labelled segment character length.
   def initialize(scan_id: '', total_words: 0, total_excluded: 0, actual_credits: 0, expected_credits: 0, creation_time: Time.utc.now)
     @scan_id = scan_id
     @total_words = total_words

@@ -458,5 +458,8 @@ module Copyleaks
     def writing_assistant_client
       @writing_assistant_client
     end
+    def text_moderation_client
+      @text_moderation_client
+    end
   end
 end

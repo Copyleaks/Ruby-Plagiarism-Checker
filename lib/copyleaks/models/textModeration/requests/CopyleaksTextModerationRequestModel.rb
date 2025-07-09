@@ -4,15 +4,18 @@ module Copyleaks
   class CopyleaksTextModerationRequestModel
     attr_accessor :text, :sandbox, :language, :labels
 
+    # @param text [String] Text to produce Text Moderation report for.
+    # @param sandbox [Boolean] Use sandbox mode to test your integration. Default: false.
+    # @param language [String, nil] The language code. Optional; set to nil for auto-detect.
+    # @param labels [Array<Object>] A list of label configurations (min 1, max 32 elements).
     def initialize(text: '', sandbox: false, language: nil, labels: [])
       @text = text
       @sandbox = sandbox
       @language = language
       @labels = labels
 
-      raise ArgumentError, "String cannot be blank" if @text.blank?
-      # Validate the labels
-      raise ArgumentError, "Labels array must have at least 1 element" if @labels.empty?
+      raise ArgumentError, "String cannot be blank" if @text.nil?
+
     end
 
     def to_json(options = {})
