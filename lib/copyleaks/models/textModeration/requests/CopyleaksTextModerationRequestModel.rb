@@ -9,15 +9,15 @@ module Copyleaks
     # @param language [String, nil] The language code. Optional; set to nil for auto-detect.
     # @param labels [Array<Object>] A list of label configurations (min 1, max 32 elements).
     def initialize(text: '', sandbox: false, language: nil, labels: [])
-      
-      raise ArgumentError, "String cannot be blank" if @text.nil?
-      raise ArgumentError, "Labels must be a non-empty array." unless labels.is_a?(Array) && !labels.empty?
-      raise ArgumentError, "Labels cannot have more than 32 elements." if labels.length > 32
-      
+
       @text = text
       @sandbox = sandbox
       @language = language
       @labels = labels
+
+      raise ArgumentError, "String cannot be blank" if @text.nil?
+      raise ArgumentError, "Labels must be a non-empty array." unless labels.is_a?(Array) && !labels.empty?
+      raise ArgumentError, "Labels cannot have more than 32 elements." if labels.length > 32
 
     end
 
