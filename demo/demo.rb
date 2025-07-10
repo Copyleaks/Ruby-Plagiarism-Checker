@@ -35,7 +35,7 @@ module CopyleaksDemo
 
     # test_submit_url(loginResponse)
 
-    test_submit_file(loginResponse)
+    # test_submit_file(loginResponse)
 
     # test_submit_ocr_file(loginResponse)
 
@@ -44,6 +44,9 @@ module CopyleaksDemo
     # test_ai_detection_source_code(loginResponse)
 
     # test_writing_assistant(loginResponse)
+
+    test_text_moderation(loginResponse)
+
   rescue StandardError => e
     puts '--------ERROR-------'
     puts
@@ -247,6 +250,36 @@ module CopyleaksDemo
     submission.score = score_weights
     res = @copyleaks.writing_assistant_client.submit_text(_authToken, scanId, submission)
     logInfo('Writing Assistant - submit_text', res)
+  end
+
+  def self.test_text_moderation(_authToken)
+    scanId = DateTime.now.strftime('%Q').to_s
+    text_moderation_request = Copyleaks::CopyleaksTextModerationRequestModel.new(
+      text: "This is some text to scan.",
+      sandbox: true,
+      language: "en",
+      labels: [
+        { id: "other-v1" },
+        { id: "adult-v1" },
+        { id: "toxic-v1" },
+        { id: "violent-v1" },
+        { id: "profanity-v1" },
+        { id: "self-harm-v1" },
+        { id: "harassment-v1" },
+        { id: "hate-speech-v1" },
+        { id: "drugs-v1" },
+        { id: "firearms-v1" },
+        { id: "cybersecurity-v1" }
+      ]
+    )
+    res = @copyleaks.text_moderation_client.submit_text(_authToken, scanId, text_moderation_request)
+
+    textModerationResponse = Copyleaks::CopyleaksTextModerationResponseModel.new(  
+      moderations: res['moderations'],
+      legend: res['legend'],
+      scanned_document: res['scannedDocument'])
+
+    logInfo('Text Moderation - submit_text', textModerationResponse)
   end
 
   def self.logInfo(title, info = nil)

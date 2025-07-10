@@ -18,6 +18,7 @@
  #=
 module Copyleaks
   class StatusWebhook < Webhook
+    # @param [Integer] status - The current status of the scan.
     attr_reader :status
 
     def initialize(status:, **args)
