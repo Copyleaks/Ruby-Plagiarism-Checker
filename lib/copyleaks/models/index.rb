@@ -37,7 +37,6 @@ require_relative 'textModeration/responses/submodules/Text.rb'
 require_relative 'textModeration/responses/submodules/TextModerationChars.rb'
 require_relative 'textModeration/responses/submodules/TextModerationScannedDocument.rb'
 require_relative 'textModeration/responses/submodules/TextModerationsLegend.rb'
-
 require_relative 'textModeration/responses/CopyleaksTextModerationResponseModel.rb'
 
 module Copyleaks

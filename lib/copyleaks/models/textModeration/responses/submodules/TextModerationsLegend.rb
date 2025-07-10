@@ -4,8 +4,8 @@ module Copyleaks
 class TextModerationsLegend
   attr_accessor :index, :id
 
-  # @param index [Object] The numerical index of the label.
-  # @param id [Object] A unique string identifier for the label. This ID serves as a machine-readable way to identify the label type.
+  # @param index [integer] The numerical index of the label.
+  # @param id [string] A unique string identifier for the label. This ID serves as a machine-readable way to identify the label type.
   def initialize(index: 0, id: '')
     @index = index
     @id = id

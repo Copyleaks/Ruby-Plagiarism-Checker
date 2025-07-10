@@ -5,9 +5,12 @@ module Copyleaks
 class TextModerationScannedDocument
   attr_accessor :scan_id, :total_words, :total_excluded, :actual_credits, :expected_credits, :creation_time
 
-  # @param starts [Array<Integer>] Start character position of the labelled segment.
-  # @param labels [Array<Integer>] Predicted label index for the corresponding segment. The index can be resolved to its ID using the supplied legend.
-  # @param lengths [Array<Integer>] Labelled segment character length.
+  # @param scan_id [String] The scan id given by the user.
+  # @param total_words [Integer] Total number of words found in the scanned text.
+  # @param total_excluded [Integer] Total excluded words from the text.
+  # @param actual_credits [Integer] The cost of credits for this scan.
+  # @param expected_credits [Integer] The amount of credits that was expected to be spent on the scan.
+  # @param creation_time [Time] Creation time of the scan.
   def initialize(scan_id: '', total_words: 0, total_excluded: 0, actual_credits: 0, expected_credits: 0, creation_time: Time.utc.now)
     @scan_id = scan_id
     @total_words = total_words
