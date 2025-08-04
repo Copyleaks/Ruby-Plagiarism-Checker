@@ -19,6 +19,14 @@ Gem::Specification.new do |spec|
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/Copyleaks/Ruby-Plagiarism-Checker'
   spec.metadata['changelog_uri'] = 'https://github.com/Copyleaks/Ruby-Plagiarism-Checker/releases'
+  spec.post_install_message = <<-MSG
+  \e[33m===============================================================
+  DEPRECATION NOTICE: plagiarism-checker v#{Copyleaks::VERSION}
+  ===============================================================
+  AI Code Detection will be discontinued on August 29, 2025.
+  Please remove AI code detection integrations before the sunset date.
+  ===============================================================\e[0m
+  MSG
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{\A(?:demo|test|spec|features)/}) || f.match(/\.gem/) }
