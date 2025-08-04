@@ -21,7 +21,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-
+warn "\e[33m[DEPRECATION] plagiarism-checker: AI Code Detection will be discontinued on August 29, 2025. See README for more info.\e[0m"
 require_relative  './copyleaks/api.rb'
 require_relative  './copyleaks/version.rb'
 require_relative  './copyleaks/app.config.rb'
