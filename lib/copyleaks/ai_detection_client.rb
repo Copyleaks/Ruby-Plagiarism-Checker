@@ -21,6 +21,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
+require_relative 'deprecationService.rb'
 
 module Copyleaks
   class AIDetectionClient
@@ -45,7 +46,7 @@ module Copyleaks
       end
 
       ClientUtils.verify_auth_token(authToken)
-
+      Copyleaks::DeprecationService.show_deprecation_message
       path = "/v2/writer-detector/source-code/#{scanId}/check"
 
       headers = {
