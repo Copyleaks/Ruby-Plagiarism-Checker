@@ -115,8 +115,11 @@ module Copyleaks
 
       verify_auth_token(authToken)
       file_extension = File.extname(submission.filename).delete_prefix('.')
-
-      if SupportedFilesTypes::SUPPORTED_CODE_EXTENSIONS.include?(file_extension)
+      
+      if file_extension.empty?
+        raise ArgumentError, "File extension could not be determined for filename: #{submission.filename}"
+      end
+      if Copyleaks::SupportedFilesTypes::SUPPORTED_CODE_EXTENSIONS.include?(file_extension)
         Copyleaks::DeprecationService.show_deprecation_message
       end
 
