@@ -26,6 +26,8 @@ module Copyleaks
     # @param [String] base64 A base64 data string of a file. If you would like to scan plain text, encode it as base64 and submit it.
     # @param [String] filename The name of the file as it will appear in the Copyleaks scan report Make sure to include the right extension for your filetype.
     # @param [SubmissionProperties] properties Check inner properties for more details.
+    attr_reader :base64, :filename, :properties
+
     def initialize(base64, filename, properties)
       unless base64.instance_of?(String)
         raise 'Copyleaks::CopyleaksFileSubmissionModel - base64 - base64 must be of type String'

@@ -21,23 +21,19 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-require_relative 'constants/index.rb'
-require_relative 'exceptions/index.rb'
-require_relative 'exports/index.rb'
-require_relative 'submissions/index.rb'
-require_relative 'auth_token.rb'
-
-require_relative 'id_object.rb'
-require_relative 'delete_request_model.rb'
-require_relative 'start_request_model.rb'
-
-require_relative 'textModeration/requests/CopyleaksTextModerationRequestModel.rb'
-require_relative 'textModeration/responses/submodules/ModerationsModel.rb'
-require_relative 'textModeration/responses/submodules/Text.rb'
-require_relative 'textModeration/responses/submodules/TextModerationChars.rb'
-require_relative 'textModeration/responses/submodules/TextModerationScannedDocument.rb'
-require_relative 'textModeration/responses/submodules/TextModerationsLegend.rb'
-require_relative 'textModeration/responses/CopyleaksTextModerationResponseModel.rb'
-
 module Copyleaks
+  class DeprecationService  
+    def self.show_deprecation_message
+      
+      warn "DEPRECATION NOTICE: AI Code Detection will be discontinued on August 29, 2025. Please remove AI code detection integrations before the sunset date."
+      
+      print "\033[31m"  
+      puts "════════════════════════════════════════════════════════════════════"
+      puts "DEPRECATION NOTICE !!!"
+      puts "AI Code Detection will be discontinued on August 29, 2025."
+      puts "Please remove AI code detection integrations before the sunset date."
+      puts "════════════════════════════════════════════════════════════════════"
+      print "\033[0m"   
+    end
+  end
 end
