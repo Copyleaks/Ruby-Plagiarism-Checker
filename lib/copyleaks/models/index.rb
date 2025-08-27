@@ -21,7 +21,6 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-require_relative 'constants/index.rb'
 require_relative 'exceptions/index.rb'
 require_relative 'exports/index.rb'
 require_relative 'submissions/index.rb'

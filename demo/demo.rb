@@ -41,8 +41,6 @@ module CopyleaksDemo
 
     # test_ai_detection_natural_language(loginResponse)
 
-    # test_ai_detection_source_code(loginResponse)
-
     # test_writing_assistant(loginResponse)
 
     test_text_moderation(loginResponse)
@@ -209,34 +207,6 @@ module CopyleaksDemo
     
     res = @copyleaks.ai_detection_client.submit_natural_language(_authToken, scanId, submission)
     logInfo('AI Detection - submit_natural_language', res)
-  end
-
-  def self.test_ai_detection_source_code(_authToken)
-    scanId = DateTime.now.strftime('%Q').to_s
-    sample_code = 
-    """def add(a, b):
-        return a + b
-
-      def multiply(a, b):
-          return a * b
-
-      def main():
-          x = 5
-          y = 10
-          sum_result = add(x, y)
-          product_result = multiply(x, y)
-          print(f'Sum: {sum_result}')
-          print(f'Product: {product_result}')
-
-      if __name__ == '__main__':
-          main()"""
-      submission = Copyleaks::SourceCodeSubmissionModel.new(
-        sample_code,
-        "sample.py"
-      )
-      submission.sandbox = true
-    res = @copyleaks.ai_detection_client.submit_source_code(_authToken, scanId, submission)
-    logInfo('AI Detection - submit_source_code', res)
   end
 
   def self.test_writing_assistant(_authToken)

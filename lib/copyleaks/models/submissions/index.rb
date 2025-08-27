@@ -30,7 +30,6 @@ require_relative 'url_submission_model.rb'
 
 require_relative 'ai_detection/ai_detection_submission_model.rb'
 require_relative 'ai_detection/natural_language_submission_model.rb'
-require_relative 'ai_detection/source_code_submission_model.rb'
 require_relative 'Webhooks/index.rb'
 
 require_relative 'writing_assistant/score_weights.rb'

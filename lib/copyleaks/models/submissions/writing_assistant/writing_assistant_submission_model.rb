@@ -32,7 +32,7 @@ module Copyleaks
     # @param [ScoreWeights] an object containing the score weights for different writing aspects (e.g., grammar, mechanics). Optional.
     def initialize(text, sandbox = false, language = nil, score = nil)
       unless text.instance_of?(String)
-        raise 'Copyleaks::SourceCodeSubmissionModel - text - text must be of type String'
+        raise 'Copyleaks::WritingAssistantSubmissionModel - text - text must be of type String'
       end
       @text = text
       @sandbox = sandbox
