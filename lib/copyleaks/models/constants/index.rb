@@ -21,23 +21,9 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-require_relative 'constants/index.rb'
-require_relative 'exceptions/index.rb'
-require_relative 'exports/index.rb'
-require_relative 'submissions/index.rb'
-require_relative 'auth_token.rb'
 
-require_relative 'id_object.rb'
-require_relative 'delete_request_model.rb'
-require_relative 'start_request_model.rb'
-
-require_relative 'textModeration/requests/CopyleaksTextModerationRequestModel.rb'
-require_relative 'textModeration/responses/submodules/ModerationsModel.rb'
-require_relative 'textModeration/responses/submodules/Text.rb'
-require_relative 'textModeration/responses/submodules/TextModerationChars.rb'
-require_relative 'textModeration/responses/submodules/TextModerationScannedDocument.rb'
-require_relative 'textModeration/responses/submodules/TextModerationsLegend.rb'
-require_relative 'textModeration/responses/CopyleaksTextModerationResponseModel.rb'
+require_relative 'CopyleaksTextModerationConstants.rb'
+require_relative 'CopyleaksTextModerationLanguages.rb'
 
 module Copyleaks
 end

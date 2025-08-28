@@ -227,19 +227,18 @@ module CopyleaksDemo
     text_moderation_request = Copyleaks::CopyleaksTextModerationRequestModel.new(
       text: "This is some text to scan.",
       sandbox: true,
-      language: "en",
+      language: Copyleaks::CopyleaksTextModerationLanguages::ENGLISH,
       labels: [
-        { id: "other-v1" },
-        { id: "adult-v1" },
-        { id: "toxic-v1" },
-        { id: "violent-v1" },
-        { id: "profanity-v1" },
-        { id: "self-harm-v1" },
-        { id: "harassment-v1" },
-        { id: "hate-speech-v1" },
-        { id: "drugs-v1" },
-        { id: "firearms-v1" },
-        { id: "cybersecurity-v1" }
+            { id: Copyleaks::CopyleaksTextModerationConstants::ADULT_V1 },
+            { id: Copyleaks::CopyleaksTextModerationConstants::TOXIC_V1 },
+            { id: Copyleaks::CopyleaksTextModerationConstants::VIOLENT_V1 },
+            { id: Copyleaks::CopyleaksTextModerationConstants::PROFANITY_V1 },
+            { id: Copyleaks::CopyleaksTextModerationConstants::SELF_HARM_V1 },
+            { id: Copyleaks::CopyleaksTextModerationConstants::HARASSMENT_V1 },
+            { id: Copyleaks::CopyleaksTextModerationConstants::HATE_SPEECH_V1 },
+            { id: Copyleaks::CopyleaksTextModerationConstants::DRUGS_V1 },
+            { id: Copyleaks::CopyleaksTextModerationConstants::FIREARMS_V1 },
+            { id: Copyleaks::CopyleaksTextModerationConstants::CYBERSECURITY_V1 }
       ]
     )
     res = @copyleaks.text_moderation_client.submit_text(_authToken, scanId, text_moderation_request)
