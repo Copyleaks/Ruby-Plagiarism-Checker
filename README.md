@@ -164,23 +164,25 @@ WEBHOOK_URL = 'https://your-server.com/webhook/{STATUS}'
 # --------------------
 
 begin
- scanId = DateTime.now.strftime('%Q').to_s
+    scanId = DateTime.now.strftime('%Q').to_s
+    labelsArray=[
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::ADULT_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::TOXIC_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::VIOLENT_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::PROFANITY_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::SELF_HARM_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::HARASSMENT_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::HATE_SPEECH_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::DRUGS_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::FIREARMS_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::CYBERSECURITY_V1)
+    ]
+    
     text_moderation_request = Copyleaks::CopyleaksTextModerationRequestModel.new(
       text: "This is some text to scan.",
       sandbox: true,
-      language: "en",
-      labels: [
-        { id: "adult-v1" },
-        { id: "toxic-v1" },
-        { id: "violent-v1" },
-        { id: "profanity-v1" },
-        { id: "self-harm-v1" },
-        { id: "harassment-v1" },
-        { id: "hate-speech-v1" },
-        { id: "drugs-v1" },
-        { id: "firearms-v1" },
-        { id: "cybersecurity-v1" }
-      ]
+      language: Copyleaks::CopyleaksTextModerationLanguages::ENGLISH,
+      labels: labelsArray
     )
     res = @copyleaks.text_moderation_client.submit_text(_authToken, scanId, text_moderation_request)
 
