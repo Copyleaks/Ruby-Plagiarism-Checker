@@ -224,11 +224,7 @@ module CopyleaksDemo
 
   def self.test_text_moderation(_authToken)
     scanId = DateTime.now.strftime('%Q').to_s
-    text_moderation_request = Copyleaks::CopyleaksTextModerationRequestModel.new(
-      text: "This is some text to scan.",
-      sandbox: true,
-      language: Copyleaks::CopyleaksTextModerationLanguages::ENGLISH,
-      labels: [
+    labelsArray=[
       Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::ADULT_V1),
       Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::TOXIC_V1),
       Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::VIOLENT_V1),
@@ -240,6 +236,12 @@ module CopyleaksDemo
       Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::FIREARMS_V1),
       Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::CYBERSECURITY_V1)
     ]
+    
+    text_moderation_request = Copyleaks::CopyleaksTextModerationRequestModel.new(
+      text: "This is some text to scan.",
+      sandbox: true,
+      language: Copyleaks::CopyleaksTextModerationLanguages::ENGLISH,
+      labels: labelsArray
     )
     res = @copyleaks.text_moderation_client.submit_text(_authToken, scanId, text_moderation_request)
 
