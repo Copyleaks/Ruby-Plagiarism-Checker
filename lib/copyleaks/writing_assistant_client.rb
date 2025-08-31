@@ -57,7 +57,7 @@ module Copyleaks
     #     https://api.copyleaks.com/documentation/v3/exponential-backoff
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     # @param [String] scanId Attach your own scan Id
-    # @param [SourceCodeSubmissionModel] submission document
+    # @param [WritingAssistantSubmissionModel] submission document
     def submit_text(authToken, scanId, submission)
       raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
       raise 'submission is invalid, must be an instance of WritingAssistantSubmissionModel' if submission.nil? || !submission.instance_of?(Copyleaks::WritingAssistantSubmissionModel)

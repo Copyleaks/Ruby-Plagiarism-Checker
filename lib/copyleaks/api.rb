@@ -27,7 +27,6 @@ require 'date'
 require_relative 'ai_detection_client.rb'
 require_relative 'writing_assistant_client.rb'
 require_relative 'text_moderation_client.rb'
-require_relative 'deprecationService.rb'
 require_relative 'utils/copyleaks_client.utils'
 
 module Copyleaks
@@ -114,14 +113,6 @@ module Copyleaks
       end
 
       verify_auth_token(authToken)
-      file_extension = File.extname(submission.filename).delete_prefix('.')
-      
-      if file_extension.empty?
-        raise ArgumentError, "File extension could not be determined for filename: #{submission.filename}"
-      end
-      if Copyleaks::SupportedFilesTypes::SUPPORTED_CODE_EXTENSIONS.include?(file_extension)
-        Copyleaks::DeprecationService.show_deprecation_message
-      end
 
       path = "/v3/scans/submit/file/#{scanId}"
 

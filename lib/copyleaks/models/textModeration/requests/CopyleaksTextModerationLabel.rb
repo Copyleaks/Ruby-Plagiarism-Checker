@@ -21,35 +21,25 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-
+require 'json'
 module Copyleaks
-  class SourceCodeSubmissionModel < AIDetectionSubmissionModel
-    attr_accessor :filename
 
-    # @param [String] A text string.
-    # @param [String] The name of the file. Make sure to include the right extension for your file type.
-    # @param [Boolean] Use sandbox mode to test your integration with the Copyleaks API for free.
-    def initialize(text, filename, sandbox = false)
-      unless text.instance_of?(String)
-        raise 'Copyleaks::SourceCodeSubmissionModel - text - text must be of type String'
-      end
-      unless filename.instance_of?(String)
-        raise 'Copyleaks::SourceCodeSubmissionModel - filename - filename must be of type String'
-      end
-      super(text, sandbox)
-      @filename = filename
+  class CopyleaksTextModerationLabel
+    attr_reader :id
+
+    def initialize(id)
+      @id = id
     end
 
-    def as_json(*_args)
-      {
-        text: @text,
-        sandbox: @sandbox,
-        filename: @filename
-      }.select { |_k, v| !v.nil? }
+    # Convert to JSON with "id" key
+    def to_json(*_args)
+      { 'id' => @id }.to_json
     end
 
-    def to_json(*options)
-      as_json(*options).to_json(*options)
+    # Build from a JSON string or a hash
+    def self.from_json(json)
+      data = json.is_a?(String) ? JSON.parse(json) : json
+      new(data['id'] || data[:id])
     end
   end
 end

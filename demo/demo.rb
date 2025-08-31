@@ -41,8 +41,6 @@ module CopyleaksDemo
 
     # test_ai_detection_natural_language(loginResponse)
 
-    # test_ai_detection_source_code(loginResponse)
-
     # test_writing_assistant(loginResponse)
 
     test_text_moderation(loginResponse)
@@ -211,34 +209,6 @@ module CopyleaksDemo
     logInfo('AI Detection - submit_natural_language', res)
   end
 
-  def self.test_ai_detection_source_code(_authToken)
-    scanId = DateTime.now.strftime('%Q').to_s
-    sample_code = 
-    """def add(a, b):
-        return a + b
-
-      def multiply(a, b):
-          return a * b
-
-      def main():
-          x = 5
-          y = 10
-          sum_result = add(x, y)
-          product_result = multiply(x, y)
-          print(f'Sum: {sum_result}')
-          print(f'Product: {product_result}')
-
-      if __name__ == '__main__':
-          main()"""
-      submission = Copyleaks::SourceCodeSubmissionModel.new(
-        sample_code,
-        "sample.py"
-      )
-      submission.sandbox = true
-    res = @copyleaks.ai_detection_client.submit_source_code(_authToken, scanId, submission)
-    logInfo('AI Detection - submit_source_code', res)
-  end
-
   def self.test_writing_assistant(_authToken)
     text = "Lions are the only cat that live in groups, called pride. A prides typically consists of a few adult males, several feales, and their offspring. This social structure is essential for hunting and raising young cubs. Female lions, or lionesses are the primary hunters of the prid. They work together in cordinated groups to take down prey usually targeting large herbiores like zbras, wildebeest and buffalo. Their teamwork and strategy during hunts highlight the intelligence and coperation that are key to their survival."
     scanId = DateTime.now.strftime('%Q').to_s
@@ -254,23 +224,24 @@ module CopyleaksDemo
 
   def self.test_text_moderation(_authToken)
     scanId = DateTime.now.strftime('%Q').to_s
+    labelsArray=[
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::ADULT_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::TOXIC_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::VIOLENT_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::PROFANITY_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::SELF_HARM_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::HARASSMENT_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::HATE_SPEECH_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::DRUGS_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::FIREARMS_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::CYBERSECURITY_V1)
+    ]
+    
     text_moderation_request = Copyleaks::CopyleaksTextModerationRequestModel.new(
       text: "This is some text to scan.",
       sandbox: true,
-      language: "en",
-      labels: [
-        { id: "other-v1" },
-        { id: "adult-v1" },
-        { id: "toxic-v1" },
-        { id: "violent-v1" },
-        { id: "profanity-v1" },
-        { id: "self-harm-v1" },
-        { id: "harassment-v1" },
-        { id: "hate-speech-v1" },
-        { id: "drugs-v1" },
-        { id: "firearms-v1" },
-        { id: "cybersecurity-v1" }
-      ]
+      language: Copyleaks::CopyleaksTextModerationLanguages::ENGLISH,
+      labels: labelsArray
     )
     res = @copyleaks.text_moderation_client.submit_text(_authToken, scanId, text_moderation_request)
 

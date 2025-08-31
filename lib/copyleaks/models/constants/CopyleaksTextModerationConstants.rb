@@ -21,24 +21,19 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-require_relative 'constants/index.rb'
-require_relative 'exceptions/index.rb'
-require_relative 'exports/index.rb'
-require_relative 'submissions/index.rb'
-require_relative 'auth_token.rb'
-
-require_relative 'id_object.rb'
-require_relative 'delete_request_model.rb'
-require_relative 'start_request_model.rb'
-
-require_relative 'textModeration/requests/CopyleaksTextModerationRequestModel.rb'
-require_relative 'textModeration/requests/CopyleaksTextModerationLabel.rb'
-require_relative 'textModeration/responses/submodules/ModerationsModel.rb'
-require_relative 'textModeration/responses/submodules/Text.rb'
-require_relative 'textModeration/responses/submodules/TextModerationChars.rb'
-require_relative 'textModeration/responses/submodules/TextModerationScannedDocument.rb'
-require_relative 'textModeration/responses/submodules/TextModerationsLegend.rb'
-require_relative 'textModeration/responses/CopyleaksTextModerationResponseModel.rb'
-
 module Copyleaks
+  class CopyleaksTextModerationConstants
+    # Provides a collection of constants representing different text moderation categories supported by the Copyleaks
+    # Text Moderation API.
+    ADULT_V1 = "adult-v1"
+    TOXIC_V1 = "toxic-v1"
+    VIOLENT_V1 = "violent-v1"
+    PROFANITY_V1 = "profanity-v1"
+    SELF_HARM_V1 = "self-harm-v1"
+    HARASSMENT_V1 = "harassment-v1"
+    HATE_SPEECH_V1 = "hate-speech-v1"
+    DRUGS_V1 = "drugs-v1"
+    FIREARMS_V1 = "firearms-v1"
+    CYBERSECURITY_V1 = "cybersecurity-v1"
+  end
 end

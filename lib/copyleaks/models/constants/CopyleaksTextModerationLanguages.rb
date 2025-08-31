@@ -22,18 +22,8 @@
 #  SOFTWARE.
 # =
 module Copyleaks
-  class DeprecationService  
-    def self.show_deprecation_message
-      
-      warn "DEPRECATION NOTICE: AI Code Detection will be discontinued on August 29, 2025. Please remove AI code detection integrations before the sunset date."
-      
-      print "\033[31m"  
-      puts "════════════════════════════════════════════════════════════════════"
-      puts "DEPRECATION NOTICE !!!"
-      puts "AI Code Detection will be discontinued on August 29, 2025."
-      puts "Please remove AI code detection integrations before the sunset date."
-      puts "════════════════════════════════════════════════════════════════════"
-      print "\033[0m"   
+  class CopyleaksTextModerationLanguages
+    # Supported languages for text moderation.
+    ENGLISH = "en"
     end
-  end
 end

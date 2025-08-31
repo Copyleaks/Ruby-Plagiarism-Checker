@@ -22,7 +22,8 @@
 #  SOFTWARE.
 # =
 
-require_relative 'supportedFilesTypes.rb'
+require_relative 'CopyleaksTextModerationConstants.rb'
+require_relative 'CopyleaksTextModerationLanguages.rb'
 
 module Copyleaks
 end
