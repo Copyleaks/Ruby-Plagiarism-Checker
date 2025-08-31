@@ -1,47 +1,206 @@
-# Copyleaks Ruby SDK
+# Copyleaks SDK
+The official [Copyleaks](https://copyleaks.com/) Ruby library.
 
-Copyleaks SDK is a simple framework that allows you to scan text for plagiarism and detect content distribution online, using the Copyleaks plagiarism checker cloud.
+## 🚀 Getting Started
+Before you start, ensure you have the following:
 
-Using Copyleaks SDK you can check for plagiarism in:
-* Online content and webpages
-* Local and cloud files (see [supported files](https://api.copyleaks.com/documentation/specifications#2-supported-file-types))
-* Free text
-* OCR (Optical Character Recognition) - scanning pictures with textual content (see [supported files](https://api.copyleaks.com/documentation/specifications#6-supported-image-types-ocr))
+*   An active Copyleaks account. If you don’t have one, [sign up for free](https://copyleaks.com/signup).
+*   You can find your API key on the [API Dashboard](https://api.copyleaks.com/dashboard).
 
-## Installation
+Once you have your account and API key:
 
-Install using [RubyGems](https://rubygems.org/gems/plagiarism-checker)
-
+  **Install the SDK**:
+  
+  Install using [RubyGems](https://rubygems.org/gems/plagiarism-checker)
 ```bash
 gem install plagiarism-checker
 ```
 
-## Register and Get Your API Key
-To use the Copyleaks API you need to first be a registered user. The registration to Copyleaks takes a minute and is free of charge. [Signup](https://api.copyleaks.com/?register=true) and make sure to confirm your account.
+## 📚 Documentation
+To learn more about how to use Copyleaks API please check out our [Documentation](https://docs.copyleaks.com/resources/sdks/ruby/). 
 
-As a signed user you can generate your personal API key. Do so on your [dashboard home](https://api.copyleaks.com/dashboard) under 'API Access Credentials'.
+## 💡 Usage Examples
+Here are some common usage examples for the Copyleaks SDK. You can also see a comprehensive code example in the `demo.rb` file on our GitHub repository: [demo.rb](https://github.com/Copyleaks/Ruby-Plagiarism-Checker/blob/master/demo/demo.rb).
 
-For more information check out our [API guide](https://api.copyleaks.com/documentation/v3).
+### Get Authentication Token
+This example demonstrates how to log in to the Copyleaks API and obtain an authentication token.
 
-## Usage
-```rb
+```ruby
 require 'copyleaks'
-copyleaks = Copyleaks::API.new
-res = copyleaks.login(<your email>,<your api key>)
-puts res.to_json
-```
-* (Option) To change the Identity server URI (default:"https://id.copyleaks.com"):
-```rb
-Copyleaks::Config.identity_server_uri = "<your identity server uri>"
-```
-* (Option) To change the API server URI (default:"https://api.copyleaks.com"):
-```rb
-Copyleaks::Config.api_server_uri = "<your api server uri>"
-```
+require 'base64'
 
-## Demo
-See [demo.rb](./demo/demo.rb) under demo folder for an example.
-## Read More
-* [API Homepage](https://api.copyleaks.com/)
-* [API Documentation](https://api.copyleaks.com/documentation)
-* [Plagiarism Report](https://github.com/Copyleaks/plagiarism-report)
+# --- Your Credentials ---
+USER_EMAIL = 'YOUR_EMAIL_ADDRESS'
+USER_API_KEY = 'YOUR_API_KEY'
+WEBHOOK_URL = 'https://your-server.com/webhook/{STATUS}'
+# --------------------
+
+begin
+  # Log in to the Copyleaks API
+  puts "Authenticating..."
+  copyleaks = Copyleaks::API.new
+  auth_token = copyleaks.login(USER_EMAIL, USER_API_KEY)
+  puts "✅ Logged in successfully!"
+
+end
+```
+For a detailed understanding of the authentication process, refer to the Copyleaks Login Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/account/login).
+##
+### Submit Text for Plagiarism Scan
+This example shows how to prepare and submit raw text content for a plagiarism scan.
+
+```ruby
+require 'copyleaks'
+require 'base64'
+
+# --- Your Credentials ---
+USER_EMAIL = 'YOUR_EMAIL_ADDRESS'
+USER_API_KEY = 'YOUR_API_KEY'
+WEBHOOK_URL = 'https://your-server.com/webhook/{STATUS}'
+# --------------------
+
+begin
+    scanId = DateTime.now.strftime('%Q').to_s
+    submisson = Copyleaks::CopyleaksFileSubmissionModel.new(
+      'aGVsbG8gd29ybGQ=',
+      'ruby.txt',
+      Copyleaks::SubmissionProperties.new(
+        Copyleaks::SubmissionWebhooks.new("#{WEBHOOK_URL}/url-webhook/scan/#{scanId}/{STATUS}","#{WEBHOOK_URL}/url-webhook/new-result"),
+        true,
+        'developer_payloads_test',
+        true,
+        60,
+        1,
+        true,
+        Copyleaks::SubmissionActions::SCAN,
+        Copyleaks::SubmissionAuthor.new('Author_name'),
+        Copyleaks::SubmissionFilter.new(true, true, true),
+        Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
+        Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
+        Copyleaks::SubmissionExclude.new(true, true, true, true, true),
+        Copyleaks::SubmissionPDF.new(true, 'pdf-title', BASE64_LOGO, false),
+        Copyleaks::SubmissionSensitiveData.new(false)
+      )
+    )
+
+    @copyleaks.submit_file(_authToken, scanId, submisson)
+
+end
+```
+For a full guide please refer to our step by step [Guide](https://docs.copyleaks.com/guides/authenticity/detect-plagiarism-text)
+
+For a detailed understanding of the plagiarism detection process, refer to the Copyleaks Submit Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/scans/submit-file)
+##
+### AI-Generated Text Detection
+Use the AI detection client to determine if content was generated by artificial intelligence.
+
+```ruby
+require 'copyleaks'
+require 'base64'
+
+# --- Your Credentials ---
+USER_EMAIL = 'YOUR_EMAIL_ADDRESS'
+USER_API_KEY = 'YOUR_API_KEY'
+WEBHOOK_URL = 'https://your-server.com/webhook/{STATUS}'
+# --------------------
+
+begin
+    scanId = DateTime.now.strftime('%Q').to_s
+    text = "Lions are social animals, living in groups called prides, typically consisting of several females, their offspring, and a few males. Female lions are the primary hunters, working together to catch prey. Lions are known for their strength, teamwork, and complex social structures."
+    submission = Copyleaks::NaturalLanguageSubmissionModel.new(
+      text,
+    )
+    submission.sandbox = true
+    
+    res = @copyleaks.ai_detection_client.submit_natural_language(_authToken, scanId, submission)
+
+end
+```
+For a full guide please refer to our step by step [Guide](https://docs.copyleaks.com/guides/ai-detector/ai-text-detection/)
+
+For a detailed understanding of the Ai detection process, refer to the Copyleaks detect natural language Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/writer-detector/check/)
+##
+### Writing Assistant
+Get intelligent suggestions for improving grammar, spelling, style, and overall writing quality.
+
+```ruby
+require 'copyleaks'
+require 'base64'
+
+# --- Your Credentials ---
+USER_EMAIL = 'YOUR_EMAIL_ADDRESS'
+USER_API_KEY = 'YOUR_API_KEY'
+WEBHOOK_URL = 'https://your-server.com/webhook/{STATUS}'
+# --------------------
+
+begin
+ text = "Lions are the only cat that live in groups, called pride. A prides typically consists of a few adult males, several feales, and their offspring. This social structure is essential for hunting and raising young cubs. Female lions, or lionesses are the primary hunters of the prid. They work together in cordinated groups to take down prey usually targeting large herbiores like zbras, wildebeest and buffalo. Their teamwork and strategy during hunts highlight the intelligence and coperation that are key to their survival."
+    scanId = DateTime.now.strftime('%Q').to_s
+    score_weights = Copyleaks::ScoreWeights.new(0.1, 0.2, 0.3, 0.4)
+    submission = Copyleaks::WritingAssistantSubmissionModel.new(
+      text,
+    )
+    submission.sandbox = true
+    submission.score = score_weights
+    res = @copyleaks.writing_assistant_client.submit_text(_authToken, scanId, submission)
+
+end
+```
+For a full guide please refer to our step by step [Guide](https://docs.copyleaks.com/guides/writing/check-grammar/)
+
+For a detailed understanding of the Writing assistant process, refer to the Copyleaks writing feedback Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/writing-assistant/check/)
+##
+### Text Moderation
+Scan and moderate text content for unsafe, inappropriate, or policy-violating material across various categories.
+
+```ruby
+require 'copyleaks'
+require 'base64'
+
+# --- Your Credentials ---
+USER_EMAIL = 'YOUR_EMAIL_ADDRESS'
+USER_API_KEY = 'YOUR_API_KEY'
+WEBHOOK_URL = 'https://your-server.com/webhook/{STATUS}'
+# --------------------
+
+begin
+ scanId = DateTime.now.strftime('%Q').to_s
+    text_moderation_request = Copyleaks::CopyleaksTextModerationRequestModel.new(
+      text: "This is some text to scan.",
+      sandbox: true,
+      language: "en",
+      labels: [
+        { id: "adult-v1" },
+        { id: "toxic-v1" },
+        { id: "violent-v1" },
+        { id: "profanity-v1" },
+        { id: "self-harm-v1" },
+        { id: "harassment-v1" },
+        { id: "hate-speech-v1" },
+        { id: "drugs-v1" },
+        { id: "firearms-v1" },
+        { id: "cybersecurity-v1" }
+      ]
+    )
+    res = @copyleaks.text_moderation_client.submit_text(_authToken, scanId, text_moderation_request)
+
+    textModerationResponse = Copyleaks::CopyleaksTextModerationResponseModel.new(  
+      moderations: res['moderations'],
+      legend: res['legend'],
+      scanned_document: res['scannedDocument'])
+
+end
+```
+For a full guide please refer to our step by step [Guide](https://docs.copyleaks.com/guides/moderation/moderate-text/)
+
+For a detailed understanding of the Text moderation process, refer to the Copyleaks text moderation Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/text-moderation/check/)
+##
+## Further Resources
+
+*   **Copyleaks API Dashboard:** Manage your API keys, monitor usage, and view analytics from your personalized dashboard. [Access Dashboard](https://api.copyleaks.com/dashboard)
+*   **Copyleaks SDK Documentation:** Explore comprehensive guides, API references, and code examples for seamless integration. [Read Documentation](https://docs.copyleaks.com/resources/sdks/overview/)
+
+
+## Support
+* If you need assistance, please contact Copyleaks Support via our support portal: Contact Copyleaks [Support](https://help.copyleaks.com/s/contactsupport).
+* To arrange a product demonstration, book a demo here: [Booking Link](https://copyleaks.com/book-a-demo).
