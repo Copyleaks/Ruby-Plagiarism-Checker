@@ -229,17 +229,17 @@ module CopyleaksDemo
       sandbox: true,
       language: Copyleaks::CopyleaksTextModerationLanguages::ENGLISH,
       labels: [
-            { id: Copyleaks::CopyleaksTextModerationConstants::ADULT_V1 },
-            { id: Copyleaks::CopyleaksTextModerationConstants::TOXIC_V1 },
-            { id: Copyleaks::CopyleaksTextModerationConstants::VIOLENT_V1 },
-            { id: Copyleaks::CopyleaksTextModerationConstants::PROFANITY_V1 },
-            { id: Copyleaks::CopyleaksTextModerationConstants::SELF_HARM_V1 },
-            { id: Copyleaks::CopyleaksTextModerationConstants::HARASSMENT_V1 },
-            { id: Copyleaks::CopyleaksTextModerationConstants::HATE_SPEECH_V1 },
-            { id: Copyleaks::CopyleaksTextModerationConstants::DRUGS_V1 },
-            { id: Copyleaks::CopyleaksTextModerationConstants::FIREARMS_V1 },
-            { id: Copyleaks::CopyleaksTextModerationConstants::CYBERSECURITY_V1 }
-      ]
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::ADULT_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::TOXIC_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::VIOLENT_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::PROFANITY_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::SELF_HARM_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::HARASSMENT_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::HATE_SPEECH_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::DRUGS_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::FIREARMS_V1),
+      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::CYBERSECURITY_V1)
+    ]
     )
     res = @copyleaks.text_moderation_client.submit_text(_authToken, scanId, text_moderation_request)
 

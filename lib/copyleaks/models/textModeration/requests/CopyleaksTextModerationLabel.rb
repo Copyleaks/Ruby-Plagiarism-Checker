@@ -21,24 +21,25 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-require_relative 'constants/index.rb'
-require_relative 'exceptions/index.rb'
-require_relative 'exports/index.rb'
-require_relative 'submissions/index.rb'
-require_relative 'auth_token.rb'
-
-require_relative 'id_object.rb'
-require_relative 'delete_request_model.rb'
-require_relative 'start_request_model.rb'
-
-require_relative 'textModeration/requests/CopyleaksTextModerationRequestModel.rb'
-require_relative 'textModeration/requests/CopyleaksTextModerationLabel.rb'
-require_relative 'textModeration/responses/submodules/ModerationsModel.rb'
-require_relative 'textModeration/responses/submodules/Text.rb'
-require_relative 'textModeration/responses/submodules/TextModerationChars.rb'
-require_relative 'textModeration/responses/submodules/TextModerationScannedDocument.rb'
-require_relative 'textModeration/responses/submodules/TextModerationsLegend.rb'
-require_relative 'textModeration/responses/CopyleaksTextModerationResponseModel.rb'
-
+require 'json'
 module Copyleaks
+
+  class CopyleaksTextModerationLabel
+    attr_reader :id
+
+    def initialize(id)
+      @id = id
+    end
+
+    # Convert to JSON with "id" key
+    def to_json(*_args)
+      { 'id' => @id }.to_json
+    end
+
+    # Build from a JSON string or a hash
+    def self.from_json(json)
+      data = json.is_a?(String) ? JSON.parse(json) : json
+      new(data['id'] || data[:id])
+    end
+  end
 end
