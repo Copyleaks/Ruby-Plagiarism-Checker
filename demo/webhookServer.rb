@@ -118,16 +118,28 @@ class ScanWebhookServlet < WEBrick::HTTPServlet::AbstractServlet
 end
 
 class WebhookServer
+  @@server = nil
+  @@server_thread = nil
+
   def self.start(port = 3001)
     log = WEBrick::Log.new($stderr, WEBrick::Log::DEBUG)
-    server = WEBrick::HTTPServer.new(Port: port, Logger: log)
+    @@server = WEBrick::HTTPServer.new(Port: port, Logger: log)
 
     # Mount the servlet to a base path.
     # The servlet's do_POST method will handle the sub-paths.
-    server.mount '/url-webhook/scan', ScanWebhookServlet
+    @@server.mount '/url-webhook/scan', ScanWebhookServlet
 
-    trap('INT') { server.shutdown }
-    Thread.new { server.start }
+    @@server_thread = Thread.new { @@server.start }
     puts "WEBrick server started on port #{port}"
+    puts "Press Ctrl+C to stop the server..."
+  end
+
+  def self.shutdown
+    if @@server
+      puts "\nShutting down webhook server..."
+      @@server.shutdown
+      @@server_thread.join if @@server_thread
+      puts "Server stopped."
+    end
   end
 end
