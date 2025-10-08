@@ -40,5 +40,14 @@ require_relative 'textModeration/responses/submodules/TextModerationScannedDocum
 require_relative 'textModeration/responses/submodules/TextModerationsLegend.rb'
 require_relative 'textModeration/responses/CopyleaksTextModerationResponseModel.rb'
 
+require_relative 'imageDetection/requests/CopyleaksAiImageDetectionRequestModel.rb'
+require_relative 'imageDetection/responses/CopyleaksAiImageDetectionResponseModel.rb'
+require_relative 'imageDetection/responses/CopyleaksAiImageDetectionResultModel.rb'
+require_relative 'imageDetection/responses/CopyleaksAiImageDetectionImageInfoModel.rb'
+require_relative 'imageDetection/responses/CopyleaksAiImageDetectionScannedDocumentModel.rb'
+require_relative 'imageDetection/responses/CopyleaksAiImageDetectionSummaryModel.rb'
+require_relative 'imageDetection/responses/CopyleaksImageMetadataModel.rb'
+require_relative 'imageDetection/responses/CopyleaksImageShapeModel.rb'
+
 module Copyleaks
 end

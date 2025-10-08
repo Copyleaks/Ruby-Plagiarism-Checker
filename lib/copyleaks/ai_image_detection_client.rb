@@ -22,10 +22,33 @@
 #  SOFTWARE.
 # =
 
-require_relative 'CopyleaksTextModerationConstants.rb'
-require_relative 'CopyleaksTextModerationLanguages.rb'
-require_relative 'CopyleaksAiImageDetectionModels.rb'
-
-
 module Copyleaks
+  class AIImageDetectionClient
+    def initialize(api_client)
+      @api_client = api_client
+    end
+
+    def submit_(authToken, scanId, submission)
+      raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
+      if submission.nil? || !submission.instance_of?(Copyleaks::CopyleaksAiImageDetectionRequestModel)
+        raise 'submission is Invalid, must be instance of type Copyleaks::CopyleaksAiImageDetectionRequestModel'
+      end
+
+      ClientUtils.verify_auth_token(authToken)
+
+      path = "/v1/ai-image-detector/#{scanId}/check"
+
+      headers = {
+        'Content-Type' => 'application/json',
+        'User-Agent' => Config.user_agent,
+        'Authorization' => "Bearer #{authToken.accessToken}"
+      }
+
+      request = Net::HTTP::Post.new(path, headers)
+      request.body = submission.to_json
+
+      res = ClientUtils.handle_response(@api_client.request(request), 'submit_image_detection')
+      res
+    end
+  end
 end

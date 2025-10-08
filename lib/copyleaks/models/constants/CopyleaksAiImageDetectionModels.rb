@@ -21,11 +21,8 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 # =
-
-require_relative 'CopyleaksTextModerationConstants.rb'
-require_relative 'CopyleaksTextModerationLanguages.rb'
-require_relative 'CopyleaksAiImageDetectionModels.rb'
-
-
 module Copyleaks
+  class CopyleaksAiImageDetectionModels
+    AI_IMAGE_1_ULTRA = "ai-image-1-ultra"
+  end
 end

@@ -1,256 +1,71 @@
 require_relative '../lib/index'
 require 'json'
 require 'date'
+require 'base64'
 require_relative 'base64logo.rb'
 require_relative './webhookServer'
+
+# Load all example files
+require_relative './examples/test_misc.rb'
+require_relative './examples/test_credit_balance.rb'
+require_relative './examples/test_usages_history.rb'
+require_relative './examples/test_delete.rb'
+require_relative './examples/test_resend_webhook.rb'
+require_relative './examples/test_export.rb'
+require_relative './examples/test_start.rb'
+require_relative './examples/test_submit_url.rb'
+require_relative './examples/test_submit_file.rb'
+require_relative './examples/test_submit_ocr_file.rb'
+require_relative './examples/test_ai_detection_natural_language.rb'
+require_relative './examples/test_writing_assistant.rb'
+require_relative './examples/test_text_moderation.rb'
+require_relative './examples/test_image_detection.rb'
+
 module CopyleaksDemo
   USER_EMAIL = '<YOUR EMAIL>'
   USER_API_KEY = '<YOUR KEY>'
   WEBHOOK_URL = '<WEBHOOK URL>'
 
-  # Start the webhook server in a background thread
-  puts "Starting webhook server..."
-  WebhookServer.start
-  
   def self.run
     @copyleaks = Copyleaks::API.new    
-    # test_misc
+    # CopyleaksExamples.test_misc(@copyleaks)
 
     loginResponse = @copyleaks.login(USER_EMAIL, USER_API_KEY)
     logInfo('login', loginResponse)
 
     @copyleaks.verify_auth_token(loginResponse)
 
-    # test_credit_balance(loginResponse)
+    # CopyleaksExamples.test_credit_balance(@copyleaks, loginResponse)
 
-    # test_usages_history(loginResponse)
+    # CopyleaksExamples.test_usages_history(@copyleaks, loginResponse)
 
-    # test_delete(loginResponse)
+    # CopyleaksExamples.test_delete(@copyleaks, loginResponse, WEBHOOK_URL)
 
-    # test_resend_webhook(loginResponse)
+    # CopyleaksExamples.test_resend_webhook(@copyleaks, loginResponse)
 
-    # test_export(loginResponse)
+    # CopyleaksExamples.test_export(@copyleaks, loginResponse, WEBHOOK_URL)
 
-    # test_start(loginResponse)
+    # CopyleaksExamples.test_start(@copyleaks, loginResponse)
 
-    # test_submit_url(loginResponse)
+    # CopyleaksExamples.test_submit_url(@copyleaks, loginResponse, WEBHOOK_URL)
 
-    # test_submit_file(loginResponse)
+    # CopyleaksExamples.test_submit_file(@copyleaks, loginResponse, WEBHOOK_URL)
 
-    # test_submit_ocr_file(loginResponse)
+    # CopyleaksExamples.test_submit_ocr_file(@copyleaks, loginResponse, WEBHOOK_URL)
 
-    # test_ai_detection_natural_language(loginResponse)
+    # CopyleaksExamples.test_ai_detection_natural_language(@copyleaks, loginResponse)
 
-    # test_writing_assistant(loginResponse)
+    # CopyleaksExamples.test_writing_assistant(@copyleaks, loginResponse)
 
-    test_text_moderation(loginResponse)
-
+    # CopyleaksExamples.test_text_moderation(@copyleaks, loginResponse)
+      
+    CopyleaksExamples.test_image_detection(@copyleaks, loginResponse)
   rescue StandardError => e
     puts '--------ERROR-------'
     puts
     puts e.message
     puts
     puts '--------------------'
-  end
-
-  def self.test_submit_ocr_file(_authToken)
-    scanId = DateTime.now.strftime('%Q').to_s
-    submisson = Copyleaks::CopyleaksFileOcrSubmissionModel.new(
-      'en',
-      'aGVsbG8gd29ybGQ=',
-      'ruby.txt',
-      Copyleaks::SubmissionProperties.new(
-        Copyleaks::SubmissionWebhooks.new("#{WEBHOOK_URL}/url-webhook/scan/#{scanId}/{STATUS}"),
-        true,
-        'developer_payloads_test',
-        true,
-        60,
-        1,
-        true,
-        Copyleaks::SubmissionActions::SCAN,
-        Copyleaks::SubmissionAuthor.new('Author_name'),
-        Copyleaks::SubmissionFilter.new(true, true, true),
-        Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
-        Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
-        Copyleaks::SubmissionExclude.new(true, true, true, true, true),
-        Copyleaks::SubmissionPDF.new(true, 'pdf-title', BASE64_LOGO, false),
-        Copyleaks::SubmissionSensitiveData.new(false)
-      )
-    )
-
-    @copyleaks.submit_file_ocr(_authToken, scanId, submisson)
-    logInfo('submit_file_ocr')
-  end
-
-  def self.test_submit_file(_authToken)
-    scanId = DateTime.now.strftime('%Q').to_s
-    submisson = Copyleaks::CopyleaksFileSubmissionModel.new(
-      'aGVsbG8gd29ybGQ=',
-      'ruby.txt',
-      Copyleaks::SubmissionProperties.new(
-        Copyleaks::SubmissionWebhooks.new("#{WEBHOOK_URL}/url-webhook/scan/#{scanId}/{STATUS}","#{WEBHOOK_URL}/url-webhook/new-result"),
-        true,
-        'developer_payloads_test',
-        true,
-        60,
-        1,
-        true,
-        Copyleaks::SubmissionActions::SCAN,
-        Copyleaks::SubmissionAuthor.new('Author_name'),
-        Copyleaks::SubmissionFilter.new(true, true, true),
-        Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
-        Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
-        Copyleaks::SubmissionExclude.new(true, true, true, true, true),
-        Copyleaks::SubmissionPDF.new(true, 'pdf-title', BASE64_LOGO, false),
-        Copyleaks::SubmissionSensitiveData.new(false)
-      )
-    )
-
-    @copyleaks.submit_file(_authToken, scanId, submisson)
-    logInfo('submit_file')
-  end
-
-  def self.test_submit_url(_authToken)
-    scanId = DateTime.now.strftime('%Q').to_s
-    submisson = Copyleaks::CopyleaksURLSubmissionModel.new(
-      'https://copyleaks.com',
-      Copyleaks::SubmissionProperties.new(
-        Copyleaks::SubmissionWebhooks.new("#{WEBHOOK_URL}/url-webhook/scan/#{scanId}/{STATUS}"),
-        true,
-        'developer_payloads_test',
-        true,
-        60,
-        1,
-        true,
-        Copyleaks::SubmissionActions::SCAN,
-        Copyleaks::SubmissionAuthor.new('Author_name'),
-        Copyleaks::SubmissionFilter.new(true, true, true),
-        Copyleaks::SubmissionScanning.new(true, nil, nil, Copyleaks::SubmissionScanningCopyleaksDB.new(true, true)),
-        Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
-        Copyleaks::SubmissionExclude.new(true, true, true, true, true),
-        Copyleaks::SubmissionPDF.new(true, 'pdf-title', BASE64_LOGO, false),
-        Copyleaks::SubmissionSensitiveData.new(false)
-      )
-    )
-
-    @copyleaks.submit_url(_authToken, scanId, submisson)
-    logInfo('submit_url')
-  end
-
-  def self.test_start(_authToken)
-    data = Copyleaks::CopyleaksStartRequestModel.new(['1611225876017'],
-                                                     Copyleaks::CopyleaksStartErrorHandlings::IGNORE)
-    @copyleaks.start(_authToken, data)
-    logInfo('start')
-  end
-
-  def self.test_export(authToken)
-    scanId = '1611042641'
-    model = Copyleaks::CopyleaksExportModel.new(
-      "#{WEBHOOK_URL}/export/#{scanId}",
-      [
-        Copyleaks::ExportResults.new('2a1b402420', "#{WEBHOOK_URL}/export/#{scanId}/result/2a1b402420", 'POST',
-                                     [%w[key1 value1], %w[key2 value2]])
-      ],
-      Copyleaks::ExportCrawledVersion.new("#{WEBHOOK_URL}/export/#{scanId}/crawled-version", 'POST')
-    )
-
-    @copyleaks.export(authToken, scanId, scanId, model)
-    logInfo('export')
-  end
-
-  def self.test_resend_webhook(authToken)
-    @copyleaks.resend_webhook(authToken, 'gzs55hrpefsaplcp')
-    logInfo('resend_webhook')
-  end
-
-  def self.test_delete(authToken)
-    model = Copyleaks::CopyleaksDeleteRequestModel.new(
-      [
-        Copyleaks::IdObject.new('e39awrk3829v3x3x')
-      ],
-      true,
-      "#{WEBHOOK_URL}/delete"
-    )
-    @copyleaks.delete(authToken, model)
-    logInfo('delete')
-  end
-
-  def self.test_usages_history(authToken)
-    res = @copyleaks.get_usages_history_csv(authToken, '01-01-2021', '02-02-2021')
-    logInfo('get_usages_history_csv', res)
-  end
-
-  def self.test_credit_balance(authToken)
-    res = @copyleaks.get_credits_balance(authToken)
-    logInfo('get_credits_balance', res)
-  end
-
-  def self.test_misc
-    ocr_supported_languages = @copyleaks.get_ocr_supported_languages
-    logInfo('get_ocr_supported_languages', ocr_supported_languages)
-
-    supported_file_types = @copyleaks.get_supported_file_types
-    logInfo('get_supported_file_types', supported_file_types)
-
-    release_notes = @copyleaks.get_release_notes
-    logInfo('get_release_notes', release_notes)
-  end
-
-  def self.test_ai_detection_natural_language(_authToken)
-    scanId = DateTime.now.strftime('%Q').to_s
-    text = "Lions are social animals, living in groups called prides, typically consisting of several females, their offspring, and a few males. Female lions are the primary hunters, working together to catch prey. Lions are known for their strength, teamwork, and complex social structures."
-    submission = Copyleaks::NaturalLanguageSubmissionModel.new(
-      text,
-    )
-    submission.sandbox = true
-    
-    res = @copyleaks.ai_detection_client.submit_natural_language(_authToken, scanId, submission)
-    logInfo('AI Detection - submit_natural_language', res)
-  end
-
-  def self.test_writing_assistant(_authToken)
-    text = "Lions are the only cat that live in groups, called pride. A prides typically consists of a few adult males, several feales, and their offspring. This social structure is essential for hunting and raising young cubs. Female lions, or lionesses are the primary hunters of the prid. They work together in cordinated groups to take down prey usually targeting large herbiores like zbras, wildebeest and buffalo. Their teamwork and strategy during hunts highlight the intelligence and coperation that are key to their survival."
-    scanId = DateTime.now.strftime('%Q').to_s
-    score_weights = Copyleaks::ScoreWeights.new(0.1, 0.2, 0.3, 0.4)
-    submission = Copyleaks::WritingAssistantSubmissionModel.new(
-      text,
-    )
-    submission.sandbox = true
-    submission.score = score_weights
-    res = @copyleaks.writing_assistant_client.submit_text(_authToken, scanId, submission)
-    logInfo('Writing Assistant - submit_text', res)
-  end
-
-  def self.test_text_moderation(_authToken)
-    scanId = DateTime.now.strftime('%Q').to_s
-    labelsArray=[
-      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::ADULT_V1),
-      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::TOXIC_V1),
-      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::VIOLENT_V1),
-      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::PROFANITY_V1),
-      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::SELF_HARM_V1),
-      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::HARASSMENT_V1),
-      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::HATE_SPEECH_V1),
-      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::DRUGS_V1),
-      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::FIREARMS_V1),
-      Copyleaks::CopyleaksTextModerationLabel.new(Copyleaks::CopyleaksTextModerationConstants::CYBERSECURITY_V1)
-    ]
-    
-    text_moderation_request = Copyleaks::CopyleaksTextModerationRequestModel.new(
-      text: "This is some text to scan.",
-      sandbox: true,
-      language: Copyleaks::CopyleaksTextModerationLanguages::ENGLISH,
-      labels: labelsArray
-    )
-    res = @copyleaks.text_moderation_client.submit_text(_authToken, scanId, text_moderation_request)
-
-    textModerationResponse = Copyleaks::CopyleaksTextModerationResponseModel.new(  
-      moderations: res['moderations'],
-      legend: res['legend'],
-      scanned_document: res['scannedDocument'])
-
-    logInfo('Text Moderation - submit_text', textModerationResponse)
   end
 
   def self.logInfo(title, info = nil)
@@ -263,5 +78,21 @@ module CopyleaksDemo
   end
 end
 
+# Start the webhook server in a background thread
+puts "Starting webhook server..."
+WebhookServer.start
+
+# Setup signal handler for Ctrl+C
+trap('INT') do
+  puts "\n\nReceived interrupt signal (Ctrl+C)..."
+  WebhookServer.shutdown
+  exit(0)
+end
+
+# Run the demo
 CopyleaksDemo.run
+
+# Keep the program running to allow webhook server to receive requests
+puts "\nDemo completed. Webhook server is still running..."
+puts "Press Ctrl+C to stop the server and exit."
 sleep 

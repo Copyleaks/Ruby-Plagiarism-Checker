@@ -27,6 +27,7 @@ require 'date'
 require_relative 'ai_detection_client.rb'
 require_relative 'writing_assistant_client.rb'
 require_relative 'text_moderation_client.rb'
+require_relative 'ai_image_detection_client.rb'
 require_relative 'utils/copyleaks_client.utils'
 
 module Copyleaks
@@ -45,6 +46,7 @@ module Copyleaks
       @ai_detection_client = AIDetectionClient.new(@api_client)
       @writing_assistant_client = WritingAssistantClient.new(@api_client)
       @text_moderation_client = TextModerationClient.new(@api_client)
+      @ai_image_detection_client = AIImageDetectionClient.new(@api_client)
     end
 
     # Login to Copyleaks authentication server.
@@ -460,6 +462,10 @@ module Copyleaks
     end
     def text_moderation_client
       @text_moderation_client
+    end
+
+    def ai_image_detection_client
+      @ai_image_detection_client
     end
   end
 end
