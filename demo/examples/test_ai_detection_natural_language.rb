@@ -3,9 +3,9 @@ require_relative '../../lib/index'
 module CopyleaksExamples
   def self.test_ai_detection_natural_language(copyleaks, authToken)
     scanId = DateTime.now.strftime('%Q').to_s
-    text = "Lions are social animals, living in groups called prides, typically consisting of several females, their offspring, and a few males. Female lions are the primary hunters, working together to catch prey. Lions are known for their strength, teamwork, and complex social structures."
+    
     submission = Copyleaks::NaturalLanguageSubmissionModel.new(
-      text,
+      "Lions are social animals, living in groups called prides, typically consisting of several females, their offspring, and a few males. Female lions are the primary hunters, working together to catch prey. Lions are known for their strength, teamwork, and complex social structures."  # text
     )
     submission.sandbox = true
     

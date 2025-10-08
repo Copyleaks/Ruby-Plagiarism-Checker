@@ -3,13 +3,23 @@ require_relative '../../lib/index'
 module CopyleaksExamples
   def self.test_export(copyleaks, authToken, webhook_url)
     scanId = '1611042641'
+    
+    export_result = Copyleaks::ExportResults.new(
+      '2a1b402420',                                              # id
+      "#{webhook_url}/export/#{scanId}/result/2a1b402420",      # endpoint
+      'POST',                                                    # verb
+      [%w[key1 value1], %w[key2 value2]]                        # headers
+    )
+    
+    crawled_version = Copyleaks::ExportCrawledVersion.new(
+      "#{webhook_url}/export/#{scanId}/crawled-version",        # endpoint
+      'POST'                                                     # verb
+    )
+    
     model = Copyleaks::CopyleaksExportModel.new(
-      "#{webhook_url}/export/#{scanId}",
-      [
-        Copyleaks::ExportResults.new('2a1b402420', "#{webhook_url}/export/#{scanId}/result/2a1b402420", 'POST',
-                                     [%w[key1 value1], %w[key2 value2]])
-      ],
-      Copyleaks::ExportCrawledVersion.new("#{webhook_url}/export/#{scanId}/crawled-version", 'POST')
+      "#{webhook_url}/export/#{scanId}",                        # completionWebhook
+      [export_result],                                          # results
+      crawled_version                                           # crawledVersion
     )
 
     copyleaks.export(authToken, scanId, scanId, model)

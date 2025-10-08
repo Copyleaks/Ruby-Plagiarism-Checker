@@ -2,13 +2,16 @@ require_relative '../../lib/index'
 
 module CopyleaksExamples
   def self.test_delete(copyleaks, authToken, webhook_url)
-    model = Copyleaks::CopyleaksDeleteRequestModel.new(
-      [
-        Copyleaks::IdObject.new('e39awrk3829v3x3x')
-      ],
-      true,
-      "#{webhook_url}/delete"
+    id_object = Copyleaks::IdObject.new(
+      'e39awrk3829v3x3x'                                        # id
     )
+    
+    model = Copyleaks::CopyleaksDeleteRequestModel.new(
+      [id_object],                                              # scans
+      true,                                                     # purge
+      "#{webhook_url}/delete"                                   # completionWebhook
+    )
+    
     copyleaks.delete(authToken, model)
     logInfo('delete')
   end
