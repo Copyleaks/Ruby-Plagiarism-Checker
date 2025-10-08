@@ -6,3 +6,12 @@
 /pkg/
 /spec/reports/
 /tmp/
+
+# Generated gem files
+*.gem
+plagiarism-checker-3.2.1.gem
+plagiarism-checker-3.5.0.gem
+plagiarism-checker-3.6.0.gem
+plagiarism-checker-3.6.1.gem
+plagiarism-checker-3.7.0.gem
+plagiarism-checker-4.0.0.gem

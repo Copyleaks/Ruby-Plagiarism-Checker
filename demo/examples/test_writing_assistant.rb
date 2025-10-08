@@ -11,9 +11,14 @@ module CopyleaksExamples
       0.4                                                       # wordChoiceWeight
     )
     
-    submission = Copyleaks::WritingAssistantSubmissionModel.new(
-      "Lions are the only cat that live in groups, called pride. A prides typically consists of a few adult males, several feales, and their offspring. This social structure is essential for hunting and raising young cubs. Female lions, or lionesses are the primary hunters of the prid. They work together in cordinated groups to take down prey usually targeting large herbiores like zbras, wildebeest and buffalo. Their teamwork and strategy during hunts highlight the intelligence and coperation that are key to their survival."  # text
-    )
+    text= "Lions are the only cat that live in groups, called pride. 
+    A prides typically consists of a few adult males, several feales, and their offspring.
+    This social structure is essential for hunting and raising young cubs. Female lions, or lionesses are the primary hunters of the prid.
+    They work together in cordinated groups to take down prey usually targeting large herbiores like zbras, wildebeest and buffalo.
+    Their teamwork and strategy during hunts highlight the intelligence and coperation that are key to their survival."  # text
+    
+    submission = Copyleaks::WritingAssistantSubmissionModel.new(text)
+     
     submission.sandbox = true
     submission.score = score_weights
     
