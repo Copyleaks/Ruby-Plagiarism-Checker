@@ -1,7 +1,7 @@
 module Copyleaks
-  require_relative 'HelperModels/baseModels/Metadata.rb'
-  require_relative 'HelperModels/baseModels/Webhook.rb'
-  require_relative 'HelperModels/baseModels/StatusWebhook.rb'
+  require_relative 'HelperModels/BaseModels/Metadata.rb'
+  require_relative 'HelperModels/BaseModels/Webhook.rb'
+  require_relative 'HelperModels/BaseModels/StatusWebhook.rb'
 
   require_relative 'HelperModels/ResultsModels/SharedResultsModel.rb'
   require_relative 'HelperModels/NewResultsModels/NewResultScore.rb'
@@ -19,7 +19,7 @@ module Copyleaks
   require_relative 'HelperModels/CompletedModels/Notifications.rb'
   require_relative 'HelperModels/CompletedModels/Results.rb'
   require_relative 'HelperModels/CompletedModels/ScannedDocument.rb'
-  
+
   require_relative 'HelperModels/ErrorModels/Error.rb'
   require_relative 'HelperModels/NotificationsModels/Alerts.rb'
   require_relative 'HelperModels/ExportModels/Task.rb'
