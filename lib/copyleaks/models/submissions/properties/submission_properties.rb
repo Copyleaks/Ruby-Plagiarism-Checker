@@ -25,7 +25,7 @@ module Copyleaks
   class SubmissionProperties
     attr_reader :webhooks, :includeHtml, :developerPayload, :sandbox, :expiration, :sensitivityLevel, :cheatDetection,
                 :action, :author, :filters, :scanning, :indexing, :exclude, :pdf, :sensitiveDataProtection, :scanMethodAlgorithm,
-                :aiGeneratedText, :customMetadata, :writingFeedback
+                :aiGeneratedText, :customMetadata, :writingFeedback, :displayLanguage, :aiSourceMatch
 
     # @param [SubmissionWebhooks] webhooks - Check inner properties for more details.
     # @param [Boolean] includeHtml - By default, Copyleaks will present the report in text format. If set to true, Copyleaks will also include html format.
@@ -46,11 +46,14 @@ module Copyleaks
     # @param [SubmissionAiGeneratedText] aiGeneratedText - Check inner properties for more details.
     # @param [SubmissionCustomMetadata] customMetadata - Add custom properties that will be attached to your document in a Copyleaks repository.
     # @param [SubmissionWritingFeedback] writingFeedback - Check inner properties for more details.
+    # @param [String] displayLanguage - The language the PDF report is generated in. Possible values: 'en', 'es', 'de', 'fr', 'it', 'pt'.
+    # @param [SubmissionAiSourceMatch] aiSourceMatch - Check inner properties for more details.
     def initialize(
       webhooks, includeHtml = nil, developerPayload = nil, sandbox = nil, expiration = nil,
       sensitivityLevel = nil, cheatDetection = nil, action = nil, author = nil, filters = nil,
       scanning = nil, indexing = nil, exclude = nil, pdf = nil, sensitiveDataProtection = nil,
-      scanMethodAlgorithm = nil, aiGeneratedText = nil, customMetadata = nil, writingFeedback = nil
+      scanMethodAlgorithm = nil, aiGeneratedText = nil, customMetadata = nil, writingFeedback = nil,
+      displayLanguage = nil, aiSourceMatch = nil
     )
       unless webhooks.instance_of?(SubmissionWebhooks)
         raise 'Copyleaks::SubmissionProperties - webhooks - webhooks must be of type SubmissionWebhooks'
@@ -109,6 +112,12 @@ module Copyleaks
       if !writingFeedback.nil? && !writingFeedback.instance_of?(SubmissionWritingFeedback)
         raise 'Copyleaks::SubmissionProperties - writingFeedback - writingFeedback must be of type SubmissionWritingFeedback'
       end
+      if !displayLanguage.nil? && !displayLanguage.instance_of?(String)
+        raise 'Copyleaks::SubmissionProperties - displayLanguage - displayLanguage must be of type String'
+      end
+      if !aiSourceMatch.nil? && !aiSourceMatch.instance_of?(SubmissionAiSourceMatch)
+        raise 'Copyleaks::SubmissionProperties - aiSourceMatch - aiSourceMatch must be of type SubmissionAiSourceMatch'
+      end
 
       @webhooks = webhooks
       @includeHtml = includeHtml
@@ -129,6 +138,8 @@ module Copyleaks
       @scanMethodAlgorithm = scanMethodAlgorithm
       @customMetadata = customMetadata
       @writingFeedback = writingFeedback
+      @displayLanguage = displayLanguage
+      @aiSourceMatch = aiSourceMatch
     end
 
     def as_json(*_args)
@@ -151,7 +162,9 @@ module Copyleaks
         sensitiveDataProtection: @sensitiveDataProtection,
         scanMethodAlgorithm: @scanMethodAlgorithm,
         customMetadata: @customMetadata,
-        writingFeedback: @writingFeedback
+        writingFeedback: @writingFeedback,
+        displayLanguage: @displayLanguage,
+        aiSourceMatch: @aiSourceMatch
       }.select { |_k, v| !v.nil? }
     end
 

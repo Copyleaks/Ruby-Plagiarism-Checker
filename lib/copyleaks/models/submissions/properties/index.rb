@@ -25,6 +25,7 @@
 require_relative 'submission_properties.rb'
 require_relative 'actions.rb'
 require_relative 'ai_generated_text.rb'
+require_relative 'ai_source_match.rb'
 require_relative 'author.rb'
 require_relative 'copyleaks_db.rb'
 require_relative 'cross_languages.rb'

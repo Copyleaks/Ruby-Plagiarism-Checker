@@ -29,6 +29,7 @@ module Copyleaks
     # @param [Boolean] rtl When set to true the text in the report will be aligned from right to left.
     # @param [SubmissionPdfVersion] verion  - PDF version to generate.
     # @param [SubmissionPdfColors] colors - Customizable colors.
+    # @param [String] reportVersion - PDF report version to generate: 'v1', 'v2', 'v3' or 'latest'. Overrides version when both are supplied.
 
     def initialize(
       create,
@@ -36,7 +37,8 @@ module Copyleaks
       largeLogo,
       rtl,
       version = nil,
-      colors = nil
+      colors = nil,
+      reportVersion = nil
     )
 
       if !colors.nil? && !colors.instance_of?(SubmissionPdfColors)
@@ -49,6 +51,7 @@ module Copyleaks
       @rtl = rtl
       @version = version
       @colors = colors
+      @reportVersion = reportVersion
     end
 
     def as_json(*_args)
@@ -58,7 +61,8 @@ module Copyleaks
         largeLogo: @largeLogo,
         rtl: @rtl,
         version: @version,
-        colors: @colors
+        colors: @colors,
+        reportVersion: @reportVersion
       }.select { |_k, v| !v.nil? }
     end
 
