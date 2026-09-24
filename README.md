@@ -129,7 +129,7 @@ class CompletedWebhookServlet < WEBrick::HTTPServlet::AbstractServlet
   end
 end
 ```
-- No AI alert (`ai_detection_alert` returns `nil`) does not by itself prove that AI detection ran: check the scan's `aiGeneratedText.detect` setting and the other AI alert codes in `Copyleaks::CopyleaksAlertCodes` (for example `AI_DETECTION_FAILED` or `AI_DETECTION_TEXT_TOO_SHORT`).
+- `ai_detection_alert` returns `nil` when the completed webhook contains no `suspected-ai-text` alert.
 - `ai_detection_result` returns `nil` when the alert has no data or its data is not a JSON object, and raises `JSON::ParserError` when `additionalData` is not valid JSON. `completed.ai_detection_result` does the same in one call.
 - The raw string is still available as `alert.additionalData`.
 

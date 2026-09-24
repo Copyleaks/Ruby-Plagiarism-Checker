@@ -30,17 +30,5 @@ module Copyleaks
     # Its additionalData holds the AI text detection result as a JSON string;
     # use Copyleaks::Alerts#ai_detection_result to read it.
     SUSPECTED_AI_TEXT = "suspected-ai-text"
-
-    # AI text detection could not be completed for the scanned document.
-    AI_DETECTION_FAILED = "ai-detection-failed"
-
-    # AI text detection was not executed because the document language is not supported.
-    AI_DETECTION_LANG_NOT_SUPPORTED = "ai-detection-lang-not-supported"
-
-    # AI text detection was not executed because the document text is too short.
-    AI_DETECTION_TEXT_TOO_SHORT = "ai-detection-text-too-short"
-
-    # AI text detection was not executed because the file type is not supported.
-    FILE_TYPE_NOT_SUPPORTED = "file-type-not-supported"
   end
 end

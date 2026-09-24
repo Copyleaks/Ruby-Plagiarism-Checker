@@ -33,9 +33,7 @@ module Copyleaks
     #
     # Works whether notifications is the raw Hash from the webhook body (string or symbol keys)
     # or a Copyleaks::Notifications object.
-    # A nil result means the scan produced no 'suspected-ai-text' alert. It does not by itself prove
-    # that AI detection ran: check the scan's aiGeneratedText.detect setting and the category 2
-    # failure codes in Copyleaks::CopyleaksAlertCodes (for example AI_DETECTION_FAILED).
+    # Returns nil when the completed webhook contains no 'suspected-ai-text' alert.
     #
     # @return [Alerts, nil] The first alert whose code is Copyleaks::CopyleaksAlertCodes::SUSPECTED_AI_TEXT, or nil.
     # @raise [ArgumentError, RuntimeError] When that alert Hash has no category or severity, or a field
@@ -57,9 +55,8 @@ module Copyleaks
 
     # Decodes the AI text detection result of the 'suspected-ai-text' alert of this scan.
     #
-    # A nil result means the scan produced no 'suspected-ai-text' alert, the alert has no data, or its
-    # data is not a JSON object. It does not by itself prove that AI detection ran: check the scan's
-    # aiGeneratedText.detect setting and the category 2 failure codes in Copyleaks::CopyleaksAlertCodes.
+    # Returns nil when the completed webhook contains no 'suspected-ai-text' alert, the alert has no data,
+    # or its data is not a JSON object.
     #
     # @return [CopyleaksAiTextDetectionResponseModel, nil] The decoded result, or nil.
     # @raise [JSON::ParserError] When the alert's additionalData is not valid JSON.
