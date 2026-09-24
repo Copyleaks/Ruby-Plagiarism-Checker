@@ -46,8 +46,13 @@ module Copyleaks
     # @param [SubmissionAiGeneratedText] aiGeneratedText - Check inner properties for more details.
     # @param [SubmissionCustomMetadata] customMetadata - Add custom properties that will be attached to your document in a Copyleaks repository.
     # @param [SubmissionWritingFeedback] writingFeedback - Check inner properties for more details.
-    # @param [String] displayLanguage - The language the PDF report is generated in. Possible values: 'en', 'es', 'de', 'fr', 'it', 'pt'.
+    # @param [String] displayLanguage - The language the PDF report is generated in.
+    #   Possible values: 'en', 'es', 'pt', 'fr', 'de', 'it'. Values are lowercase and case-sensitive ('EN' and 'en-US' are rejected).
+    #   Only takes effect when pdf.create is true.
+    #   Leave nil to omit the field and get the server default ('en').
     # @param [SubmissionAiSourceMatch] aiSourceMatch - Check inner properties for more details.
+    #   AI Source Match currently only applies to documents detected as English.
+    #   Leave nil to omit the field and get the server default (disabled).
     def initialize(
       webhooks, includeHtml = nil, developerPayload = nil, sandbox = nil, expiration = nil,
       sensitivityLevel = nil, cheatDetection = nil, action = nil, author = nil, filters = nil,

@@ -24,6 +24,8 @@
 module Copyleaks
   class SubmissionAiSourceMatch
     # @param [Boolean] enable - Identify online sources suspected of containing AI generated text.
+    #   Currently only applies to documents detected as English.
+    #   Leave nil to omit the field and get the server default (false).
     def initialize(
       enable = nil
     )
