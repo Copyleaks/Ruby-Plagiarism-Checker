@@ -54,6 +54,18 @@ class ScanWebhookServlet < WEBrick::HTTPServlet::AbstractServlet
     puts "[COMPLETED] scan_id: #{scan_id}"
     pp completed.scannedDocument 
 
+    # Read the AI text detection result from the 'suspected-ai-text' alert, if the scan produced one
+    begin
+      ai_result = completed.ai_detection_result
+      if ai_result.nil?
+        puts "[COMPLETED] no AI text detection result in this webhook"
+      elsif ai_result.summary
+        puts "[COMPLETED] AI text detection: ai=#{ai_result.summary.ai}, human=#{ai_result.summary.human}, model=#{ai_result.model_version}"
+      end
+    rescue JSON::ParserError => e
+      puts "[COMPLETED] could not parse the AI alert additionalData: #{e.message}"
+    end
+
     res.status = 200
     res.body = "completed received #{completed.to_json()}"
   end

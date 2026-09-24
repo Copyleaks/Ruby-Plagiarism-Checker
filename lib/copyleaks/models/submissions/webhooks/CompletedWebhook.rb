@@ -29,6 +29,43 @@ module Copyleaks
       @extra_fields = args # Store any additional fields here
     end
 
+    # Finds the AI text detection alert of this scan.
+    #
+    # Works whether notifications is the raw Hash from the webhook body (string or symbol keys)
+    # or a Copyleaks::Notifications object.
+    # A nil result means the scan produced no 'suspected-ai-text' alert. It does not by itself prove
+    # that AI detection ran: check the scan's aiGeneratedText.detect setting and the category 2
+    # failure codes in Copyleaks::CopyleaksAlertCodes (for example AI_DETECTION_FAILED).
+    #
+    # @return [Alerts, nil] The first alert whose code is Copyleaks::CopyleaksAlertCodes::SUSPECTED_AI_TEXT, or nil.
+    def ai_detection_alert
+      alerts = notification_alerts
+      return nil unless alerts.is_a?(Array)
+
+      alerts.each do |alert|
+        if alert.is_a?(Alerts)
+          return alert if alert.code == CopyleaksAlertCodes::SUSPECTED_AI_TEXT
+        elsif alert.is_a?(Hash)
+          code = alert.key?('code') ? alert['code'] : alert[:code]
+          return Alerts.from_json(alert) if code == CopyleaksAlertCodes::SUSPECTED_AI_TEXT
+        end
+      end
+      nil
+    end
+
+    # Decodes the AI text detection result of the 'suspected-ai-text' alert of this scan.
+    #
+    # A nil result means the scan produced no 'suspected-ai-text' alert, or the alert has no data.
+    # It does not by itself prove that AI detection ran: check the scan's aiGeneratedText.detect
+    # setting and the category 2 failure codes in Copyleaks::CopyleaksAlertCodes.
+    #
+    # @return [CopyleaksAiTextDetectionResponseModel, nil] The decoded result, or nil.
+    # @raise [JSON::ParserError] When the alert's additionalData is not valid JSON.
+    def ai_detection_result
+      alert = ai_detection_alert
+      alert.nil? ? nil : alert.ai_detection_result
+    end
+
     def as_json(*_args)
       super.merge(
         {
@@ -41,6 +78,17 @@ module Copyleaks
 
     def to_json(*options)
       as_json.to_json(*options)
+    end
+
+    private
+
+    # @return [Array, nil] The alerts of the notifications section, as received or as Alerts objects.
+    def notification_alerts
+      if @notifications.is_a?(Hash)
+        @notifications.key?('alerts') ? @notifications['alerts'] : @notifications[:alerts]
+      elsif @notifications.respond_to?(:alerts)
+        @notifications.alerts
+      end
     end
   end
 end
