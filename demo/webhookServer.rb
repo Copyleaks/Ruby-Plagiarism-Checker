@@ -66,6 +66,7 @@ class ScanWebhookServlet < WEBrick::HTTPServlet::AbstractServlet
       puts "[COMPLETED] could not parse the AI alert additionalData: #{e.message}"
     end
 
+    # Acknowledge the webhook even when the AI alert could not be decoded
     res.status = 200
     res.body = "completed received #{completed.to_json()}"
   end

@@ -96,26 +96,41 @@ When AI text detection is enabled for a scan (`aiGeneratedText.detect`) and AI t
 ```ruby
 require 'copyleaks'
 require 'json'
+require 'webrick'
 
-# body: the raw JSON body of the completed webhook request
-payload = JSON.parse(body)
-completed = Copyleaks::CompletedWebhook.new(**payload.transform_keys(&:to_sym))
+# A WEBrick servlet, as in demo/webhookServer.rb. Mount it on your completed webhook URL:
+#   server.mount '/webhook/completed', CompletedWebhookServlet
+class CompletedWebhookServlet < WEBrick::HTTPServlet::AbstractServlet
+  def do_POST(req, res)
+    payload = JSON.parse(req.body)
+    completed = Copyleaks::CompletedWebhook.new(**payload.transform_keys(&:to_sym))
 
-alert = completed.ai_detection_alert # Copyleaks::Alerts, or nil
-ai_result = completed.ai_detection_result # Copyleaks::CopyleaksAiTextDetectionResponseModel, or nil
-
-if ai_result
-  puts "AI: #{ai_result.summary.ai}, human: #{ai_result.summary.human}, model: #{ai_result.model_version}"
-  ai_result.results.each do |result|
-    # classification: 1 = human, 2 = AI
-    result.matches.each do |match|
-      puts "classification #{result.classification}: starts #{match.text.chars.starts.inspect}, lengths #{match.text.chars.lengths.inspect}"
+    alert = completed.ai_detection_alert # Copyleaks::Alerts, or nil when the scan produced no AI alert
+    if alert
+      begin
+        # nil when the alert has no data; raises JSON::ParserError when additionalData is not valid JSON
+        ai_result = alert.ai_detection_result
+        if ai_result && ai_result.summary
+          puts "AI: #{ai_result.summary.ai}, human: #{ai_result.summary.human}, model: #{ai_result.model_version}"
+          Array(ai_result.results).each do |result|
+            # classification: 1 = human, 2 = AI
+            Array(result.matches).each do |match|
+              puts "classification #{result.classification}: starts #{match.text.chars.starts.inspect}, lengths #{match.text.chars.lengths.inspect}"
+            end
+          end
+        end
+      rescue JSON::ParserError => e
+        warn "Could not decode the AI alert: #{e.message}"
+      end
     end
+
+    # Acknowledge the webhook even when the AI alert could not be decoded.
+    res.status = 200
   end
 end
 ```
-- `nil` from `ai_detection_alert` means the scan produced no AI alert. It does not by itself prove that AI detection ran: check the scan's `aiGeneratedText.detect` setting and alerts with the other category 2 codes in `Copyleaks::CopyleaksAlertCodes` (for example `AI_DETECTION_FAILED`).
-- `ai_detection_result` returns `nil` when the alert has no data, and raises `JSON::ParserError` when `additionalData` is not valid JSON.
+- No AI alert (`ai_detection_alert` returns `nil`) does not by itself prove that AI detection ran: check the scan's `aiGeneratedText.detect` setting and the other AI alert codes in `Copyleaks::CopyleaksAlertCodes` (for example `AI_DETECTION_FAILED` or `AI_DETECTION_TEXT_TOO_SHORT`).
+- `ai_detection_result` returns `nil` when the alert has no data or its data is not a JSON object, and raises `JSON::ParserError` when `additionalData` is not valid JSON. `completed.ai_detection_result` does the same in one call.
 - The raw string is still available as `alert.additionalData`.
 
 For more details on the alerts, refer to the Copyleaks scan alerts [Documentation](https://docs.copyleaks.com/reference/data-types/authenticity/scan-alerts)
