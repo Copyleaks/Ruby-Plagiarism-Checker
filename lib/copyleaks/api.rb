@@ -366,6 +366,7 @@ module Copyleaks
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token.
     # @param [String] startDate The start date to collect usage history from. Date Format: `dd-MM-yyyy`.
     # @param [String] endDate The end date to collect usage history from. Date Format: `dd-MM-yyyy`.
+    # @return [String] The usage history as CSV text.
     def get_usages_history_csv(authToken, startDate, endDate)
       raise 'startDate is Invalid, must be instance of String' if startDate.nil? || !startDate.instance_of?(String)
       raise 'endDate is Invalid, must be instance of String' if endDate.nil? || !endDate.instance_of?(String)
@@ -381,7 +382,11 @@ module Copyleaks
       }
 
       request = Net::HTTP::Get.new(path, headers)
-      handle_response(@api_client.request(request), 'get_usages_history_csv')
+      response = @api_client.request(request)
+      # The endpoint returns CSV, so return the body as text.
+      return response.body&.force_encoding(Encoding::UTF_8) if Utils.is_success_status_code(response.code)
+
+      handle_response(response, 'get_usages_history_csv')
     end
 
     # Get a list of the supported languages for OCR (this is not a list of supported languages for the api, but only for the OCR files scan).
