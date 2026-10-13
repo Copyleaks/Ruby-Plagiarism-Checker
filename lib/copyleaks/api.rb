@@ -383,8 +383,7 @@ module Copyleaks
 
       request = Net::HTTP::Get.new(path, headers)
       response = @api_client.request(request)
-      # The endpoint returns CSV, not JSON, so return the body as text. Net::HTTP returns
-      # the bytes as ASCII-8BIT, and the server writes UTF-8.
+      # The endpoint returns CSV, not JSON, so return the body as text.
       return response.body&.force_encoding(Encoding::UTF_8) if Utils.is_success_status_code(response.code)
 
       handle_response(response, 'get_usages_history_csv')
