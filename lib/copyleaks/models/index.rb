@@ -49,5 +49,16 @@ require_relative 'imageDetection/responses/CopyleaksAiImageDetectionSummaryModel
 require_relative 'imageDetection/responses/CopyleaksImageMetadataModel.rb'
 require_relative 'imageDetection/responses/CopyleaksImageShapeModel.rb'
 
+require_relative 'aiDetection/responses/CopyleaksAiTextDetectionResponseModel.rb'
+require_relative 'aiDetection/responses/CopyleaksAiTextDetectionResultModel.rb'
+require_relative 'aiDetection/responses/CopyleaksAiTextDetectionMatchModel.rb'
+require_relative 'aiDetection/responses/CopyleaksAiTextDetectionMatchTextModel.rb'
+require_relative 'aiDetection/responses/CopyleaksAiTextDetectionPositionsModel.rb'
+require_relative 'aiDetection/responses/CopyleaksAiTextDetectionSummaryModel.rb'
+require_relative 'aiDetection/responses/CopyleaksAiTextDetectionExplainModel.rb'
+require_relative 'aiDetection/responses/CopyleaksAiTextDetectionPatternsModel.rb'
+require_relative 'aiDetection/responses/CopyleaksAiTextDetectionPatternStatisticsModel.rb'
+require_relative 'aiDetection/responses/CopyleaksAiTextDetectionPatternMatchModel.rb'
+
 module Copyleaks
 end
