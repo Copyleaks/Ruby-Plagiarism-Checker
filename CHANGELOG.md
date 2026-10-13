@@ -27,6 +27,10 @@ The gem is now published as `copyleaks`. Versions up to 4.1.1 were published as 
 - **`Copyleaks::Alerts` accepts the webhook's own types (BAC-5392).** `category` and `severity` can be Integers, as the webhook sends them. Strings are still accepted. `title`, `message`, `helpLink` and `additionalData` are now optional. `to_json` leaves out fields that are `nil`.
 - **README (BAC-5374).** The README now describes the SDK as the Copyleaks platform SDK and lists the products it covers: AI Text Detection, AI Image Detection, Plagiarism Checker, Grammar Checker and Text Moderation. Headings such as "AI Text Detection" now use the product names.
 
+### Fixed
+
+- **Usage history (BAC-6741).** `Copyleaks::API#get_usages_history_csv` now returns the usage history as CSV text (a String). Earlier versions tried to parse the CSV as JSON and always raised `JSON::ParserError`.
+
 ### Upgrade notes
 
 - **Gemfile:** replace `gem 'plagiarism-checker'` with `gem 'copyleaks'`, then run `bundle install`. If you pin a version, use `gem 'copyleaks', '~> 5.0'`.
