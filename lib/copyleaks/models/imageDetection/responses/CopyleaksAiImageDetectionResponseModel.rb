@@ -43,6 +43,13 @@ module Copyleaks
     # Metadata about the scan operation.
     attr_accessor :scanned_document
 
+    # Whether the image was determined to be AI-generated.
+    attr_accessor :is_ai_detected
+
+    # Objects located in the image (Array of CopyleaksAiImageDetectedObjectModel). Present only when the
+    # request included object_detection. Look entries up by object, not by position.
+    attr_accessor :detected_objects
+
     # Initialize a new CopyleaksAiImageDetectionResponseModel
     #
     # @param model [String] The version of the AI detection model used for analysis
@@ -50,12 +57,17 @@ module Copyleaks
     # @param summary [CopyleaksAiImageDetectionSummaryModel] Summary statistics of the AI detection analysis
     # @param image_info [CopyleaksAiImageDetectionImageInfoModel] Information about the analyzed image
     # @param scanned_document [CopyleaksAiImageDetectionScannedDocumentModel] Metadata about the scan operation
-    def initialize(model: nil, result: nil, summary: nil, image_info: nil, scanned_document: nil)
+    # @param is_ai_detected [Boolean] Whether the image was determined to be AI-generated
+    # @param detected_objects [Array<CopyleaksAiImageDetectedObjectModel>] Objects located in the image
+    def initialize(model: nil, result: nil, summary: nil, image_info: nil, scanned_document: nil,
+                   is_ai_detected: nil, detected_objects: nil)
       @model = model
       @result = result
       @summary = summary
       @image_info = image_info
       @scanned_document = scanned_document
+      @is_ai_detected = is_ai_detected
+      @detected_objects = detected_objects
     end
 
     # Create instance from JSON hash
@@ -66,25 +78,33 @@ module Copyleaks
       summary = CopyleaksAiImageDetectionSummaryModel.from_json(json_hash['summary']) if json_hash['summary']
       image_info = CopyleaksAiImageDetectionImageInfoModel.from_json(json_hash['imageInfo']) if json_hash['imageInfo']
       scanned_document = CopyleaksAiImageDetectionScannedDocumentModel.from_json(json_hash['scannedDocument']) if json_hash['scannedDocument']
+      if json_hash['detectedObjects'].is_a?(Array)
+        detected_objects = json_hash['detectedObjects'].map { |o| CopyleaksAiImageDetectedObjectModel.from_json(o) }
+      end
 
       new(
         model: json_hash['model'],
         result: result,
         summary: summary,
         image_info: image_info,
-        scanned_document: scanned_document
+        scanned_document: scanned_document,
+        is_ai_detected: json_hash['isAiDetected'],
+        detected_objects: detected_objects
       )
     end
 
     # Convert to JSON
     def to_json(*args)
-      {
+      hash = {
         'model' => @model,
         'result' => @result ? JSON.parse(@result.to_json) : nil,
         'summary' => @summary ? JSON.parse(@summary.to_json) : nil,
         'imageInfo' => @image_info ? JSON.parse(@image_info.to_json) : nil,
         'scannedDocument' => @scanned_document ? JSON.parse(@scanned_document.to_json) : nil
-      }.to_json(*args)
+      }
+      hash['isAiDetected'] = @is_ai_detected unless @is_ai_detected.nil?
+      hash['detectedObjects'] = @detected_objects.map { |o| JSON.parse(o.to_json) } unless @detected_objects.nil?
+      hash.to_json(*args)
     end
   end
 end

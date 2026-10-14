@@ -22,30 +22,27 @@
 #  SOFTWARE.
 # =
 
+
 module Copyleaks
   class TextModerationClient
+    # @param [Copyleaks::HttpClient] api_client The pooled API connection (a Net::HTTP is also accepted).
     def initialize(api_client)
-      @api_client = api_client
+      @api_client = HttpClient.wrap(api_client)
     end
 
+    # Scan text for unsafe or policy-violating content.
+    # For more info: https://docs.copyleaks.com/reference/actions/text-moderation/check
+    # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
+    # @param [String] scanId Attach your own scan Id
+    # @param [CopyleaksTextModerationRequestModel] submission The text and the labels to check.
     def submit_text(authToken, scanId, submission)
       raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
       raise 'submission is invalid, must be an instance of CopyleaksTextModerationRequestModel' if submission.nil? || !submission.instance_of?(Copyleaks::CopyleaksTextModerationRequestModel)
 
       ClientUtils.verify_auth_token(authToken)
 
-      path = "/v1/text-moderation/#{scanId}/check"
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent,
-        'Authorization' => "Bearer #{authToken.accessToken}"
-      }
-
-      request = Net::HTTP::Post.new(path, headers)
-      request.body = submission.to_json
-
-      ClientUtils.handle_response(@api_client.request(request), 'submit_text_moderation')
+      path = "/v1/text-moderation/#{ClientUtils.escape_path(scanId)}/check"
+      ClientUtils.send_request(@api_client, :post, path, 'submit_text_moderation', auth_token: authToken, json: submission)
     end
   end
 end

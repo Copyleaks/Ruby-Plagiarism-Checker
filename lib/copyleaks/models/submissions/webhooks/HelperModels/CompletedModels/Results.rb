@@ -20,14 +20,19 @@
 
 module Copyleaks
   class Results
-    attr_reader :database, :batch, :repositories, :score, :internet
+    attr_reader :database, :batch, :repositories, :score, :internet, :internalAIData
 
     # @param [Array<Database>] database
     # @param [Array<Batch>] batch
     # @param [Array<Repositories>] repositories
     # @param [Score] score
     # @param [Array<Internet>] internet
-    def initialize(database: nil, batch: nil, repositories: nil, score: nil, internet: nil)
+    # @param [Array<Hash>] internalAIData Internal AI Source Match results (id, title, introduction, matchedWords,
+    #   identicalWords, similarWords, paraphrasedWords, totalWords, tags).
+    def initialize(database: nil, batch: nil, repositories: nil, score: nil, internet: nil, internalAIData: nil)
+      if !internalAIData.nil? && !internalAIData.is_a?(Array)
+        raise 'Copyleaks::Results - internalAIData must be an array'
+      end
       if !database.nil? && !(database.is_a?(Array) && database.all? { |d| d.is_a?(Database) })
         raise 'Copyleaks::Results - database must be an array of Database objects'
       end
@@ -49,6 +54,7 @@ module Copyleaks
       @repositories = repositories
       @score = score
       @internet = internet
+      @internalAIData = internalAIData
     end
 
     def as_json(*_args)
@@ -57,7 +63,8 @@ module Copyleaks
         batch: @batch,
         repositories: @repositories,
         score: @score,
-        internet: @internet
+        internet: @internet,
+        internalAIData: @internalAIData
       }.select { |_k, v| !v.nil? }
     end
 

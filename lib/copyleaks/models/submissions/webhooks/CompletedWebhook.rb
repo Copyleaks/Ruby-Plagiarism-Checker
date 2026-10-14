@@ -19,13 +19,17 @@
 
 module Copyleaks
   class CompletedWebhook < StatusWebhook
-    attr_reader :results, :notifications, :scannedDocument
+    attr_reader :results, :notifications, :scannedDocument, :referencesValidation
 
-    def initialize(results: nil, notifications: nil, scannedDocument: nil, **args)
+    # @param [Hash] referencesValidation Citation Checker summary (summary.total, summary.academic,
+    #   summary.academicValidated, summary.nonAcademicValidated). Present when references.validate was
+    #   enabled for the scan.
+    def initialize(results: nil, notifications: nil, scannedDocument: nil, referencesValidation: nil, **args)
       super(**args)
       @results = results
       @notifications = notifications
       @scannedDocument = scannedDocument
+      @referencesValidation = referencesValidation
       @extra_fields = args # Store any additional fields here
     end
 
@@ -70,8 +74,9 @@ module Copyleaks
         {
           results: @results.respond_to?(:as_json) ? @results.as_json : @results,
           notifications: @notifications.respond_to?(:as_json) ? @notifications.as_json : @notifications,
-          scannedDocument: @scannedDocument.respond_to?(:as_json) ? @scannedDocument.as_json : @scannedDocument
-        }
+          scannedDocument: @scannedDocument.respond_to?(:as_json) ? @scannedDocument.as_json : @scannedDocument,
+          referencesValidation: @referencesValidation
+        }.reject { |key, value| key == :referencesValidation && value.nil? }
       ).merge(@extra_fields)
     end
 

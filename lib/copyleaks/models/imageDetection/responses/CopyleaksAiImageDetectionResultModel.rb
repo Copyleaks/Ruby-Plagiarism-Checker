@@ -33,13 +33,19 @@ module Copyleaks
     # Lengths of AI-detected segments corresponding to each start position.
     attr_accessor :lengths
 
+    # Present only when the request set maskType to "heatmap": one confidence band (0 lowest to 4 highest)
+    # per segment, aligned with starts and lengths. nil for the default binary mask.
+    attr_accessor :labels
+
     # Initialize a new CopyleaksAiImageDetectionResultModel
     #
     # @param starts [Array<Integer>] Start positions of AI-detected segments in the flattened image array
     # @param lengths [Array<Integer>] Lengths of AI-detected segments corresponding to each start position
-    def initialize(starts: nil, lengths: nil)
+    # @param labels [Array<Integer>] Heatmap confidence band per segment (heatmap mask only)
+    def initialize(starts: nil, lengths: nil, labels: nil)
       @starts = starts
       @lengths = lengths
+      @labels = labels
     end
 
     # Create instance from JSON hash
@@ -48,16 +54,19 @@ module Copyleaks
 
       new(
         starts: json_hash['starts'],
-        lengths: json_hash['lengths']
+        lengths: json_hash['lengths'],
+        labels: json_hash['labels']
       )
     end
 
     # Convert to JSON
     def to_json(*args)
-      {
+      hash = {
         'starts' => @starts,
         'lengths' => @lengths
-      }.to_json(*args)
+      }
+      hash['labels'] = @labels unless @labels.nil?
+      hash.to_json(*args)
     end
   end
 end

@@ -41,6 +41,8 @@ require_relative 'textModeration/responses/submodules/TextModerationsLegend.rb'
 require_relative 'textModeration/responses/CopyleaksTextModerationResponseModel.rb'
 
 require_relative 'imageDetection/requests/CopyleaksAiImageDetectionRequestModel.rb'
+require_relative 'imageDetection/requests/CopyleaksAsyncWebhooksModel.rb'
+require_relative 'imageDetection/requests/CopyleaksAiImageDetectionAsyncRequestModel.rb'
 require_relative 'imageDetection/responses/CopyleaksAiImageDetectionResponseModel.rb'
 require_relative 'imageDetection/responses/CopyleaksAiImageDetectionResultModel.rb'
 require_relative 'imageDetection/responses/CopyleaksAiImageDetectionImageInfoModel.rb'
@@ -48,6 +50,13 @@ require_relative 'imageDetection/responses/CopyleaksAiImageDetectionScannedDocum
 require_relative 'imageDetection/responses/CopyleaksAiImageDetectionSummaryModel.rb'
 require_relative 'imageDetection/responses/CopyleaksImageMetadataModel.rb'
 require_relative 'imageDetection/responses/CopyleaksImageShapeModel.rb'
+require_relative 'imageDetection/responses/CopyleaksAiImageDetectedObjectModel.rb'
+
+require_relative 'videoDetection/requests/CopyleaksAiVideoDetectionRequestModel.rb'
+require_relative 'videoDetection/responses/CopyleaksAiVideoDetectionResponseModel.rb'
+
+require_relative 'imagePlagiarism/requests/CopyleaksImagePlagiarismRequestModel.rb'
+require_relative 'imagePlagiarism/responses/CopyleaksImagePlagiarismResponseModel.rb'
 
 require_relative 'aiDetection/responses/CopyleaksAiTextDetectionResponseModel.rb'
 require_relative 'aiDetection/responses/CopyleaksAiTextDetectionResultModel.rb'
@@ -59,6 +68,7 @@ require_relative 'aiDetection/responses/CopyleaksAiTextDetectionExplainModel.rb'
 require_relative 'aiDetection/responses/CopyleaksAiTextDetectionPatternsModel.rb'
 require_relative 'aiDetection/responses/CopyleaksAiTextDetectionPatternStatisticsModel.rb'
 require_relative 'aiDetection/responses/CopyleaksAiTextDetectionPatternMatchModel.rb'
+require_relative 'aiDetection/responses/CopyleaksAiTextDetectionScannedDocumentModel.rb'
 
 module Copyleaks
 end

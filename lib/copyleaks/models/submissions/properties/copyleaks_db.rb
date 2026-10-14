@@ -23,9 +23,10 @@
 # =
 module Copyleaks
   class SubmissionScanningCopyleaksDB
+    # Both arguments are optional. An argument left nil is not sent, and the server default applies.
     # @param [Boolean] includeMySubmissions When set to true: Copyleaks will also compare against content which was uploaded by YOU to the Copyleaks internal database. If true, it will also index the scan in the Copyleaks internal database.
     # @param [Boolean] includeOthersSubmissions  When set to true: Copyleaks will also compare against content which was uploaded by OTHERS to the Copyleaks internal database. If true, it will also index the scan in the Copyleaks internal database.
-    def initialize(includeMySubmissions, includeOthersSubmissions)
+    def initialize(includeMySubmissions = nil, includeOthersSubmissions = nil)
       @includeMySubmissions = includeMySubmissions
       @includeOthersSubmissions = includeOthersSubmissions
     end

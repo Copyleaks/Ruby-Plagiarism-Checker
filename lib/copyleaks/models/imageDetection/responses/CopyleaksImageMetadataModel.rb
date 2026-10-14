@@ -36,35 +36,43 @@ module Copyleaks
     # The application or device used to create the image.
     attr_accessor :app_or_device_used
 
+    # A summary of how the image was generated (if available).
+    attr_accessor :content_summary
+
     # Initialize a new CopyleaksImageMetadataModel
     #
     # @param issued_time [String] Timestamp when the image was created (if available)
     # @param issued_by [String] The AI service or tool that created the image (if detected)
     # @param app_or_device_used [String] The application or device used to create the image
-    def initialize(issued_time: nil, issued_by: nil, app_or_device_used: nil)
+    # @param content_summary [String] A summary of how the image was generated (if available)
+    def initialize(issued_time: nil, issued_by: nil, app_or_device_used: nil, content_summary: nil)
       @issued_time = issued_time
       @issued_by = issued_by
       @app_or_device_used = app_or_device_used
+      @content_summary = content_summary
     end
 
     # Create instance from JSON hash
     def self.from_json(json_hash)
-      return nil if json_hash.nil?
+      return nil unless json_hash.is_a?(Hash)
 
       new(
         issued_time: json_hash['issuedTime'],
         issued_by: json_hash['issuedBy'],
-        app_or_device_used: json_hash['appOrDeviceUsed']
+        app_or_device_used: json_hash['appOrDeviceUsed'],
+        content_summary: json_hash['contentSummary']
       )
     end
 
     # Convert to JSON
     def to_json(*args)
-      {
+      hash = {
         'issuedTime' => @issued_time,
         'issuedBy' => @issued_by,
         'appOrDeviceUsed' => @app_or_device_used
-      }.to_json(*args)
+      }
+      hash['contentSummary'] = @content_summary unless @content_summary.nil?
+      hash.to_json(*args)
     end
   end
 end

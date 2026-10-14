@@ -8,7 +8,7 @@ module CopyleaksExamples
     scanId = DateTime.now.strftime('%Q').to_s
     
     # Read and encode your image file to base64
-    base64_image = Base64.strict_encode64(File.read("Path/to/your/image.jpg")) # Update this path to your image
+    base64_image = Base64.strict_encode64(File.binread("Path/to/your/image.jpg")) # Update this path to your image
     
     model = Copyleaks::CopyleaksAiImageDetectionRequestModel.new(
       base64_image,                                             # base64

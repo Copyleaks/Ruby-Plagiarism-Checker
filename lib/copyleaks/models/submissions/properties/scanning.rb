@@ -23,29 +23,43 @@
 # =
 module Copyleaks
   class SubmissionScanning
-    # @param [Boolean] internet Compare your content with online sources.
+    # Every argument is optional. An argument left nil is not sent, and the server default applies.
+    # @param [Boolean] internet Compare your content with online sources (server default: true).
     # @param [SubmissionScanningExclude] exclude Check inner properties of SubmissionScanningExclude for more details.
     # @param [SubmissionScanningRepository[]] repositories - Check inner properties of SubmissionScanningRepository for more details.
     # @param [SubmissionScanningCopyleaksDB] copyleaksDb Check inner properties for more details.
-    # @param [SubmissionCrossLanguages] crossLanguages
+    # @param [SubmissionCrossLanguages] crossLanguages Languages for cross-language plagiarism detection.
+    #   Copyleaks::API#get_allowed_cross_languages lists the allowed codes.
+    # @param [SubmissionScanningInclude] include Only include internal database and repository results whose
+    #   scan id matches a pattern.
     def initialize(
-      internet = false,
+      internet = nil,
       exclude = nil,
       repositories = nil,
       copyleaksDb = nil,
-      crossLanguages = nil
+      crossLanguages = nil,
+      include: nil
     )
+      if !internet.nil? && ![true, false].include?(internet)
+        raise 'Copyleaks::SubmissionScanning - internet - internet must be of type Boolean'
+      end
+      if !include.nil? && !include.instance_of?(SubmissionScanningInclude)
+        raise 'Copyleaks::SubmissionScanning - include - include must be of type SubmissionScanningInclude'
+      end
+
       @internet = internet
       @exclude = exclude
       @repositories = repositories
       @copyleaksDb = copyleaksDb
       @crossLanguages = crossLanguages
+      @include = include
     end
 
     def as_json(*_args)
       {
         internet: @internet,
         exclude: @exclude,
+        include: @include,
         repositories: @repositories,
         copyleaksDb: @copyleaksDb,
         crossLanguages: @crossLanguages

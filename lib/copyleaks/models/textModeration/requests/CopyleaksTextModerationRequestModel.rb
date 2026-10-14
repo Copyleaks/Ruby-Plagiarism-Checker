@@ -25,13 +25,16 @@ require 'json'
 
 module Copyleaks
   class CopyleaksTextModerationRequestModel
+    # The server accepts at most this many labels per request.
+    MAX_LABELS = 16
+
     attr_accessor :text, :sandbox, :language, :labels
 
     # @param text [String] Text to produce Text Moderation report for.
-    # @param sandbox [Boolean] Use sandbox mode to test your integration. Default: false.
-    # @param language [String, nil] The language code. Optional; set to nil for auto-detect.
-    # @param labels [Array<Object>] A list of label configurations (min 1, max 32 elements).
-    def initialize(text: '', sandbox: false, language: nil, labels: [])
+    # @param sandbox [Boolean, nil] Use sandbox mode to test your integration. Leave nil to omit it (server default: false).
+    # @param language [String, nil] The language code. Optional; leave nil for auto-detect.
+    # @param labels [Array<CopyleaksTextModerationLabel>] The labels to check (required, 1 to 16 labels).
+    def initialize(text: '', sandbox: nil, language: nil, labels: [])
 
       @text = text
       @sandbox = sandbox
@@ -40,7 +43,7 @@ module Copyleaks
 
       raise ArgumentError, "String cannot be blank" if @text.nil?
       raise ArgumentError, "Labels must be a non-empty array." unless labels.is_a?(Array) && !labels.empty?
-      raise ArgumentError, "Labels cannot have more than 32 elements." if labels.length > 32
+      raise ArgumentError, "Labels cannot have more than #{MAX_LABELS} elements." if labels.length > MAX_LABELS
 
     end
 
@@ -50,7 +53,7 @@ module Copyleaks
         sandbox: @sandbox,
         language: @language,
         labels: @labels
-      }.to_json(options)
+      }.reject { |_k, v| v.nil? }.to_json(options)
     end
 
     def self.from_json(json_string)

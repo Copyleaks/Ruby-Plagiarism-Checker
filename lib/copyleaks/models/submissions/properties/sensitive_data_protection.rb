@@ -31,15 +31,16 @@ module Copyleaks
     # @param [Boolean] emailAddress - Mask email addresses from the scanned document with # characters. Available for users on a plan for 2500 pages or more.
     # @param [Boolean] creditCard - Mask credit card numbers and credit card track numbers from the scanned document with # characters. Available for users on a plan for 2500 pages or more.
     # @param [Boolean] phoneNumber - Mask phone numbers from the scanned document with # characters. Available for users on a plan for 2500 pages or more.
+    # Every argument is optional. An argument left nil is not sent, and the server default (false) applies.
     def initialize(
-      driversLicense = false,
-      credentials = false,
-      passport = false,
-      network = false,
-      url = false,
-      emailAddress = false,
-      creditCard = false,
-      phoneNumber = false
+      driversLicense = nil,
+      credentials = nil,
+      passport = nil,
+      network = nil,
+      url = nil,
+      emailAddress = nil,
+      creditCard = nil,
+      phoneNumber = nil
     )
       @driversLicense = driversLicense
       @credentials = credentials

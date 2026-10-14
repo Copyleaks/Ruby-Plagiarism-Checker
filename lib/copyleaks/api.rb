@@ -24,87 +24,105 @@
 require 'net/http'
 require 'json'
 require 'date'
+require 'uri'
+require_relative 'utils/http_client.rb'
+require_relative 'utils/multipart.rb'
+require_relative 'utils/copyleaks_client.utils.rb'
 require_relative 'ai_detection_client.rb'
 require_relative 'writing_assistant_client.rb'
 require_relative 'text_moderation_client.rb'
 require_relative 'ai_image_detection_client.rb'
-require_relative 'utils/copyleaks_client.utils'
+require_relative 'ai_video_detection_client.rb'
+require_relative 'image_plagiarism_client.rb'
 
 module Copyleaks
+  # Entry point of the SDK.
+  #
+  # One instance is safe to share between threads. It keeps a small pool of persistent
+  # connections to each Copyleaks server, so calls reuse connections instead of opening
+  # a new TCP and TLS session every time.
+  #
+  # Errors raised by every call:
+  # * CommandException: the server rejected the request. See exception.response for the status code, headers and body.
+  # * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance (HTTP 503).
+  # * RateLimitException: too many requests (HTTP 429). See exception.retry_after.
+  # * AuthExpiredException: the login token has expired. Log in again.
+  # * Net::OpenTimeout, Net::ReadTimeout, Net::WriteTimeout and socket errors: the request did not complete.
+  #   Requests are never resent automatically. Before resubmitting a scan after a timeout, note that
+  #   the first request may have been accepted; a second submit with the same scan id returns 409 Conflict.
+  # Retry 429 and 503 with exponential backoff: https://docs.copyleaks.com/concepts/performance/handling-failures
   class API
-    def initialize
+    attr_reader :ai_detection_client, :writing_assistant_client, :text_moderation_client,
+                :ai_image_detection_client, :ai_video_detection_client, :image_plagiarism_client
+
+    # @param [Numeric] open_timeout Seconds to wait for the connection and the TLS handshake. Default 10.
+    # @param [Numeric] read_timeout Seconds to wait for each read of a response. Default 120.
+    # @param [Numeric] write_timeout Seconds to wait for each write of a request body. Default 120.
+    # @param [Numeric] keep_alive_timeout Seconds an idle connection is kept open for reuse. Default 30.
+    # @param [Integer] pool_size Maximum open connections per Copyleaks server. Default 5.
+    # @param [String] identity_server_uri Overrides Copyleaks::Config.identity_server_uri for this client.
+    # @param [String] api_server_uri Overrides Copyleaks::Config.api_server_uri for this client.
+    def initialize(open_timeout: HttpClient::DEFAULT_OPEN_TIMEOUT,
+                   read_timeout: HttpClient::DEFAULT_READ_TIMEOUT,
+                   write_timeout: HttpClient::DEFAULT_WRITE_TIMEOUT,
+                   keep_alive_timeout: HttpClient::DEFAULT_KEEP_ALIVE_TIMEOUT,
+                   pool_size: HttpClient::DEFAULT_POOL_SIZE,
+                   identity_server_uri: nil,
+                   api_server_uri: nil)
+      options = {
+        open_timeout: open_timeout,
+        read_timeout: read_timeout,
+        write_timeout: write_timeout,
+        keep_alive_timeout: keep_alive_timeout,
+        pool_size: pool_size
+      }
       # copyleaks identity http client
-      _identity_server_uri = URI.parse(Config.identity_server_uri)
-      @id_client = Net::HTTP.new(_identity_server_uri.host, _identity_server_uri.port)
-      @id_client.use_ssl = true
+      @id_client = HttpClient.new(identity_server_uri || Config.identity_server_uri, **options)
       # copyleaks api http client
-      _api_server_uri = URI.parse(Config.api_server_uri)
-      @api_client = Net::HTTP.new(_api_server_uri.host, _api_server_uri.port)
-      @api_client.use_ssl = true
+      @api_client = HttpClient.new(api_server_uri || Config.api_server_uri, **options)
 
       # Initialize clients
       @ai_detection_client = AIDetectionClient.new(@api_client)
       @writing_assistant_client = WritingAssistantClient.new(@api_client)
       @text_moderation_client = TextModerationClient.new(@api_client)
       @ai_image_detection_client = AIImageDetectionClient.new(@api_client)
+      @ai_video_detection_client = AIVideoDetectionClient.new(@api_client)
+      @image_plagiarism_client = ImagePlagiarismClient.new(@api_client)
+    end
+
+    # Closes the idle pooled connections. The client stays usable and reconnects when needed.
+    def close
+      @id_client.close
+      @api_client.close
+      nil
     end
 
     # Login to Copyleaks authentication server.
-    # For more info: https://api.copyleaks.com/documentation/v3/account/login.
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code, headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance. We recommend to implement exponential backoff algorithm as described here: https://api.copyleaks.com/documentation/v3/exponential-backoff
+    # For more info: https://docs.copyleaks.com/reference/actions/account/login
     # @param [String] email Copyleaks account email address.
     # @param [String] key Copyleaks account secret key.
-    # @return A authentication token that being expired after certain amount of time.
+    # @return [CopyleaksAuthToken] An authentication token that expires after a certain amount of time.
     def login(email, key)
       raise 'email is Invalid, must be instance of String' if email.nil? || !email.instance_of?(String)
-      raise 'key is Invalid, must be instance of String' if key.nil? || !email.instance_of?(String)
-
-      path = '/v3/account/login/api'
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent
-      }
+      raise 'key is Invalid, must be instance of String' if key.nil? || !key.instance_of?(String)
 
       payload = { email: email, key: key }
-
-      request = Net::HTTP::Post.new(path, headers)
-      request.body = payload.to_json
-
-      res_data = handle_response(@id_client.request(request), 'login')
+      res_data = ClientUtils.send_request(@id_client, :post, '/v3/account/login/api', 'login', json: payload)
 
       CopyleaksAuthToken.new(res_data['.expires'], res_data['access_token'], res_data['.issued'])
     end
 
-    # Verify that Copyleaks authentication token is exists and not exipired.
+    # Verify that a Copyleaks authentication token exists and has not expired.
+    # A token that expires within the next 5 minutes is treated as expired.
     # * Exceptions:
     # * * AuthExpiredException: authentication expired. Need to login again.
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     def verify_auth_token(authToken)
-      if authToken.nil? || !authToken.instance_of?(CopyleaksAuthToken)
-        raise 'authToken is Invalid, must be instance of CopyleaksAuthToken'
-      end
-
-      _time = DateTime.now
-      _expiresTime = DateTime.parse(authToken.expires)
-
-      if _expiresTime <= _time
-        raise AuthExpiredException # expired
-      end
+      ClientUtils.verify_auth_token(authToken)
     end
 
-
     # Starting a new process by providing a file to scan.
-    # For more info:
-    # https://api.copyleaks.com/documentation/v3/scans/submit/file
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
+    # For more info: https://docs.copyleaks.com/reference/actions/authenticity/submit-file
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     # @param [String] scanId Attach your own scan Id
     # @param [CopyleaksFileSubmissionModel] submission Submission properties
@@ -116,29 +134,12 @@ module Copyleaks
 
       verify_auth_token(authToken)
 
-      path = "/v3/scans/submit/file/#{scanId}"
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent,
-        'Authorization' => "Bearer #{authToken.accessToken}"
-      }
-
-      request = Net::HTTP::Put.new(path, headers)
-      request.body = submission.to_json
-
-      handle_response(@api_client.request(request), 'submit_file')
+      path = "/v3/scans/submit/file/#{ClientUtils.escape_path(scanId)}"
+      ClientUtils.send_request(@api_client, :put, path, 'submit_file', auth_token: authToken, json: submission)
     end
 
     # Starting a new process by providing a OCR image file to scan.
-    # For more info:
-    # https://api.copyleaks.com/documentation/v3/scans/submit/ocr
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
+    # For more info: https://docs.copyleaks.com/reference/actions/authenticity/submit-ocr
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     # @param [String] scanId Attach your own scan Id
     # @param [CopyleaksFileOcrSubmissionModel] submission Submission properties
@@ -150,29 +151,12 @@ module Copyleaks
 
       verify_auth_token(authToken)
 
-      path = "/v3/scans/submit/ocr/#{scanId}"
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent,
-        'Authorization' => "Bearer #{authToken.accessToken}"
-      }
-
-      request = Net::HTTP::Put.new(path, headers)
-      request.body = submission.to_json
-
-      handle_response(@api_client.request(request), 'submit_file_ocr')
+      path = "/v3/scans/submit/ocr/#{ClientUtils.escape_path(scanId)}"
+      ClientUtils.send_request(@api_client, :put, path, 'submit_file_ocr', auth_token: authToken, json: submission)
     end
 
     # Starting a new process by providing a URL to scan.
-    # For more info:
-    # https://api.copyleaks.com/documentation/v3/scans/submit/url
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
+    # For more info: https://docs.copyleaks.com/reference/actions/authenticity/submit-url
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     # @param [String] scanId Attach your own scan Id
     # @param [CopyleaksURLSubmissionModel] submission Submission properties
@@ -184,29 +168,12 @@ module Copyleaks
 
       verify_auth_token(authToken)
 
-      path = "/v3/scans/submit/url/#{scanId}"
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent,
-        'Authorization' => "Bearer #{authToken.accessToken}"
-      }
-
-      request = Net::HTTP::Put.new(path, headers)
-      request.body = submission.to_json
-
-      handle_response(@api_client.request(request), 'submit_url')
+      path = "/v3/scans/submit/url/#{ClientUtils.escape_path(scanId)}"
+      ClientUtils.send_request(@api_client, :put, path, 'submit_url', auth_token: authToken, json: submission)
     end
 
     # Exporting scans artifact into your server.
-    # For more info:
-    # https://api.copyleaks.com/documentation/v3/downloads/export
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
+    # For more info: https://docs.copyleaks.com/reference/actions/downloads/export
     # @param [CopyleaksAuthToken] authToken Your login token to Copyleaks server
     # @param [String] scanId The scan ID of the specific scan to export.
     # @param [String] exportId A new Id for the export process.
@@ -219,29 +186,13 @@ module Copyleaks
       end
 
       verify_auth_token(authToken)
-      path = "/v3/downloads/#{scanId}/export/#{exportId}"
 
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent,
-        'Authorization' => "Bearer #{authToken.accessToken}"
-      }
-
-      request = Net::HTTP::Post.new(path, headers)
-      request.body = model.to_json
-
-      handle_response(@api_client.request(request), 'export')
+      path = "/v3/downloads/#{ClientUtils.escape_path(scanId)}/export/#{ClientUtils.escape_path(exportId)}"
+      ClientUtils.send_request(@api_client, :post, path, 'export', auth_token: authToken, json: model)
     end
 
     # Start scanning all the files you submitted for a price-check.
-    # For more info:
-    # https://api.copyleaks.com/documentation/v3/scans/start
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
+    # For more info: https://docs.copyleaks.com/reference/actions/authenticity/start
     # @param [CopyleaksAuthToken] authToken Your login token to Copyleaks server.
     # @param [CopyleaksStartRequestModel] data Include information about which scans should be started.
     def start(authToken, data)
@@ -251,30 +202,11 @@ module Copyleaks
 
       verify_auth_token(authToken)
 
-      path =  "/v3/scans/start"
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent,
-        'Authorization' => "Bearer #{authToken.accessToken}"
-      }
-
-      request = Net::HTTP::Patch.new(path, headers)
-      request.body = data.to_json
-
-      handle_response(@api_client.request(request), 'start')
+      ClientUtils.send_request(@api_client, :patch, '/v3/scans/start', 'start', auth_token: authToken, json: data)
     end
 
-
     # Delete the specific process from the server.
-    # For more info:
-    # https://api.copyleaks.com/documentation/v3/scans/delete
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
+    # For more info: https://docs.copyleaks.com/reference/actions/authenticity/delete
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     # @param [CopyleaksDeleteRequestModel] data
     def delete(authToken, data)
@@ -284,29 +216,11 @@ module Copyleaks
 
       verify_auth_token(authToken)
 
-      path = "/v3.1/scans/delete"
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent,
-        'Authorization' => "Bearer #{authToken.accessToken}"
-      }
-
-      request = Net::HTTP::Patch.new(path, headers)
-      request.body = data.to_json
-
-      handle_response(@api_client.request(request), 'delete')
+      ClientUtils.send_request(@api_client, :patch, '/v3.1/scans/delete', 'delete', auth_token: authToken, json: data)
     end
 
     # Resend status webhooks for existing scans.
-    # For more info:
-    # https://api.copyleaks.com/documentation/v3/scans/webhook-resend
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
+    # For more info: https://docs.copyleaks.com/reference/actions/authenticity/resend-webhook
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     # @param [String] scanId Copyleaks scan Id
     def resend_webhook(authToken, scanId)
@@ -314,163 +228,111 @@ module Copyleaks
 
       verify_auth_token(authToken)
 
-      path =  "/v3/scans/#{scanId}/webhooks/resend"
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent,
-        'Authorization' => "Bearer #{authToken.accessToken}"
-      }
-
-      request = Net::HTTP::Post.new(path, headers)
-      handle_response(@api_client.request(request), 'resend_webhook')
+      path = "/v3/scans/#{ClientUtils.escape_path(scanId)}/webhooks/resend"
+      ClientUtils.send_request(@api_client, :post, path, 'resend_webhook', auth_token: authToken)
     end
 
     # Get current credits balance for the Copyleaks account.
-    # For more info:
-    # https://api.copyleaks.com/documentation/v3/scans/credits
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
-    # * * RateLimitException: Too many requests. Please wait before calling again.
+    # For more info: https://docs.copyleaks.com/reference/actions/admin/check-credits
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     def get_credits_balance(authToken)
       verify_auth_token(authToken)
 
-      path = "/v3/scans/credits"
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent,
-        'Authorization' => "Bearer #{authToken.accessToken}"
-      }
-
-      request = Net::HTTP::Get.new(path, headers)
-      handle_response(@api_client.request(request), 'get_credits_balance')
+      ClientUtils.send_request(@api_client, :get, '/v3/scans/credits', 'get_credits_balance', auth_token: authToken)
     end
 
-    # This endpoint allows you to export your usage history between two dates.
-    # The output results will be exported to a csv file and it will be attached to the response.
-    # For more info:
-    # https://api.copyleaks.com/documentation/v3/scans/usages/history
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
-    # * * RateLimitException: Too many requests. Please wait before calling again.
+    # Export your usage history between two dates, as CSV.
+    # For more info: https://docs.copyleaks.com/reference/actions/admin/usage-history
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token.
     # @param [String] startDate The start date to collect usage history from. Date Format: `dd-MM-yyyy`.
     # @param [String] endDate The end date to collect usage history from. Date Format: `dd-MM-yyyy`.
-    # @return [String] The usage history as CSV text.
-    def get_usages_history_csv(authToken, startDate, endDate)
+    # @yield [String] Optional. When a block is given, the CSV is streamed to it in chunks instead of
+    #   being returned as one String, so a long history is never held in memory at once.
+    # @return [String, nil] The usage history as CSV text, or nil when a block is given.
+    def get_usages_history_csv(authToken, startDate, endDate, &block)
       raise 'startDate is Invalid, must be instance of String' if startDate.nil? || !startDate.instance_of?(String)
       raise 'endDate is Invalid, must be instance of String' if endDate.nil? || !endDate.instance_of?(String)
 
       verify_auth_token(authToken)
 
-      path =  "/v3/scans/usages/history?start=#{startDate}&end=#{endDate}"
+      path = "/v3/scans/usages/history?#{URI.encode_www_form(start: startDate, end: endDate)}"
+      request = ClientUtils.build_request(:get, path, auth_token: authToken)
 
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent,
-        'Authorization' => "Bearer #{authToken.accessToken}"
-      }
-
-      request = Net::HTTP::Get.new(path, headers)
-      response = @api_client.request(request)
-      # The endpoint returns CSV, so return the body as text.
-      return response.body&.force_encoding(Encoding::UTF_8) if Utils.is_success_status_code(response.code)
+      if block
+        response = @api_client.request(request) do |res|
+          if Utils.is_success_status_code(res.code)
+            res.read_body { |chunk| block.call(chunk.force_encoding(Encoding::UTF_8)) }
+          end
+        end
+        return nil if Utils.is_success_status_code(response.code)
+      else
+        response = @api_client.request(request)
+        # The endpoint returns CSV, so return the body as text.
+        return response.body&.force_encoding(Encoding::UTF_8) if Utils.is_success_status_code(response.code)
+      end
 
       handle_response(response, 'get_usages_history_csv')
     end
 
     # Get a list of the supported languages for OCR (this is not a list of supported languages for the api, but only for the OCR files scan).
-    # For more info: https://api.copyleaks.com/documentation/v3/specifications/ocr-languages/list
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
-    # * * RateLimitException: Too many requests. Please wait before calling again.
-    # @return array List of supported OCR languages.
+    # For more info: https://docs.copyleaks.com/reference/actions/miscellaneous/ocr-supported-languages
+    # @return [Array<String>] List of supported OCR languages.
     def get_ocr_supported_languages
-      path = '/v3/miscellaneous/ocr-languages-list'
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent
-      }
-      request = Net::HTTP::Get.new(path, headers)
-      handle_response(@api_client.request(request), 'get_ocr_supported_languages')
+      ClientUtils.send_request(@api_client, :get, '/v3/miscellaneous/ocr-languages-list', 'get_ocr_supported_languages')
     end
 
-    # Get a list of the supported file types.
-    # For more info: https://api.copyleaks.com/documentation/v3/specifications/supported-file-types
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
-    # * * RateLimitException: Too many requests. Please wait before calling again.
-    # @return mixed List of supported file types.
+    # Get a list of the file types supported by plagiarism scans.
+    # For more info: https://docs.copyleaks.com/reference/actions/miscellaneous/supported-plagiarism-file-types
+    # @return [Hash] The supported file types, for example { 'textual' => [...], 'ocr' => [...] }.
     def get_supported_file_types
-      path =  '/v3/miscellaneous/supported-file-types'
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent
-      }
-
-      request = Net::HTTP::Get.new(path, headers)
-      handle_response(@api_client.request(request), 'get_supported_file_types')
+      ClientUtils.send_request(@api_client, :get, '/v3/miscellaneous/supported-plagiarism-file-types',
+                               'get_supported_file_types')
     end
 
-    # Get updates about copyleaks api release notes.
-    # For more info: https://api.copyleaks.com/documentation/v3/release-notes
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
-    # * * RateLimitException: Too many requests. Please wait before calling again.
-    # @return mixed List of release notes.
+    # Get the file types supported by AI Text Detection. No login is needed.
+    # For more info: https://docs.copyleaks.com/reference/actions/miscellaneous/supported-ai-text-detection-file-types
+    # @return [Hash] For example { 'supportedAiFileTypes' => ['pdf', 'docx', ...] }.
+    def get_supported_ai_text_detection_file_types
+      ClientUtils.send_request(@api_client, :get, '/v3/miscellaneous/supported-ai-text-detection-file-types',
+                               'get_supported_ai_text_detection_file_types')
+    end
+
+    # Get the language codes (ISO-639-1) allowed for cross-language plagiarism detection. No login is needed.
+    # Use them with Copyleaks::SubmissionCrossLanguages.
+    # For more info: https://docs.copyleaks.com/reference/actions/miscellaneous/supported-cross-languages
+    # @return [Hash] For example { 'documentLanguages' => [...], 'resultLanguages' => [...] }.
+    def get_allowed_cross_languages
+      ClientUtils.send_request(@api_client, :get, '/v3/miscellaneous/allowed-cross-languages',
+                               'get_allowed_cross_languages')
+    end
+
+    # Get a Private Cloud Hub repository's information: credit consumption, masking policy and status.
+    # Requires the "Super Admin" or "Admin" role.
+    # For more info: https://docs.copyleaks.com/reference/actions/private-cloud-hub/info
+    # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
+    # @param [String] repositoryId The repository id, from the Copyleaks Admin Dashboard.
+    # @return [Hash] The repository information (id, name, description, permission, status, maxCredits,
+    #   currentCredits, maskingPolicy, creationTime).
+    def get_repository_info(authToken, repositoryId)
+      if repositoryId.nil? || !repositoryId.instance_of?(String) || repositoryId.empty?
+        raise 'repositoryId is Invalid, must be a non-empty String'
+      end
+
+      verify_auth_token(authToken)
+
+      path = "/v3/repositories/repository/#{ClientUtils.escape_path(repositoryId)}/info"
+      ClientUtils.send_request(@api_client, :get, path, 'get_repository_info', auth_token: authToken)
+    end
+
+    # Get updates about Copyleaks API release notes.
+    # @return [Hash] The release notes.
     def get_release_notes
-      path = '/v3/release-logs.json'
-
-      header = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent
-      }
-      request = Net::HTTP::Get.new(path, header)
-      handle_response(@api_client.request(request), 'get_release_notes')
+      ClientUtils.send_request(@api_client, :get, '/v3/release-logs.json', 'get_release_notes')
     end
 
-    # this methods is a helper for hanlding reponse data and exceptions.
+    # This method is a helper for handling response data and exceptions.
     def handle_response(response, used_by)
       Copyleaks::ClientUtils.handle_response(response, used_by)
-    end
-
-    def ai_detection_client
-      @ai_detection_client
-    end
-
-    def writing_assistant_client
-      @writing_assistant_client
-    end
-    def text_moderation_client
-      @text_moderation_client
-    end
-
-    def ai_image_detection_client
-      @ai_image_detection_client
     end
   end
 end

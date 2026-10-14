@@ -28,9 +28,10 @@ module Copyleaks
 
     # @param [String] Text to produce Writing Assistant report for. 1 >= characters <= 25000
     # @param [Boolean] Use sandbox mode to test your integration with the Copyleaks API without consuming any credits.
+    #   Leave nil to omit the field (server default: false).
     # @param [String] language The language code of your content. Optional; if not provided, the system will attempt to auto-detect the language.
     # @param [ScoreWeights] an object containing the score weights for different writing aspects (e.g., grammar, mechanics). Optional.
-    def initialize(text, sandbox = false, language = nil, score = nil)
+    def initialize(text, sandbox = nil, language = nil, score = nil)
       unless text.instance_of?(String)
         raise 'Copyleaks::WritingAssistantSubmissionModel - text - text must be of type String'
       end

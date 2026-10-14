@@ -1,35 +1,33 @@
 require 'json'
+
 module Copyleaks
+  class TextModerationChars
+    attr_accessor :labels, :starts, :lengths
 
-class TextModerationChars
-  attr_accessor :labels, :starts, :lengths
+    def initialize(starts: [], labels: [], lengths: [])
+      @starts = starts
+      @labels = labels
+      @lengths = lengths
+    end
 
-  # @param starts [Array<Integer>] Start character position of the labelled segment.
-  # @param labels [Array<Integer>] Predicted label index for the corresponding segment. The index can be resolved to its ID using the supplied legend.
-  # @param lengths [Array<Integer>] Labelled segment character length.
-  def initialize( starts: [],labels: [], lengths: [])
-    @starts = starts
-    @labels = labels
-    @lengths = lengths
+    def to_json(options = {})
+      {
+        labels: @labels,
+        starts: @starts,
+        lengths: @lengths
+      }.to_json(options)
+    end
+
+    # @param json [Hash, String] A parsed Hash or a JSON String.
+    def self.from_json(json)
+      data = TextModerationJson.to_hash(json)
+      return nil if data.nil?
+
+      new(
+        labels: TextModerationJson.get(data, 'labels'),
+        starts: TextModerationJson.get(data, 'starts'),
+        lengths: TextModerationJson.get(data, 'lengths')
+      )
+    end
   end
-
-
-  def to_json(options = {})
-    {
-      labels: @labels,
-      starts: @starts,
-      lengths: @lengths
-    }.to_json(options)
-  end
-
-  def self.from_json(json_string)
-    data = JSON.parse(json_string, symbolize_names: true)
-    new(
-      labels: data[:labels],
-      starts: data[:starts],
-      lengths: data[:lengths]
-    )
-  end
-end
-
 end

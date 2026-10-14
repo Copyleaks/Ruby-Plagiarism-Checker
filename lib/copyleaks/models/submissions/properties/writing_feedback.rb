@@ -23,31 +23,33 @@
 # =
 
 module Copyleaks
-    class SubmissionWritingFeedback
-      attr_accessor :enable, :score
-      # @param [Boolean] Enable automated Writing Assistant . This feature includes grammar checking, spell checking and sentence structure corrections.
-      # @param [ScoreWeights] an object containing the score weights for different writing aspects (e.g., grammar, mechanics). Optional.
-      def initialize(enable = false, score = nil)
-        unless [true, false].include?(enable)
-            raise 'Copyleaks::SubmissionWritingFeedback - enable - enable must be of type Boolean'
-        end
-        unless score.nil? || score.is_a?(ScoreWeights)
-            raise 'Copyleaks::SubmissionWritingFeedback - score - score must be of type ScoreWeights'
-        end
+  class SubmissionWritingFeedback
+    attr_accessor :enable, :score
 
-        @enable = enable
-        @score = score
+    # @param [Boolean] enable Enable the automated Grammar Checker for the scan: grammar checking, spell checking
+    #   and sentence structure corrections. Leave nil to omit the field (server default: false).
+    # @param [ScoreWeights] score The score weights for different writing aspects (e.g., grammar, mechanics). Optional.
+    def initialize(enable = nil, score = nil)
+      unless enable.nil? || [true, false].include?(enable)
+        raise 'Copyleaks::SubmissionWritingFeedback - enable - enable must be of type Boolean'
       end
-  
-      def as_json(*_args)
-        {
-          enable: @enable,
-          score: @score
-        }.reject { |_k, v| v.nil? }
+      unless score.nil? || score.is_a?(ScoreWeights)
+        raise 'Copyleaks::SubmissionWritingFeedback - score - score must be of type ScoreWeights'
       end
-  
-      def to_json(*options)
-        as_json(*options).to_json(*options)
-      end
+
+      @enable = enable
+      @score = score
+    end
+
+    def as_json(*_args)
+      {
+        enable: @enable,
+        score: @score
+      }.reject { |_k, v| v.nil? }
+    end
+
+    def to_json(*options)
+      as_json(*options).to_json(*options)
     end
   end
+end

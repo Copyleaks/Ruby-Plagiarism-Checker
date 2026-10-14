@@ -23,24 +23,40 @@
 # =
 module Copyleaks
   class CopyleaksURLSubmissionModel < CopyleaksSubmissionModel
-    attr_reader :url
+    VERBS = %w[GET POST PUT].freeze
+
+    attr_reader :url, :verb, :headers
 
     # @param [String] url The url to be scanned
     # @param [SubmissionProperties] properties Check inner properties for more details.
-    def initialize(url, properties)
+    # @param [String] verb The HTTP method Copyleaks uses to fetch the url: 'GET', 'POST' or 'PUT'.
+    #   Leave nil to omit the field (server default: GET).
+    # @param [Array<Array<String>>] headers Headers Copyleaks sends when it fetches the url, for example
+    #   [['Cookie', 'session=abc']]. When set, Copyleaks does not add its own default headers.
+    def initialize(url, properties, verb: nil, headers: nil)
       raise 'Copyleaks::CopyleaksURLSubmissionModel - url - url must be of type String' unless url.instance_of?(String)
       unless properties.instance_of?(SubmissionProperties)
         raise 'Copyleaks::CopyleaksURLSubmissionModel - properties - properties must be of type SubmissionProperties'
       end
+      if !verb.nil? && !VERBS.include?(verb)
+        raise "Copyleaks::CopyleaksURLSubmissionModel - verb - verb must be one of #{VERBS.join(', ')}"
+      end
+      unless headers.nil? || (headers.instance_of?(Array) && headers.all? { |pair| pair.instance_of?(Array) && pair.length == 2 && pair.all? { |part| part.instance_of?(String) } })
+        raise 'Copyleaks::CopyleaksURLSubmissionModel - headers - headers must be an Array of String Array pairs'
+      end
 
       super(properties)
       @url = url
+      @verb = verb
+      @headers = headers
     end
 
     def as_json(*_args)
       {
-        properties: @properties,
-        url: @url
+        url: @url,
+        verb: @verb,
+        headers: @headers,
+        properties: @properties
       }.select { |_k, v| !v.nil? }
     end
 

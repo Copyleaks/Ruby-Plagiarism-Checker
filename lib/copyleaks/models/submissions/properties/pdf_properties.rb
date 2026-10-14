@@ -23,22 +23,23 @@
 # =
 module Copyleaks
   class SubmissionPDF
+    # Every argument is optional. An argument left nil is not sent, and the server default applies.
     # @param [Boolean] create Add a request to generate a customizable export of the scan report, in a pdf format. Set to true in order to generate a pdf report for this scan.
     # @param [String] title Customize the title for the PDF report.
     # @param [String] largeLogo Customize the logo image in the PDF report.
     # @param [Boolean] rtl When set to true the text in the report will be aligned from right to left.
-    # @param [SubmissionPdfVersion] verion  - PDF version to generate.
+    # @param [SubmissionPdfVersion] version - Deprecated: use reportVersion. PDF version to generate.
     # @param [SubmissionPdfColors] colors - Customizable colors.
     # @param [String] reportVersion - PDF report version to generate. Overrides version when both are supplied.
-    #   Possible values: 'v1', 'v2', 'v3', 'latest'. Values are lowercase and case-sensitive ('V3' is rejected).
+    #   Possible values (SubmissionPdfReportVersion): 'v1', 'v2', 'v3', 'latest'. Values are lowercase and case-sensitive ('V3' is rejected).
     #   Only takes effect when create is true.
     #   Leave nil to omit the field and get the server default.
 
     def initialize(
-      create,
-      title,
-      largeLogo,
-      rtl,
+      create = nil,
+      title = nil,
+      largeLogo = nil,
+      rtl = nil,
       version = nil,
       colors = nil,
       reportVersion = nil

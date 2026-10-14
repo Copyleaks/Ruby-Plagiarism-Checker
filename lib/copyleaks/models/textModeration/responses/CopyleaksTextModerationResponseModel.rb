@@ -1,36 +1,57 @@
 require 'json'
+
 module Copyleaks
+  # Builds the text moderation models from a parsed Hash (String or Symbol keys) or a JSON String.
+  module TextModerationJson
+    def self.to_hash(json)
+      data = json.is_a?(String) ? JSON.parse(json) : json
+      data.is_a?(Hash) ? data : nil
+    end
 
-class CopyleaksTextModerationResponseModel
-  attr_accessor :moderations, :legend, :scanned_document
-
-  # @param moderations [ModerationsModel] Moderated text segments detected in the input text.
-  # @param legend [Array<TextModerationsLegend>] An array that provides a lookup for the labels referenced by their numerical indices in the `text.chars.labels` array. Each object within this legend array defines a specific label that was used in the scan.
-  # @param scanned_document [TextModerationScannedDocument] General information about the scanned document.
-  def initialize(moderations: ModerationsModel.new, legend: [], scanned_document: TextModerationScannedDocument.new, **_ignored)
-    @moderations = moderations
-    @legend = legend
-    @scanned_document = scanned_document
+    def self.get(data, key)
+      data.key?(key) ? data[key] : data[key.to_sym]
+    end
   end
 
+  class CopyleaksTextModerationResponseModel
+    attr_accessor :moderations, :legend, :scanned_document, :model_version
 
-  def to_json(options = {})
-    {
-      moderations: @moderations ? JSON.parse(@moderations.to_json) : nil,
-      legend: @legend.map(&:to_json).map { |l| JSON.parse(l) },
-      scannedDocument: @scanned_document ? JSON.parse(@scanned_document.to_json) : nil
-    }.to_json(options)
+    # @param moderations [ModerationsModel] The flagged character ranges.
+    # @param legend [Array<TextModerationsLegend>] Maps label indexes to label ids.
+    # @param scanned_document [TextModerationScannedDocument] Metadata about the scan.
+    # @param model_version [String] The version of the moderation model used.
+    def initialize(moderations: ModerationsModel.new, legend: [], scanned_document: TextModerationScannedDocument.new,
+                   model_version: nil, **_ignored)
+      @moderations = moderations
+      @legend = legend
+      @scanned_document = scanned_document
+      @model_version = model_version
+    end
+
+    def to_json(options = {})
+      hash = {
+        moderations: @moderations ? JSON.parse(@moderations.to_json) : nil,
+        legend: (@legend || []).map { |l| JSON.parse(l.to_json) },
+        scannedDocument: @scanned_document ? JSON.parse(@scanned_document.to_json) : nil
+      }
+      hash[:modelVersion] = @model_version unless @model_version.nil?
+      hash.to_json(options)
+    end
+
+    # @param json [Hash, String] The client result (a Hash) or the raw JSON String.
+    def self.from_json(json)
+      data = TextModerationJson.to_hash(json)
+      return nil if data.nil?
+
+      moderations = TextModerationJson.get(data, 'moderations')
+      legend = TextModerationJson.get(data, 'legend')
+      scanned_document = TextModerationJson.get(data, 'scannedDocument')
+      new(
+        moderations: moderations ? ModerationsModel.from_json(moderations) : nil,
+        legend: (legend || []).map { |l| TextModerationsLegend.from_json(l) },
+        scanned_document: scanned_document ? TextModerationScannedDocument.from_json(scanned_document) : nil,
+        model_version: TextModerationJson.get(data, 'modelVersion')
+      )
+    end
   end
-
-
-  def self.from_json(json_string)
-    data = JSON.parse(json_string, symbolize_names: true)
-    new(
-      moderations: data[:moderations] ? ModerationsModel.from_json(data[:moderations].to_json) : nil,
-      legend: data[:legend].map { |l| TextModerationsLegend.from_json(l.to_json) },
-      scanned_document: data[:scannedDocument] ? TextModerationScannedDocument.from_json(data[:scannedDocument].to_json) : nil
-    )
-  end
-end
-
 end

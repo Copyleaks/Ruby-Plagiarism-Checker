@@ -24,36 +24,47 @@
 require 'json'
 module Copyleaks
   class CopyleaksDeleteRequestModel
-    attr_reader :scans, :purge, :completionWebhook
+    attr_reader :scans, :purge, :completionWebhook, :headers
 
-    # @param [Array] scans The list of scans to delete
+    # @param [Array] scans The list of scans to delete (IdObject items).
     # @param [Boolean] purge Delete all trace of the scan from Copyleaks server, including from internal database. A purged process will not be available as a result for previous scans.
+    #   Leave nil to omit the field (server default: false).
     # @param [String] completionWebhook Allows you to register to a webhook that will be fired once the removal has been completed. Make sure that your endpoint is listening to a POST method (no body parameters were supplied).
-    def initialize(scans, purge = false, completionWebhook = '')
+    #   Leave nil to omit the field.
+    # @param [Array<Array<String>>] headers Headers added to the completion webhook request, for example
+    #   [['Authorization', 'Bearer my-token']].
+    def initialize(scans, purge = nil, completionWebhook = nil, headers: nil)
       scans.each do |object_id|
         unless object_id.instance_of?(IdObject)
           raise 'Copyleaks::CopyleaksDeleteRequestModel - scans - entity must be of type Copyleaks::IdObject'
         end
       end
 
-      unless [true, false].include? purge
+      unless purge.nil? || [true, false].include?(purge)
         raise 'Copyleaks::CopyleaksDeleteRequestModel - purge - purge must be of type Boolean'
       end
 
-      unless completionWebhook.instance_of?(String)
+      unless completionWebhook.nil? || completionWebhook.instance_of?(String)
         raise 'Copyleaks::CopyleaksDeleteRequestModel - completionWebhook - completionWebhook must be of type String'
+      end
+
+      unless headers.nil? || (headers.instance_of?(Array) && headers.all? { |pair| pair.instance_of?(Array) && pair.length == 2 && pair.all? { |part| part.instance_of?(String) } })
+        raise 'Copyleaks::CopyleaksDeleteRequestModel - headers - headers must be an Array of String Array pairs'
       end
 
       @scans = scans
       @purge = purge
-      @completionWebhook = completionWebhook
+      # An empty webhook URL means "no webhook": leave it out of the request.
+      @completionWebhook = completionWebhook == '' ? nil : completionWebhook
+      @headers = headers
     end
 
     def as_json(*_args)
       {
         scans: @scans.map { |object_id| object_id.as_json },
         purge: @purge,
-        completionWebhook: @completionWebhook
+        completionWebhook: @completionWebhook,
+        headers: @headers
       }.select { |_k, v| !v.nil? }
     end
 

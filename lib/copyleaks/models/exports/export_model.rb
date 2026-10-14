@@ -23,16 +23,23 @@
 # =
 module Copyleaks
   class CopyleaksExportModel
-    attr_reader :completionWebhook, :completionWebhookHeaders, :results, :crawledVersion, :pdfReport, :maxRetries, :developerPayload
+    attr_reader :completionWebhook, :completionWebhookHeaders, :results, :crawledVersion, :pdfReport, :maxRetries,
+                :developerPayload, :aiDetection, :writingFeedback, :overview
 
+    # Only completionWebhook is required. Request at least one artifact to export.
     # @param [String] completionWebhook This webhook event is triggered once the export is completed.
     # @param [ExportResults[]] results An array of results to be exported. The equivalent of downloading results manually.
-    # @param [ExportCrawledVersion crawledVersion Download the crawled version of the submitted text. The equivalent of downloading crawled version manually.
+    # @param [ExportCrawledVersion] crawledVersion Download the crawled version of the submitted text. The equivalent of downloading crawled version manually.
     # @param [ExportPdfReport] pdfReport Download the PDF report. Allowed only when `properties.pdf.create` was set to true on the scan submission.
     # @param [Integer] maxRetries How many retries to send before giving up. Using high value (12) may lead to a longer time until the completionWebhook being executed. A low value (1) may lead to errors while your service is temporary having problems.
-    # @param [String] developerPayload Add a custom developer payload that will then be provided on the Export-Completed webhook. https://api.copyleaks.com/documentation/v3/webhooks/export-completed
+    # @param [String] developerPayload Add a custom developer payload that will then be provided on the Export-Completed webhook.
     # @param [Array] completionWebhookHeaders Adds headers to the completion webhook.
-    def initialize(completionWebhook, results, crawledVersion, pdfReport = nil, maxRetries = nil, developerPayload = nil, completionWebhookHeaders = nil)
+    # @param [ExportAiDetection] aiDetection Export the AI Content Detection report (keyword option).
+    # @param [ExportWritingFeedback] writingFeedback Export the Grammar Checker report (keyword option).
+    # @param [ExportOverview] overview Export the Gen-AI Overview report (keyword option).
+    def initialize(completionWebhook, results = nil, crawledVersion = nil, pdfReport = nil, maxRetries = nil,
+                   developerPayload = nil, completionWebhookHeaders = nil,
+                   aiDetection: nil, writingFeedback: nil, overview: nil)
       unless completionWebhook.instance_of?(String)
         raise 'Copyleaks::CopyleaksExportModel - completionWebhook - completionWebhook must be of type String'
       end
@@ -41,13 +48,11 @@ module Copyleaks
         raise 'Copyleaks::CopyleaksExportModel - completionWebhookHeaders - completionWebhookHeaders must be an Array of String Array pairs'
       end
 
-      results.each do |item|
-        unless item.instance_of?(ExportResults)
-          raise 'Copyleaks::CopyleaksExportModel - results - entity must be of type Copyleaks::ExportResults'
-        end
+      unless results.nil? || (results.is_a?(Array) && results.all? { |item| item.instance_of?(ExportResults) })
+        raise 'Copyleaks::CopyleaksExportModel - results - entity must be of type Copyleaks::ExportResults'
       end
 
-      unless crawledVersion.instance_of?(ExportCrawledVersion)
+      if !crawledVersion.nil? && !crawledVersion.instance_of?(ExportCrawledVersion)
         raise 'Copyleaks::CopyleaksExportModel - crawledVersion - crawledVersion must be of type Copyleaks::ExportCrawledVersion'
       end
 
@@ -63,6 +68,18 @@ module Copyleaks
         raise 'Copyleaks::CopyleaksExportModel - developerPayload - developerPayload must be of type String'
       end
 
+      if !aiDetection.nil? && !aiDetection.instance_of?(ExportAiDetection)
+        raise 'Copyleaks::CopyleaksExportModel - aiDetection - aiDetection must be of type Copyleaks::ExportAiDetection'
+      end
+
+      if !writingFeedback.nil? && !writingFeedback.instance_of?(ExportWritingFeedback)
+        raise 'Copyleaks::CopyleaksExportModel - writingFeedback - writingFeedback must be of type Copyleaks::ExportWritingFeedback'
+      end
+
+      if !overview.nil? && !overview.instance_of?(ExportOverview)
+        raise 'Copyleaks::CopyleaksExportModel - overview - overview must be of type Copyleaks::ExportOverview'
+      end
+
       @completionWebhook = completionWebhook
       @completionWebhookHeaders = completionWebhookHeaders
       @results = results
@@ -70,6 +87,9 @@ module Copyleaks
       @pdfReport = pdfReport
       @maxRetries = maxRetries
       @developerPayload = developerPayload
+      @aiDetection = aiDetection
+      @writingFeedback = writingFeedback
+      @overview = overview
     end
 
     def as_json(*_args)
@@ -79,6 +99,9 @@ module Copyleaks
         results: @results,
         crawledVersion: @crawledVersion,
         pdfReport: @pdfReport,
+        aiDetection: @aiDetection,
+        writingFeedback: @writingFeedback,
+        overview: @overview,
         maxRetries: @maxRetries,
         developerPayload: @developerPayload
       }.select { |_k, v| !v.nil? }

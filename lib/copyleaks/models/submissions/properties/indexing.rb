@@ -23,14 +23,23 @@
 # =
 module Copyleaks
   class SubmissionIndexing
-    # @param [SubmissionIndexingRepository[]] repositories - Check inner properties of SubmissionRepository for more details.
-    def initialize(repositories)
+    # @param [SubmissionIndexingRepository[]] repositories - Repositories to index the scanned document to.
+    #   Check inner properties of SubmissionIndexingRepository for more details.
+    # @param [Boolean] copyleaksDb Add the submitted document to the Copyleaks Shared Data Hub.
+    #   Leave nil to omit the field (server default: false).
+    def initialize(repositories = nil, copyleaksDb: nil)
+      if !copyleaksDb.nil? && ![true, false].include?(copyleaksDb)
+        raise 'Copyleaks::SubmissionIndexing - copyleaksDb - copyleaksDb must be of type Boolean'
+      end
+
       @repositories = repositories
+      @copyleaksDb = copyleaksDb
     end
 
     def as_json(*_args)
       {
-        repositories: @repositories
+        repositories: @repositories,
+        copyleaksDb: @copyleaksDb
       }.select { |_k, v| !v.nil? }
     end
 

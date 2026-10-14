@@ -23,16 +23,37 @@
 # =
 module Copyleaks
   class SubmissionAiGeneratedText
-    # @param [Boolean] detect Detects whether the text was written by an AI.
-    def initialize(
-      detect = false
-    )
+    attr_reader :detect, :sensitivity, :explain
+
+    # Every field is optional. A field left nil is not sent, and the server default applies.
+    # @param [Boolean] detect Detects whether the text was written by an AI (server default: false).
+    # @param [Integer] sensitivity How aggressive the AI detection is, 1 to 3 (server default: 2).
+    #   1 finds text copied from an AI tool without edits, 3 also finds heavily edited AI text.
+    # @param [SubmissionAiGeneratedTextExplain, Boolean] explain AI Logic: return explanations with the
+    #   AI detection result. true is the same as SubmissionAiGeneratedTextExplain.new(true).
+    def initialize(detect = nil, sensitivity: nil, explain: nil)
+      if !detect.nil? && ![true, false].include?(detect)
+        raise 'Copyleaks::SubmissionAiGeneratedText - detect - detect must be of type Boolean'
+      end
+      if !sensitivity.nil? && !(sensitivity.is_a?(Integer) && sensitivity.between?(1, 3))
+        raise 'Copyleaks::SubmissionAiGeneratedText - sensitivity - sensitivity must be an Integer from 1 to 3'
+      end
+
+      explain = SubmissionAiGeneratedTextExplain.new(explain) if [true, false].include?(explain)
+      if !explain.nil? && !explain.instance_of?(SubmissionAiGeneratedTextExplain)
+        raise 'Copyleaks::SubmissionAiGeneratedText - explain - explain must be of type SubmissionAiGeneratedTextExplain'
+      end
+
       @detect = detect
+      @sensitivity = sensitivity
+      @explain = explain
     end
 
     def as_json(*_args)
       {
-        detect: @detect
+        detect: @detect,
+        sensitivity: @sensitivity,
+        explain: @explain
       }.select { |_k, v| !v.nil? }
     end
 

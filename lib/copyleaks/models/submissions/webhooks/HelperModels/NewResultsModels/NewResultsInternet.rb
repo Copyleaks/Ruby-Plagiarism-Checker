@@ -26,7 +26,8 @@ module Copyleaks
     # @param [Integer] matchedWords - Total matched words between this result and the scanned document.
     # @param [Metadata] metadata - Metadata object
     # @param [String] url - Public URL of the resource.
-    def initialize(id:, title:, introduction:, matchedWords:, scanId:, metadata:, url:)
+    # scanId is accepted for compatibility with earlier versions and is not used: internet results have no scan id.
+    def initialize(id:, title:, introduction:, matchedWords:, metadata:, url:, scanId: nil)
       raise 'Copyleaks::NewResultsInternet - id must be a String' unless id.is_a?(String)
       raise 'Copyleaks::NewResultsInternet - title must be a String' unless title.is_a?(String)
       raise 'Copyleaks::NewResultsInternet - introduction must be a String' unless introduction.is_a?(String)

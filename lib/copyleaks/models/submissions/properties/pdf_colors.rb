@@ -23,36 +23,51 @@
 # =
 module Copyleaks
     class SubmissionPdfColors
+        attr_reader :mainStrip, :titles, :identical, :minorChanges, :relatedMeaning, :aiDetection, :writingFeedback
+
+        # Every color is optional, in HEX format (for example '#040F21'). A color left nil is not sent.
         # @param [String] mainStrip - The color of the main strip in the header.
-        # @param [String] title - The color for titles in copyleaks result report.
+        # @param [String] titles - The color of titles in the PDF report. Sent as "titles".
         # @param [String] identical - The highlight color for identical matches.
         # @param [String] minorChanges - The highlight color for minor changes matches.
         # @param [String] relatedMeaning - The highlight color for related meaning matches.
-
+        # @param [String] aiDetection - The highlight color for AI content detection.
+        # @param [String] writingFeedback - The highlight color for writing feedback (Grammar Checker).
         def initialize(
             mainStrip = nil,
-            title = nil,
+            titles = nil,
             identical = nil,
             minorChanges = nil,
-            relatedMeaning = nil
+            relatedMeaning = nil,
+            aiDetection: nil,
+            writingFeedback: nil
         )
             @mainStrip = mainStrip
-            @title = title
+            @titles = titles
             @identical = identical
             @minorChanges = minorChanges
             @relatedMeaning = relatedMeaning
+            @aiDetection = aiDetection
+            @writingFeedback = writingFeedback
         end
-    
+
+        # Earlier versions named the second argument title.
+        def title
+            @titles
+        end
+
         def as_json(*_args)
             {
                 mainStrip: @mainStrip,
-                title: @title,
+                titles: @titles,
                 identical: @identical,
                 minorChanges: @minorChanges,
-                relatedMeaning: @relatedMeaning
+                relatedMeaning: @relatedMeaning,
+                aiDetection: @aiDetection,
+                writingFeedback: @writingFeedback
             }.select { |_k, v| !v.nil? }
         end
-  
+
         def to_json(*options)
             as_json(*options).to_json(*options)
         end

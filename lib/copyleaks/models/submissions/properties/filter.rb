@@ -23,23 +23,24 @@
 # =
 module Copyleaks
   class SubmissionFilter
-    # @param [Boolean] identicalEnabled Enable matching of exact words in the text.
-    # @param [Boolean] minorChangesEnabled Enable matching of nearly identical words with small differences like slow becomes slowly.
-    # @param [Boolean] relatedMeaningEnabled Enable matching of paraphrased content stating similar ideas with different words.
+    # Every argument is optional. An argument left nil is not sent, and the server default applies.
+    # @param [Boolean] identicalEnabled Enable matching of exact words in the text (server default: true).
+    # @param [Boolean] minorChangesEnabled Enable matching of nearly identical words with small differences like slow becomes slowly (server default: true).
+    # @param [Boolean] relatedMeaningEnabled Enable matching of paraphrased content stating similar ideas with different words (server default: true).
     # @param [Integer] minCopiedWords Select results with at least minCopiedWords copied words.
-    # @param [Boolean] safeSearch Block explicit adult content from the scan results such as web pages containing inappropriate images and videos. SafeSearch is not 100% effective with all websites.
+    # @param [Boolean] safeSearch Block explicit adult content from the scan results such as web pages containing inappropriate images and videos. SafeSearch is not 100% effective with all websites (server default: false).
     # @param [String[]] domains list of domains to either include or exclude from the scan - depending on the value of domainsMode.
-    # @param [SubmissionFilterDomainsMode] domainsMode Include or Exclude the list of domains you specified under the domains property
-    # @param [Boolean] allowSameDomain when set to true it will allow results from the same domain as the submitted url.
+    # @param [SubmissionFilterDomainsMode] domainsMode Include or Exclude the list of domains you specified under the domains property (server default: EXCLUDE).
+    # @param [Boolean] allowSameDomain when set to true it will allow results from the same domain as the submitted url (server default: false).
     def initialize(
-      identicalEnabled = true,
-      minorChangesEnabled = false,
-      relatedMeaningEnabled = false,
+      identicalEnabled = nil,
+      minorChangesEnabled = nil,
+      relatedMeaningEnabled = nil,
       minCopiedWords = nil,
-      safeSearch = false,
-      domains = [],
-      domainsMode = SubmissionFilterDomainsMode::EXCLUDE,
-      allowSameDomain = false
+      safeSearch = nil,
+      domains = nil,
+      domainsMode = nil,
+      allowSameDomain = nil
     )
       @identicalEnabled = identicalEnabled
       @minorChangesEnabled = minorChangesEnabled

@@ -22,23 +22,22 @@
 #  SOFTWARE.
 # =
 module Copyleaks
-    class SubmissionExcludeCode
-      # @param [Boolean] Exclude comments from the scan.
-  
-      def initialize(
-        comments = false
-      )
-        @comments = comments
-      end
-  
-      def as_json(*_args)
-        {
-            comments: @comments,
-        }.select { |_k, v| !v.nil? }
-      end
-  
-      def to_json(*options)
-        as_json(*options).to_json(*options)
-      end
+  class SubmissionExcludeCode
+    # @param [Boolean] comments Exclude comments from the scan. Leave nil to omit the field.
+    def initialize(
+      comments = nil
+    )
+      @comments = comments
+    end
+
+    def as_json(*_args)
+      {
+        comments: @comments
+      }.select { |_k, v| !v.nil? }
+    end
+
+    def to_json(*options)
+      as_json(*options).to_json(*options)
     end
   end
+end

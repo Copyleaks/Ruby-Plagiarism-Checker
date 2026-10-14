@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['sales@copyleaks.com']
 
   spec.summary       = 'The official Copyleaks Ruby library.'
-  spec.description   = "Copyleaks is the integrity layer for your tech stack that helps organizations and individuals understand what's human-made and original, AI-generated, or manipulated across text, image, audio and video. This SDK gives you access to the following Copyleaks products: AI Text Detection, AI Image Detection, Plagiarism Checker (Authenticity scans: file, URL, OCR), Grammar Checker, Text Moderation."
+  spec.description   = "Copyleaks is the integrity layer for your tech stack that helps organizations and individuals understand what's human-made and original, AI-generated, or manipulated across text, image, audio and video. This SDK gives you access to the following Copyleaks products: AI Text Detection, AI Image Detection, AI Video Detection, Plagiarism Checker (Authenticity scans: file, URL, OCR), Image Plagiarism Detection, Grammar Checker, Text Moderation."
   spec.homepage      = 'https://api.copyleaks.com'
   spec.license       = 'MIT'
 
@@ -26,4 +26,9 @@ Gem::Specification.new do |spec|
   spec.bindir        = 'bin'
   spec.executables   = []
   spec.require_paths = ['lib']
+
+  # Development and test only. The gem has no runtime dependencies.
+  spec.add_development_dependency 'minitest', '~> 5.0'
+  spec.add_development_dependency 'rake', '>= 12.0'
+  spec.add_development_dependency 'webrick', '>= 1.4'
 end

@@ -26,9 +26,10 @@ module Copyleaks
   class AIDetectionSubmissionModel
     attr_accessor :text, :sandbox
 
-    # @param [String] A text string.
-    # @param [Boolean] Use sandbox mode to test your integration with the Copyleaks API for free.
-    def initialize(text, sandbox = false)
+    # @param [String] text A text string.
+    # @param [Boolean] sandbox Use sandbox mode to test your integration with the Copyleaks API for free.
+    #   Leave nil to omit the field (server default: false).
+    def initialize(text, sandbox = nil)
       unless text.instance_of?(String)
         raise 'Copyleaks::AIDetectionSubmissionModel - text - text must be of type String'
       end

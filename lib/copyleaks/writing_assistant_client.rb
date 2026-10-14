@@ -22,39 +22,24 @@
 #  SOFTWARE.
 # =
 
+
 module Copyleaks
   class WritingAssistantClient
+    # @param [Copyleaks::HttpClient] api_client The pooled API connection (a Net::HTTP is also accepted).
     def initialize(api_client)
-      @api_client = api_client
+      @api_client = HttpClient.wrap(api_client)
     end
 
     # Get a list of correction types supported within the Writing Assistant API. Correction types apply to all supported languages. The supplied language code for this request is used to determine the language of the texts returned.
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
-    # @param [languageCode] The language for the returned texts to be in. Language codes are in ISO 639-1 standard. Supported Values: en - English
+    # For more info: https://docs.copyleaks.com/reference/actions/writing-assistant/correction-types
+    # @param [String] language_code The language for the returned texts to be in. Language codes are in ISO 639-1 standard. Supported Values: en - English
     def get_correction_types(language_code)
-      path = "/v1/writing-feedback/correction-types/#{language_code}"
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent
-      }
-
-      request = Net::HTTP::Get.new(path, headers)
-      ClientUtils.handle_response(@api_client.request(request), 'get_correction_types')
+      path = "/v1/writing-feedback/correction-types/#{ClientUtils.escape_path(language_code)}"
+      ClientUtils.send_request(@api_client, :get, path, 'get_correction_types')
     end
 
     # Use Copyleaks Writing Assistant to generate grammar, spelling and sentence corrections for a given text.
-    # * Exceptions:
-    # * * CommandExceptions: Server reject the request. See response status code,
-    #     headers and content for more info.
-    # * * UnderMaintenanceException: Copyleaks servers are unavailable for maintenance.
-    #     We recommend to implement exponential backoff algorithm as described here:
-    #     https://api.copyleaks.com/documentation/v3/exponential-backoff
+    # For more info: https://docs.copyleaks.com/reference/actions/writing-assistant/check
     # @param [CopyleaksAuthToken] authToken Copyleaks authentication token
     # @param [String] scanId Attach your own scan Id
     # @param [WritingAssistantSubmissionModel] submission document
@@ -64,18 +49,8 @@ module Copyleaks
 
       ClientUtils.verify_auth_token(authToken)
 
-      path = "/v1/writing-feedback/#{scanId}/check"
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'User-Agent' => Config.user_agent,
-        'Authorization' => "Bearer #{authToken.accessToken}"
-      }
-
-      request = Net::HTTP::Post.new(path, headers)
-      request.body = submission.to_json
-
-      ClientUtils.handle_response(@api_client.request(request), 'submit_writing_assistant')
+      path = "/v1/writing-feedback/#{ClientUtils.escape_path(scanId)}/check"
+      ClientUtils.send_request(@api_client, :post, path, 'submit_writing_assistant', auth_token: authToken, json: submission)
     end
   end
 end

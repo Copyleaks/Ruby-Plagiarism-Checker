@@ -48,6 +48,9 @@ module Copyleaks
     # AI Logic explanation. Present only when AI Logic (explain) was enabled.
     attr_accessor :explain
 
+    # Metadata about the scan (CopyleaksAiTextDetectionScannedDocumentModel).
+    attr_accessor :scanned_document
+
     # Initialize a new CopyleaksAiTextDetectionResponseModel
     #
     # @param model_version [String] The version of the AI detection model used for the analysis
@@ -56,13 +59,16 @@ module Copyleaks
     # @param translation_provider [Integer] The translation provider (0 = none, 1 = Google Translate, 2 = Helsinki, 3 = Azure)
     # @param translation [String] The full English translation of the text, when it was machine-translated
     # @param explain [CopyleaksAiTextDetectionExplainModel] AI Logic explanation, when AI Logic was enabled
-    def initialize(model_version: nil, results: nil, summary: nil, translation_provider: nil, translation: nil, explain: nil)
+    # @param scanned_document [CopyleaksAiTextDetectionScannedDocumentModel] Metadata about the scan
+    def initialize(model_version: nil, results: nil, summary: nil, translation_provider: nil, translation: nil, explain: nil,
+                   scanned_document: nil)
       @model_version = model_version
       @results = results
       @summary = summary
       @translation_provider = translation_provider
       @translation = translation
       @explain = explain
+      @scanned_document = scanned_document
     end
 
     # Create instance from JSON hash
@@ -81,7 +87,8 @@ module Copyleaks
         summary: summary,
         translation_provider: json_hash['translationProvider'],
         translation: json_hash['translation'],
-        explain: explain
+        explain: explain,
+        scanned_document: CopyleaksAiTextDetectionScannedDocumentModel.from_json(json_hash['scannedDocument'])
       )
     end
 
@@ -93,7 +100,8 @@ module Copyleaks
         'summary' => @summary,
         'translationProvider' => @translation_provider,
         'translation' => @translation,
-        'explain' => @explain
+        'explain' => @explain,
+        'scannedDocument' => @scanned_document
       }.compact.to_json(*args)
     end
   end

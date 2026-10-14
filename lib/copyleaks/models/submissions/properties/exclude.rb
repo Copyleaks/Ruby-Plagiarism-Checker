@@ -30,14 +30,16 @@ module Copyleaks
     # @param [Boolean] htmlTemplate When the scanned document is an HTML document, exclude irrelevant text that appears across the site like the website footer or header.
     # @param [Boolean] citations - Exclude citations from the scan.
     # @param [String[]] documentTemplateIds - Exclude text based on text found within other documents.
-    # @param [SubmissionExcludeCode] code - Exclude sections of source code
+    # @param [SubmissionExcludeCode] code - Exclude sections of source code. Not part of the current API reference;
+    #   kept for compatibility.
 
+    # Every argument is optional. An argument left nil is not sent, and the server default (false) applies.
     def initialize(
-      quotes = false,
-      references = false,
-      tableOfContents = false,
-      titles = false,
-      htmlTemplate = false,
+      quotes = nil,
+      references = nil,
+      tableOfContents = nil,
+      titles = nil,
+      htmlTemplate = nil,
       citations = nil,
       documentTemplateIds = nil,
       code = nil
