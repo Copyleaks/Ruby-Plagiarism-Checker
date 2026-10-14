@@ -17,7 +17,7 @@ class ScanWebhookServlet < WEBrick::HTTPServlet::AbstractServlet
     when %r{^/url-webhook/scan/(\w+)/error$}
       scan_id = $1
       handle_error(req, res, scan_id)
-    when %r{^/url-webhook/scan/(\w+)/creditsChecked$}
+    when %r{^/url-webhook/scan/(\w+)/creditschecked$}
       scan_id = $1
       handle_credits_checked(req, res, scan_id)
     when %r{^/url-webhook/scan/(\w+)/indexed$}
