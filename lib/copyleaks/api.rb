@@ -300,7 +300,9 @@ module Copyleaks
     # Get the language codes (ISO-639-1) allowed for cross-language plagiarism detection. No login is needed.
     # Use them with Copyleaks::SubmissionCrossLanguages.
     # For more info: https://docs.copyleaks.com/reference/actions/miscellaneous/supported-cross-languages
-    # @return [Hash] For example { 'documentLanguages' => [...], 'resultLanguages' => [...] }.
+    # @return [Hash] Two maps of language name to code: the languages a scanned document can be in, and the
+    #   languages results can be found in. For example
+    #   { 'documentLanguages' => { 'english' => 'en', ... }, 'resultLanguages' => { 'french' => 'fr', ... } }.
     def get_allowed_cross_languages
       ClientUtils.send_request(@api_client, :get, '/v3/miscellaneous/allowed-cross-languages',
                                'get_allowed_cross_languages')

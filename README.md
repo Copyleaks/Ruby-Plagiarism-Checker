@@ -156,7 +156,7 @@ Other new options:
 - `Copyleaks::CopyleaksURLSubmissionModel.new(url, properties, verb: 'POST', headers: [['Cookie', 'session=abc']])`
 - `Copyleaks::CopyleaksDeleteRequestModel.new(scans, true, 'https://your-server.com/deleted', headers: [['Authorization', 'Bearer token']])`
 
-`copyleaks.get_allowed_cross_languages` lists the language codes you can use with `Copyleaks::SubmissionCrossLanguages`. It needs no login.
+`copyleaks.get_allowed_cross_languages` lists the languages you can use with `Copyleaks::SubmissionCrossLanguages`, as maps of language name to code. For example, `copyleaks.get_allowed_cross_languages['resultLanguages'].values` returns the codes results can be found in. It needs no login.
 ##
 ### Export scan artifacts
 Request any combination of artifacts. Only `completionWebhook` is required.

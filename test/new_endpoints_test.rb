@@ -184,8 +184,10 @@ class NewEndpointsTest < Minitest::Test
   end
 
   def test_allowed_cross_languages_is_public
-    @server.respond { |_req| [200, {}, '{"documentLanguages":["en"],"resultLanguages":["fr"]}'] }
-    assert_equal({ 'documentLanguages' => ['en'], 'resultLanguages' => ['fr'] }, api.get_allowed_cross_languages)
+    body = { documentLanguages: { english: 'en' }, resultLanguages: { french: 'fr' } }.to_json
+    @server.respond { |_req| [200, {}, body] }
+    assert_equal({ 'documentLanguages' => { 'english' => 'en' }, 'resultLanguages' => { 'french' => 'fr' } },
+                 api.get_allowed_cross_languages)
 
     req = @server.last_request
     assert_equal 'GET', req.method
