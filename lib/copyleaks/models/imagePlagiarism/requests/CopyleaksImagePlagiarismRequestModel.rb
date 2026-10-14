@@ -25,7 +25,6 @@
 module Copyleaks
   # Request model for the Image Plagiarism Detector. The image is uploaded as multipart/form-data.
   class CopyleaksImagePlagiarismRequestModel
-    VALID_EXTENSIONS = %w[.jpg .jpeg .png .gif .bmp .webp .ico].freeze
     FILENAME_MAX_LENGTH = 255
 
     attr_reader :image, :filename, :sandbox, :developer_payload

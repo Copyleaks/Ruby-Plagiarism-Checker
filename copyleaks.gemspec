@@ -21,7 +21,9 @@ Gem::Specification.new do |spec|
   spec.metadata['changelog_uri'] = 'https://github.com/Copyleaks/Ruby-Plagiarism-Checker/blob/master/CHANGELOG.md'
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    `git ls-files -z`.split("\x0").reject { |f| f.match(%r{\A(?:demo|test|spec|features)/}) || f.match(/\.gem/) }
+    files = `git ls-files -z 2>/dev/null`.split("\x0")
+    files = Dir['lib/**/*.rb'] + %w[README.md CHANGELOG.md LICENSE.txt copyleaks.gemspec] if files.empty?
+    files.reject { |f| f.match(%r{\A(?:demo|test|spec|features)/}) || f.match(/\.gem/) }
   end
   spec.bindir        = 'bin'
   spec.executables   = []
@@ -30,5 +32,5 @@ Gem::Specification.new do |spec|
   # Development and test only. The gem has no runtime dependencies.
   spec.add_development_dependency 'minitest', '~> 5.0'
   spec.add_development_dependency 'rake', '>= 12.0'
-  spec.add_development_dependency 'webrick', '>= 1.4'
+  spec.add_development_dependency 'webrick', '~> 1.4'
 end

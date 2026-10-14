@@ -58,8 +58,9 @@ module Copyleaks
     end
 
     # Adds a file field. data is a binary String or an IO that responds to #read.
+    # An IO is rewound first when it can be, so the same request can be sent again.
     def add_file(name, data, filename, content_type = nil)
-      bytes = data.respond_to?(:read) ? data.read : data
+      bytes = data.respond_to?(:read) ? read_io(data) : data
       raise ArgumentError, "Copyleaks::MultipartForm - #{name} - file data must be a String or an IO" unless bytes.is_a?(String)
 
       content_type ||= self.class.content_type_for(filename)
@@ -92,6 +93,15 @@ module Copyleaks
     end
 
     private
+
+    def read_io(io)
+      begin
+        io.rewind if io.respond_to?(:rewind)
+      rescue Errno::ESPIPE
+        # Pipes and sockets cannot be rewound; they are read from where they are.
+      end
+      io.read
+    end
 
     # Quotes and line breaks cannot appear inside a quoted header value.
     def escape(value)

@@ -309,6 +309,14 @@ class ModelsTest < Minitest::Test
     assert_equal 'application/octet-stream', Copyleaks::MultipartForm.content_type_for('file.xyz')
   end
 
+  def test_multipart_form_rereads_io
+    io = StringIO.new("\xFF\x00".b)
+    first = Copyleaks::MultipartForm.new('BOUNDARY').add_file('image', io, 'a.png').body
+    second = Copyleaks::MultipartForm.new('BOUNDARY').add_file('image', io, 'a.png').body
+    assert_equal first, second
+    assert_includes second, "\xFF\x00\r\n".b
+  end
+
   def test_path_escaping
     assert_equal 'abc-123_x.y~', Copyleaks::ClientUtils.escape_path('abc-123_x.y~')
     assert_equal '%2F%3F%23%25%20%2B%22%3C%3E%7B%7D%7C%2A', Copyleaks::ClientUtils.escape_path('/?#% +"<>{}|*')
