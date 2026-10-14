@@ -175,11 +175,14 @@ module Copyleaks
 
   # The AI video detection result, delivered to your webhook.
   # Build it from the parsed webhook body: CopyleaksAiVideoDetectionResponseModel.from_json(JSON.parse(body))
+  # Check error first: when the scan failed, error (a Copyleaks::Error) is set and the result fields are nil.
+  # developer_payload is the developer payload sent with the submit request.
   class CopyleaksAiVideoDetectionResponseModel
-    attr_accessor :model, :audio_result, :visual_result, :summary, :is_ai_detected, :video_info, :scanned_video
+    attr_accessor :model, :audio_result, :visual_result, :summary, :is_ai_detected, :video_info, :scanned_video,
+                  :error, :developer_payload
 
     def initialize(model: nil, audio_result: nil, visual_result: nil, summary: nil, is_ai_detected: nil,
-                   video_info: nil, scanned_video: nil)
+                   video_info: nil, scanned_video: nil, error: nil, developer_payload: nil)
       @model = model
       @audio_result = audio_result
       @visual_result = visual_result
@@ -187,6 +190,8 @@ module Copyleaks
       @is_ai_detected = is_ai_detected
       @video_info = video_info
       @scanned_video = scanned_video
+      @error = error
+      @developer_payload = developer_payload
     end
 
     def self.from_json(json_hash)
@@ -199,7 +204,9 @@ module Copyleaks
         summary: CopyleaksAiVideoDetectionSummaryModel.from_json(json_hash['summary']),
         is_ai_detected: json_hash['isAiDetected'],
         video_info: CopyleaksAiVideoDetectionVideoInfoModel.from_json(json_hash['videoInfo']),
-        scanned_video: CopyleaksAiVideoDetectionScannedVideoModel.from_json(json_hash['scannedVideo'])
+        scanned_video: CopyleaksAiVideoDetectionScannedVideoModel.from_json(json_hash['scannedVideo']),
+        error: Error.from_json(json_hash['error']),
+        developer_payload: json_hash['developerPayload']
       )
     end
 
@@ -211,7 +218,9 @@ module Copyleaks
         'summary' => @summary&.as_json,
         'isAiDetected' => @is_ai_detected,
         'videoInfo' => @video_info&.as_json,
-        'scannedVideo' => @scanned_video&.as_json
+        'scannedVideo' => @scanned_video&.as_json,
+        'error' => @error&.as_json,
+        'developerPayload' => @developer_payload
       }.reject { |_k, v| v.nil? }
     end
 

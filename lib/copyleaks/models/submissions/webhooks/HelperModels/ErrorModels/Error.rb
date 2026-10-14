@@ -45,6 +45,14 @@ module Copyleaks
       @details = details
     end
 
+    # Builds the error from the 'error' object of a parsed webhook body (a Hash with String or Symbol keys).
+    # Returns nil when the value is not a Hash.
+    def self.from_json(json_hash)
+      return nil unless json_hash.is_a?(Hash)
+
+      new(**json_hash.transform_keys(&:to_sym))
+    end
+
     def as_json(*_args)
       hash = {
         code: @code,

@@ -129,7 +129,66 @@ class NewEndpointsTest < Minitest::Test
     assert_equal 'Sora', model.video_info.metadata.app_or_device_used
     assert_equal 'Created using generative AI', model.video_info.metadata.content_summary
     assert_equal 'vid1', model.scanned_video.scan_id
+    assert_nil model.error
     assert_equal payload, JSON.parse(model.to_json)
+  end
+
+  ASYNC_ERROR = {
+    'error' => { 'type' => 'invalid_request_error', 'id' => 'unsupported_file', 'code' => 67,
+                 'message' => 'The file could not be processed.', 'url' => 'https://docs.copyleaks.com/using-the-apis/api-errors',
+                 'details' => [{ 'param' => 'url', 'message' => 'Unsupported format' }] },
+    'developerPayload' => 'order-1'
+  }.freeze
+
+  def assert_async_error(error)
+    assert_instance_of Copyleaks::Error, error
+    assert_equal 'invalid_request_error', error.type
+    assert_equal 'unsupported_file', error.id
+    assert_equal 67, error.code
+    assert_equal 'The file could not be processed.', error.message
+    assert_equal 'https://docs.copyleaks.com/using-the-apis/api-errors', error.url
+    assert_equal [{ 'param' => 'url', 'message' => 'Unsupported format' }], error.details
+  end
+
+  def test_ai_video_webhook_developer_payload_and_error
+    ok = Copyleaks::CopyleaksAiVideoDetectionResponseModel.from_json(
+      'model' => 'ai-video-1-pro', 'isAiDetected' => false, 'summary' => { 'overallAIRatio' => 0.1 }, 'developerPayload' => 'order-1'
+    )
+    assert_nil ok.error
+    assert_equal 'order-1', ok.developer_payload
+    assert_equal 'order-1', JSON.parse(ok.to_json)['developerPayload']
+
+    failed = Copyleaks::CopyleaksAiVideoDetectionResponseModel.from_json(JSON.parse(ASYNC_ERROR.to_json))
+    assert_async_error(failed.error)
+    assert_equal 'order-1', failed.developer_payload
+    assert_nil failed.summary
+    assert_nil failed.is_ai_detected
+    assert_equal ASYNC_ERROR, JSON.parse(failed.to_json)
+  end
+
+  def test_ai_image_async_webhook_developer_payload_and_error
+    ok = Copyleaks::CopyleaksAiImageDetectionResponseModel.from_json(
+      'model' => 'ai-image-1-ultra', 'summary' => { 'human' => 1.0, 'ai' => 0.0 }, 'isAiDetected' => false,
+      'developerPayload' => 'order-1'
+    )
+    assert_nil ok.error
+    assert_equal 'order-1', ok.developer_payload
+    refute JSON.parse(ok.to_json).key?('error')
+
+    failed = Copyleaks::CopyleaksAiImageDetectionResponseModel.from_json(JSON.parse(ASYNC_ERROR.to_json))
+    assert_async_error(failed.error)
+    assert_equal 'order-1', failed.developer_payload
+    assert_nil failed.summary
+    assert_nil failed.is_ai_detected
+    json = JSON.parse(failed.to_json)
+    assert_equal ASYNC_ERROR['error'], json['error']
+    assert_equal 'order-1', json['developerPayload']
+
+    minimal = Copyleaks::CopyleaksAiImageDetectionResponseModel.from_json('error' => { 'code' => 67, 'message' => 'm' })
+    assert_equal 67, minimal.error.code
+    assert_nil minimal.error.url
+    assert_nil minimal.error.details
+    assert_nil minimal.developer_payload
   end
 
   def test_ai_image_async_submit

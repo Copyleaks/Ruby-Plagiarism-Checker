@@ -49,6 +49,7 @@ The gem is now published as `copyleaks`. Versions up to 4.1.1 were published as 
   - Text Moderation: `model_version`.
   - Completed webhook: `referencesValidation`, and `internalAIData` in `Copyleaks::Results`. New-result webhook: `internalAIData`.
   - Error webhook: `type`, `id`, `url` and `details` in `Copyleaks::Error`.
+  - Failed asynchronous AI Image and AI Video Detection scans: `Copyleaks::CopyleaksAiImageDetectionResponseModel` and `Copyleaks::CopyleaksAiVideoDetectionResponseModel` have `error` (a `Copyleaks::Error`) and `developer_payload`, and `from_json` reads both. When a scan fails, the webhook has an `error` instead of a result, so check `error` first. `Copyleaks::Error.from_json(hash)` builds the error from a webhook `error` Hash.
 - **Connection settings.** `Copyleaks::API.new` accepts `open_timeout:`, `read_timeout:`, `write_timeout:`, `keep_alive_timeout:`, `pool_size:`, `identity_server_uri:` and `api_server_uri:`. `api.close` closes idle connections.
 - **Retry information.** `Copyleaks::RateLimitException` and `Copyleaks::UnderMaintenanceException` now carry the HTTP `response`, and `retry_after` returns the `Retry-After` header.
 - **Streamed usage history.** Pass a block to `get_usages_history_csv` to receive the CSV in chunks instead of one String.

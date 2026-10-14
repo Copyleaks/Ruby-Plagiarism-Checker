@@ -398,7 +398,13 @@ model = Copyleaks::CopyleaksAiImageDetectionAsyncRequestModel.new(
   sandbox: true
 )
 copyleaks.ai_image_detection_client.submit_async(authToken, scanId, model)
+
+# In your webhook handler:
+result = Copyleaks::CopyleaksAiImageDetectionResponseModel.from_json(JSON.parse(request_body))
+puts "Scan failed: #{result.error.code} #{result.error.message}" if result.error
 ```
+When the scan fails, the webhook body has an `error` (a `Copyleaks::Error` with `code`, `message`, and optionally `type`, `id`, `url` and `details`) instead of a result, so check `error` first. `developer_payload` returns the `developer_payload` you sent.
+
 For more details, refer to the Copyleaks AI Image Detector Async Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/ai-image-detector/submit)
 ##
 ### AI Video Detection
@@ -416,8 +422,14 @@ copyleaks.ai_video_detection_client.submit(authToken, scanId, model)
 
 # In your webhook handler:
 result = Copyleaks::CopyleaksAiVideoDetectionResponseModel.from_json(JSON.parse(request_body))
-puts "AI detected: #{result.is_ai_detected}, overall ratio: #{result.summary.overall_ai_ratio}"
+if result.error
+  puts "Scan failed: #{result.error.code} #{result.error.message}"
+else
+  puts "AI detected: #{result.is_ai_detected}, overall ratio: #{result.summary.overall_ai_ratio}"
+end
 ```
+When the scan fails, the webhook body has an `error` (a `Copyleaks::Error`) instead of a result, so check `error` first. `developer_payload` returns the `developer_payload` you sent.
+
 For more details, refer to the Copyleaks AI Video Detection Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/ai-video-detector/submit)
 ##
 ### Image Plagiarism Detection

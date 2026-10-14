@@ -50,6 +50,13 @@ module Copyleaks
     # request included object_detection. Look entries up by object, not by position.
     attr_accessor :detected_objects
 
+    # Why the scan failed (a Copyleaks::Error). Set only in the webhook of an asynchronous scan that failed,
+    # and then the result fields are nil, so check it first.
+    attr_accessor :error
+
+    # The developer payload sent with the asynchronous submit request.
+    attr_accessor :developer_payload
+
     # Initialize a new CopyleaksAiImageDetectionResponseModel
     #
     # @param model [String] The version of the AI detection model used for analysis
@@ -59,8 +66,10 @@ module Copyleaks
     # @param scanned_document [CopyleaksAiImageDetectionScannedDocumentModel] Metadata about the scan operation
     # @param is_ai_detected [Boolean] Whether the image was determined to be AI-generated
     # @param detected_objects [Array<CopyleaksAiImageDetectedObjectModel>] Objects located in the image
+    # @param error [Copyleaks::Error] Why the asynchronous scan failed
+    # @param developer_payload [String] The developer payload sent with the asynchronous submit request
     def initialize(model: nil, result: nil, summary: nil, image_info: nil, scanned_document: nil,
-                   is_ai_detected: nil, detected_objects: nil)
+                   is_ai_detected: nil, detected_objects: nil, error: nil, developer_payload: nil)
       @model = model
       @result = result
       @summary = summary
@@ -68,6 +77,8 @@ module Copyleaks
       @scanned_document = scanned_document
       @is_ai_detected = is_ai_detected
       @detected_objects = detected_objects
+      @error = error
+      @developer_payload = developer_payload
     end
 
     # Create instance from JSON hash
@@ -89,7 +100,9 @@ module Copyleaks
         image_info: image_info,
         scanned_document: scanned_document,
         is_ai_detected: json_hash['isAiDetected'],
-        detected_objects: detected_objects
+        detected_objects: detected_objects,
+        error: Error.from_json(json_hash['error']),
+        developer_payload: json_hash['developerPayload']
       )
     end
 
@@ -104,6 +117,8 @@ module Copyleaks
       }
       hash['isAiDetected'] = @is_ai_detected unless @is_ai_detected.nil?
       hash['detectedObjects'] = @detected_objects.map { |o| JSON.parse(o.to_json) } unless @detected_objects.nil?
+      hash['error'] = JSON.parse(@error.to_json) unless @error.nil?
+      hash['developerPayload'] = @developer_payload unless @developer_payload.nil?
       hash.to_json(*args)
     end
   end
