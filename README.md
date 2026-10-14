@@ -6,10 +6,13 @@ Copyleaks is the integrity layer for your tech stack that helps organizations an
 This SDK gives you access to the following Copyleaks products:
 
 *   AI Text Detection
-*   AI Image Detection
+*   AI Image Detection (synchronous and asynchronous)
+*   AI Video Detection
 *   Plagiarism Checker (Authenticity scans: file, URL, OCR)
+*   Image Plagiarism Detection
 *   Grammar Checker
 *   Text Moderation
+*   Private Cloud Hub repository information
 
 ## 🚀 Getting Started
 Before you start, ensure you have the following:
@@ -33,6 +36,30 @@ This gem was previously published as `plagiarism-checker`. To switch, replace `p
 
 ## 📚 Documentation
 To learn more about how to use Copyleaks API please check out our [Documentation](https://docs.copyleaks.com/resources/sdks/ruby/). 
+
+## Client options
+`Copyleaks::API.new` takes optional keyword arguments. The defaults suit most applications.
+
+```ruby
+copyleaks = Copyleaks::API.new(
+  open_timeout: 10,       # seconds to connect (TCP and TLS)
+  read_timeout: 120,      # seconds to wait for each read of a response
+  write_timeout: 120,     # seconds to wait for each write of a request body (raise it for large uploads on slow links)
+  keep_alive_timeout: 30, # seconds an idle connection is kept for reuse
+  pool_size: 5            # maximum open connections per Copyleaks server
+)
+```
+
+- One `Copyleaks::API` instance is safe to share between threads (Puma, Sidekiq and other threaded servers). Each request uses its own pooled connection, and connections are reused between calls.
+- Requests are never resent automatically. If a submit times out, the scan may still have been created: a second submit with the same scan id returns `409 Conflict`.
+- `copyleaks.close` closes the idle connections. The client stays usable.
+- `identity_server_uri:` and `api_server_uri:` override the server addresses for one client, without changing `Copyleaks::Config`.
+
+### Errors
+- `Copyleaks::CommandException`: the server rejected the request. `e.response` holds the status code, headers and body.
+- `Copyleaks::RateLimitException` (HTTP 429) and `Copyleaks::UnderMaintenanceException` (HTTP 503): retry later with exponential backoff. `e.retry_after` returns the `Retry-After` header when the server sends one.
+- `Copyleaks::AuthExpiredException`: the login token has expired, or expires within 5 minutes. Log in again.
+- `Net::OpenTimeout`, `Net::ReadTimeout`, `Net::WriteTimeout` and socket errors: the request did not complete.
 
 ## 💡 Usage Examples
 Here are some common usage examples for the Copyleaks SDK. You can also see a comprehensive code example in the `demo.rb` file on our GitHub repository: [demo.rb](https://github.com/Copyleaks/Ruby-Plagiarism-Checker/blob/master/demo/demo.rb).
@@ -103,7 +130,50 @@ end
 ```
 For a full guide please refer to our step by step [Guide](https://docs.copyleaks.com/guides/authenticity/detect-plagiarism-text)
 
-For a detailed understanding of the plagiarism detection process, refer to the Copyleaks Submit Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/scans/submit-file)
+For a detailed understanding of the plagiarism detection process, refer to the Copyleaks Submit Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/authenticity/submit-file)
+
+Only `webhooks` is required in `Copyleaks::SubmissionProperties`. Every other argument is optional: a value left `nil` is not sent, and the server default applies. Newer options are keyword arguments:
+
+```ruby
+properties = Copyleaks::SubmissionProperties.new(
+  Copyleaks::SubmissionWebhooks.new("#{WEBHOOK_URL}/webhook/{STATUS}"),
+  nil, nil, true, # includeHtml, developerPayload, sandbox
+  overview: Copyleaks::SubmissionOverview.new(true, ignoreAuthorData: true),       # Gen-AI Overview
+  internalAiSourceMatch: Copyleaks::SubmissionInternalAiSourceMatch.new(true),     # Internal AI Source Match
+  references: Copyleaks::SubmissionReferences.new(true),                           # Citation Checker
+  scanTimeZone: 'America/New_York',                                                # time zone of the PDF report
+  course: Copyleaks::SubmissionCourse.new('course-1'),
+  assignment: Copyleaks::SubmissionAssignment.new('assignment-1'),
+  institution: Copyleaks::SubmissionInstitution.new('institution-1')
+)
+```
+Other new options:
+- `Copyleaks::SubmissionAiGeneratedText.new(true, sensitivity: 2, explain: true)`: AI detection sensitivity (1 to 3) and AI Logic explanations
+- `Copyleaks::SubmissionScanning.new(true, exclude, repositories, copyleaks_db, cross_languages, include: Copyleaks::SubmissionScanningInclude.new('my-prefix-*'))`
+- `Copyleaks::SubmissionScanningExclude.new('draft-*', backlinksDomains: ['example.com'], text: ['Sample header'])`
+- `Copyleaks::SubmissionIndexing.new(repositories, copyleaksDb: true)`
+- `Copyleaks::SubmissionPdfColors.new(main_strip, titles, identical, minor_changes, related_meaning, aiDetection: '#FE5758', writingFeedback: '#FF9A02')`
+- `Copyleaks::CopyleaksURLSubmissionModel.new(url, properties, verb: 'POST', headers: [['Cookie', 'session=abc']])`
+- `Copyleaks::CopyleaksDeleteRequestModel.new(scans, true, 'https://your-server.com/deleted', headers: [['Authorization', 'Bearer token']])`
+
+`copyleaks.get_allowed_cross_languages` lists the language codes you can use with `Copyleaks::SubmissionCrossLanguages`. It needs no login.
+##
+### Export scan artifacts
+Request any combination of artifacts. Only `completionWebhook` is required.
+
+```ruby
+model = Copyleaks::CopyleaksExportModel.new(
+  'https://your-server.com/export/completed',
+  nil,                                                                      # results
+  nil,                                                                      # crawledVersion
+  Copyleaks::ExportPdfReport.new('https://your-server.com/pdf', 'POST'),
+  aiDetection: Copyleaks::ExportAiDetection.new('https://your-server.com/ai', 'POST'),
+  writingFeedback: Copyleaks::ExportWritingFeedback.new('https://your-server.com/grammar', 'POST'),
+  overview: Copyleaks::ExportOverview.new('https://your-server.com/overview', 'POST')
+)
+copyleaks.export(auth_token, scan_id, 'export-1', model)
+```
+For more details, refer to the Copyleaks Export Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/downloads/export)
 ##
 ### Reading the AI alert from the completed webhook
 When AI Text Detection is enabled for a scan (`aiGeneratedText.detect`) and AI text is found, the completed webhook carries a `suspected-ai-text` alert in `notifications.alerts`. Its `additionalData` is the AI detection result, encoded as a JSON string. The SDK decodes it for you.
@@ -167,10 +237,21 @@ begin
     text = "Lions are social animals, living in groups called prides, typically consisting of several females, their offspring, and a few males. Female lions are the primary hunters, working together to catch prey. Lions are known for their strength, teamwork, and complex social structures."
     submission = Copyleaks::NaturalLanguageSubmissionModel.new(
       text,
+      nil,   # language: nil detects it automatically
+      true,  # sandbox
+      explain: true,  # AI Logic: the response includes the patterns behind the result
+      sensitivity: 2  # 1 to 3
     )
-    submission.sandbox = true
-    
+
     res = @copyleaks.ai_detection_client.submit_natural_language(_authToken, scanId, submission)
+    result = Copyleaks::CopyleaksAiTextDetectionResponseModel.from_json(res)
+    puts "AI: #{result.summary.ai}, human: #{result.summary.human}"
+
+    # Credits available for AI Text Detection
+    credits = @copyleaks.ai_detection_client.get_credits_balance(_authToken)['credits']
+
+    # File types accepted by AI Text Detection (no login needed)
+    file_types = @copyleaks.get_supported_ai_text_detection_file_types['supportedAiFileTypes']
 
 end
 ```
@@ -268,9 +349,9 @@ Determine if a given image was generated or partially generated by an AI.
       
       scanId = DateTime.now.strftime('%Q').to_s
       
-      # Read and encode your image file to base64
+      # Read and encode your image file to base64 (read it in binary mode)
       image_path = "Path/to/your/image.jpg" # Update this path to your image
-      base64_image = Base64.strict_encode64(File.read(image_path))
+      base64_image = Base64.strict_encode64(File.binread(image_path))
       
       model = Copyleaks::CopyleaksAiImageDetectionRequestModel.new(
         base64_image,
@@ -289,12 +370,104 @@ For a full guide please refer to our step by step [Guide](https://docs.copyleaks
 
 For a detailed understanding of the AI Image Detection process, refer to the Copyleaks AI image detection Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/ai-image-detector/check/)
 
+To upload the raw image as multipart/form-data, which skips the base64 overhead, pass `nil` as the first argument and the bytes as `image:`. You can also pick the detection mask and locate objects:
+
+```ruby
+model = Copyleaks::CopyleaksAiImageDetectionRequestModel.new(
+  nil, 'image.jpg', Copyleaks::CopyleaksAiImageDetectionModels::AI_IMAGE_1_ULTRA, true,
+  image: File.binread('Path/to/your/image.jpg'),
+  mask_type: Copyleaks::CopyleaksAiImageMaskTypes::HEATMAP, # BINARY (default), HEATMAP or NONE
+  object_detection: ['face', 'hand']                        # up to 3 objects
+)
+res = copyleaks.ai_image_detection_client.check(authToken, scanId, model) # same as submit_
+result = Copyleaks::CopyleaksAiImageDetectionResponseModel.from_json(res)
+puts "AI detected: #{result.is_ai_detected}, objects: #{Array(result.detected_objects).map(&:object)}"
+```
+`model.validate!` runs optional client-side checks (file name, extension and size) before you send the request.
+##
+### AI Image Detection (asynchronous)
+Submit an image URL. The server answers right away and posts the result to your webhook. The webhook body has the same shape as the synchronous result, so `Copyleaks::CopyleaksAiImageDetectionResponseModel.from_json(JSON.parse(body))` reads it.
+
+```ruby
+model = Copyleaks::CopyleaksAiImageDetectionAsyncRequestModel.new(
+  url: 'https://example.com/image.png',
+  file_name: 'image.png',
+  model: Copyleaks::CopyleaksAiImageDetectionModels::AI_IMAGE_1_ULTRA,
+  webhooks: Copyleaks::CopyleaksAsyncWebhooksModel.new('https://your-server.com/webhook/ai-image'),
+  mask_type: Copyleaks::CopyleaksAiImageMaskTypes::HEATMAP,
+  sandbox: true
+)
+copyleaks.ai_image_detection_client.submit_async(authToken, scanId, model)
+```
+For more details, refer to the Copyleaks AI Image Detector Async Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/ai-image-detector/submit)
+##
+### AI Video Detection
+Submit a video URL. The server answers right away and posts the result to your webhook.
+
+```ruby
+model = Copyleaks::CopyleaksAiVideoDetectionRequestModel.new(
+  url: 'https://example.com/video.mp4',
+  filename: 'video.mp4',
+  model: Copyleaks::CopyleaksAiVideoDetectionModels::AI_VIDEO_1_PRO,
+  webhooks: Copyleaks::CopyleaksAsyncWebhooksModel.new('https://your-server.com/webhook/ai-video'),
+  sandbox: true
+)
+copyleaks.ai_video_detection_client.submit(authToken, scanId, model)
+
+# In your webhook handler:
+result = Copyleaks::CopyleaksAiVideoDetectionResponseModel.from_json(JSON.parse(request_body))
+puts "AI detected: #{result.is_ai_detected}, overall ratio: #{result.summary.overall_ai_ratio}"
+```
+For more details, refer to the Copyleaks AI Video Detection Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/ai-video-detector/submit)
+##
+### Image Plagiarism Detection
+Search the web for copies of an image. The image is uploaded as multipart/form-data and the matches are in the response.
+
+```ruby
+model = Copyleaks::CopyleaksImagePlagiarismRequestModel.new(
+  image: File.binread('Path/to/your/photo.jpg'),
+  filename: 'photo.jpg',
+  sandbox: true
+)
+res = copyleaks.image_plagiarism_client.check(authToken, scanId, model)
+result = Copyleaks::CopyleaksImagePlagiarismResponseModel.from_json(res)
+puts "Matches: #{result.matches.score.total_matches}"
+result.matches.internet.each { |match| puts "#{match.url} (#{match.match_type == 0 ? 'full' : 'partial'})" }
+```
+For more details, refer to the Copyleaks Image Plagiarism Detection Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/image-plagiarism-detector/check)
+##
+### Account and lookups
+
+```ruby
+copyleaks.get_credits_balance(authToken)                      # plagiarism credits
+copyleaks.ai_detection_client.get_credits_balance(authToken)  # AI Text Detection credits
+copyleaks.get_repository_info(authToken, 'my-repo-id')        # Private Cloud Hub repository (Admin role)
+
+# Usage history as CSV. With a block, the CSV is streamed in chunks.
+File.open('usage.csv', 'w') do |file|
+  copyleaks.get_usages_history_csv(authToken, '01-09-2026', '30-09-2026') { |chunk| file.write(chunk) }
+end
+
+# Public lookups, no login needed
+copyleaks.get_supported_file_types
+copyleaks.get_supported_ai_text_detection_file_types
+copyleaks.get_allowed_cross_languages
+copyleaks.get_ocr_supported_languages
+```
+
 ##
 ### Further Resources
 
 *   **Copyleaks API Dashboard:** Manage your API keys, monitor usage, and view analytics from your personalized dashboard. [Access Dashboard](https://api.copyleaks.com/dashboard)
 *   **Copyleaks SDK Documentation:** Explore comprehensive guides, API references, and code examples for seamless integration. [Read Documentation](https://docs.copyleaks.com/resources/sdks/overview/)
 
+
+## Development
+The offline test suite runs against a local stub server and never calls the Copyleaks API:
+
+```bash
+rake test
+```
 
 ## Support
 * If you need assistance, please contact Copyleaks Support via our support portal: Contact Copyleaks [Support](https://help.copyleaks.com/s/contactsupport).
