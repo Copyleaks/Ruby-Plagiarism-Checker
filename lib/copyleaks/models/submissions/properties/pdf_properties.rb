@@ -27,10 +27,10 @@ module Copyleaks
     # @param [String] title Customize the title for the PDF report.
     # @param [String] largeLogo Customize the logo image in the PDF report.
     # @param [Boolean] rtl When set to true the text in the report will be aligned from right to left.
-    # @param [SubmissionPdfVersion] verion  - PDF version to generate.
+    # @param [SubmissionPdfVersion] version - Deprecated: PDF report versions 1 and 2 are deprecated; use reportVersion 'v3' instead.
     # @param [SubmissionPdfColors] colors - Customizable colors.
     # @param [String] reportVersion - PDF report version to generate. Overrides version when both are supplied.
-    #   Possible values: 'v1', 'v2', 'v3', 'latest'. Values are lowercase and case-sensitive ('V3' is rejected).
+    #   Possible values: 'v1' (deprecated), 'v2' (deprecated), 'v3', 'latest'. Values are lowercase and case-sensitive ('V3' is rejected).
     #   Only takes effect when create is true.
     #   Leave nil to omit the field and get the server default.
 
@@ -49,6 +49,10 @@ module Copyleaks
       end
       if !reportVersion.nil? && !reportVersion.instance_of?(String)
         raise 'Copyleaks::SubmissionPDF - reportVersion - reportVersion must be of type String'
+      end
+      unless version.nil?
+        message = "Copyleaks::SubmissionPDF - version - PDF report versions 1 and 2 are deprecated. Use reportVersion 'v3' instead."
+        RUBY_VERSION >= '3.0' ? warn(message, uplevel: 1, category: :deprecated) : warn(message)
       end
 
       @create = create

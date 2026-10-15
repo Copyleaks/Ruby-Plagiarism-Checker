@@ -22,6 +22,7 @@
 #  SOFTWARE.
 # =
 module Copyleaks
+    # @deprecated PDF report versions 1 and 2 are deprecated; use SubmissionPDF reportVersion 'v3' instead.
     class SubmissionPdfVersion
         
       V1 = 1
