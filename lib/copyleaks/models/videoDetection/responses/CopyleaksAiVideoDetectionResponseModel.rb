@@ -1,27 +1,3 @@
-#
-#  The MIT License(MIT)
-#
-#  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#  The above copyright notice and this permission notice shall be included in all
-#  copies or substantial portions of the Software.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#  SOFTWARE.
-# =
-
 module Copyleaks
   # Time ranges of one track (positions and lengths are in milliseconds).
   class CopyleaksAiVideoDetectionRangesModel
@@ -108,9 +84,8 @@ module Copyleaks
   class CopyleaksAiVideoDetectionVideoInfoModel
     attr_accessor :duration, :metadata
 
-    # @param duration [Float] Total duration of the video in seconds.
-    # @param metadata [CopyleaksImageMetadataModel] Optional provenance metadata (issuedTime, issuedBy,
-    #   appOrDeviceUsed, contentSummary).
+    # @param duration [Float] In seconds.
+    # @param metadata [CopyleaksImageMetadataModel] Optional provenance metadata.
     def initialize(duration: nil, metadata: nil)
       @duration = duration
       @metadata = metadata
@@ -173,10 +148,8 @@ module Copyleaks
     end
   end
 
-  # The AI video detection result, delivered to your webhook.
-  # Build it from the parsed webhook body: CopyleaksAiVideoDetectionResponseModel.from_json(JSON.parse(body))
+  # AI video detection result delivered to your webhook; build it with from_json(JSON.parse(body)).
   # Check error first: when the scan failed, error (a Copyleaks::Error) is set and the result fields are nil.
-  # developer_payload is the developer payload sent with the submit request.
   class CopyleaksAiVideoDetectionResponseModel
     attr_accessor :model, :audio_result, :visual_result, :summary, :is_ai_detected, :video_info, :scanned_video,
                   :error, :developer_payload

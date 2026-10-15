@@ -1,35 +1,6 @@
-#
-#  The MIT License(MIT)
-#
-#  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#  The above copyright notice and this permission notice shall be included in all
-#  copies or substantial portions of the Software.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#  SOFTWARE.
-# =
-
-
 module Copyleaks
-  # Request model for Copyleaks AI image detection (synchronous check).
-  #
-  # The image can be sent two ways:
-  # * as base64 in a JSON body: pass the base64 string as the first argument;
-  # * as raw bytes in a multipart/form-data body (recommended, no base64 overhead):
-  #   pass nil as the first argument and the bytes as image:, for example image: File.binread(path).
+  # Synchronous AI image detection request. Pass the image as base64 (JSON body), or pass nil and the raw
+  # bytes as image:, e.g. image: File.binread(path) (multipart body, recommended: no base64 overhead).
   class CopyleaksAiImageDetectionRequestModel
     VALID_EXTENSIONS = %w[.png .bmp .jpg .jpeg .webp .heic .heif .avif].freeze
     FILENAME_MIN_LENGTH = 5
@@ -39,17 +10,12 @@ module Copyleaks
 
     attr_accessor :base64, :file_name, :model, :sandbox, :mask_type, :object_detection, :image
 
-    # @param base64 [String, nil] The base64-encoded image. nil when image: is used instead.
-    # @param file_name [String] The name of the image file including its extension.
-    # @param model [String] The AI detection model, for example CopyleaksAiImageDetectionModels::AI_IMAGE_1_ULTRA.
-    # @param sandbox [Boolean, nil] Use sandbox mode to test your integration without consuming credits.
-    #   Leave nil to omit the field (server default: false).
-    # @param mask_type [String, nil] The detection mask to return: CopyleaksAiImageMaskTypes::BINARY (server default),
-    #   HEATMAP (adds result.labels, a confidence band per segment) or NONE (no result object, scores only).
-    # @param object_detection [Array<String>, nil] Up to 3 objects to locate in the image, for example ['face', 'hand'].
-    #   Each name is 1 to 32 characters. The response then includes detectedObjects.
-    # @param image [String, IO, nil] The raw image bytes (or an IO to read them from). When set, the image is
-    #   uploaded as multipart/form-data and base64 must be nil.
+    # @param file_name [String] With extension; see VALID_EXTENSIONS.
+    # @param model [String] See CopyleaksAiImageDetectionModels.
+    # @param sandbox [Boolean, nil] Test without using credits. nil omits the field (server default: false).
+    # @param mask_type [String, nil] See CopyleaksAiImageMaskTypes. Server default: BINARY.
+    # @param object_detection [Array<String>, nil] Up to 3 names, 1-32 chars each, e.g. ['face']. Adds detectedObjects.
+    # @param image [String, IO, nil] Raw image bytes or an IO, uploaded as multipart/form-data.
     def initialize(base64, file_name, model, sandbox = nil, mask_type: nil, object_detection: nil, image: nil)
       if !base64.nil? && !image.nil?
         raise ArgumentError, 'Copyleaks::CopyleaksAiImageDetectionRequestModel - pass either base64 or image:, not both'
@@ -73,14 +39,12 @@ module Copyleaks
       @image = image
     end
 
-    # True when the image is sent as multipart/form-data (raw bytes given with image:).
+    # True when image: is set, so the request is sent as multipart/form-data.
     def multipart?
       !@image.nil?
     end
 
-    # Convert the model to a hash for JSON serialization. Fields that are nil are left out.
-    #
-    # @return [Hash] Hash representation of the model
+    # Nil fields are left out.
     def to_hash
       {
         base64: @base64,
@@ -92,15 +56,11 @@ module Copyleaks
       }.reject { |_k, v| v.nil? }
     end
 
-    # Convert the model to JSON
-    #
-    # @return [String] JSON representation of the model
     def to_json(*args)
       to_hash.to_json(*args)
     end
 
-    # Build the multipart/form-data body used when image: is set.
-    # @return [Copyleaks::MultipartForm]
+    # @return [Copyleaks::MultipartForm] The body used when image: is set.
     def to_multipart
       form = MultipartForm.new
       form.add_file('image', @image, @file_name.to_s)
@@ -113,15 +73,10 @@ module Copyleaks
       form
     end
 
-    # Optional client-side checks. The client does not call this method, so the server stays the
-    # final judge of what it accepts.
-    #
-    # Requirements (from the API reference):
-    # - Image: minimum 512x512px, maximum 6000x4500px (27 megapixels), less than 32MB
-    # - Formats: PNG, JPEG, BMP, WebP, HEIC/HEIF, AVIF
-    # - File name: 5 to 254 characters, with a supported extension
-    #
-    # @raise [ArgumentError] If required fields are missing or invalid
+    # Optional client-side checks; the client never calls this, so the server has the final say.
+    # Limits: 512x512 to 6000x4500 px (27 MP), under 32 MB; PNG, JPEG, BMP, WebP, HEIC/HEIF, AVIF;
+    # file name 5 to 254 characters with a supported extension.
+    # @raise [ArgumentError] When a field is missing or invalid.
     def validate!
       if @image.nil? && (@base64.nil? || @base64.empty?)
         raise ArgumentError, 'base64 or image is required'
@@ -153,7 +108,6 @@ module Copyleaks
 
     private
 
-    # Validate file name format and extension
     def validate_file_name!
       unless @file_name.length.between?(FILENAME_MIN_LENGTH, FILENAME_MAX_LENGTH)
         raise ArgumentError, "file_name must be #{FILENAME_MIN_LENGTH} to #{FILENAME_MAX_LENGTH} characters"
@@ -165,7 +119,6 @@ module Copyleaks
       end
     end
 
-    # Validate the image size (basic check)
     def validate_file_size!
       max_bytes = 32 * 1024 * 1024
       size = if @image.nil?

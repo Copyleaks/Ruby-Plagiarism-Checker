@@ -18,8 +18,6 @@ module Copyleaks
 
     # @param moderations [ModerationsModel] The flagged character ranges.
     # @param legend [Array<TextModerationsLegend>] Maps label indexes to label ids.
-    # @param scanned_document [TextModerationScannedDocument] Metadata about the scan.
-    # @param model_version [String] The version of the moderation model used.
     def initialize(moderations: ModerationsModel.new, legend: [], scanned_document: TextModerationScannedDocument.new,
                    model_version: nil, **_ignored)
       @moderations = moderations

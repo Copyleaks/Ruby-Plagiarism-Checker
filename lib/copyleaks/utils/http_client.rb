@@ -1,39 +1,13 @@
-#
-#  The MIT License(MIT)
-#
-#  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#  The above copyright notice and this permission notice shall be included in all
-#  copies or substantial portions of the Software.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#  SOFTWARE.
-# =
 require 'net/http'
 require 'openssl'
 require 'uri'
 
 module Copyleaks
-  # A small, thread-safe pool of persistent (keep-alive) connections to one host.
-  #
-  # * Each request checks out one started Net::HTTP connection, so two threads never share a socket.
-  # * Connections are reused between requests, so a call does not pay a new TCP and TLS handshake.
-  # * Requests are never retried automatically (max_retries = 0). A submit that timed out is not
-  #   uploaded a second time.
-  # * A connection that failed mid-request is closed and dropped, never reused.
-  # * After a fork, the child process opens its own connections instead of sharing the parent's sockets.
+  # A small, thread-safe pool of keep-alive connections to one host.
+  # * Each request checks out its own Net::HTTP connection, so two threads never share a socket.
+  # * Requests are never retried automatically, so a submit that timed out is not uploaded twice.
+  # * A connection that failed mid-request is dropped, never reused.
+  # * After a fork, the child opens its own connections instead of sharing the parent's sockets.
   class HttpClient
     DEFAULT_OPEN_TIMEOUT = 10
     DEFAULT_READ_TIMEOUT = 120
@@ -44,12 +18,9 @@ module Copyleaks
     attr_reader :address, :port, :use_ssl, :open_timeout, :read_timeout, :write_timeout,
                 :keep_alive_timeout, :pool_size
 
-    # @param [String, URI] uri Base URI of the server, for example 'https://api.copyleaks.com'.
-    # @param [Numeric] open_timeout Seconds to wait for the TCP connection and the TLS handshake.
-    # @param [Numeric] read_timeout Seconds to wait for each read of the response.
-    # @param [Numeric] write_timeout Seconds to wait for each write of the request body.
-    # @param [Numeric] keep_alive_timeout Seconds an idle connection is kept before it is reopened.
-    # @param [Integer] pool_size Maximum number of open connections. Extra threads wait for a free one.
+    # Timeouts are in seconds, as in API#initialize.
+    # @param [String, URI] uri For example 'https://api.copyleaks.com'.
+    # @param [Integer] pool_size Maximum open connections. Extra threads wait for a free one.
     def initialize(uri,
                    open_timeout: DEFAULT_OPEN_TIMEOUT,
                    read_timeout: DEFAULT_READ_TIMEOUT,
@@ -85,7 +56,7 @@ module Copyleaks
       @pid = Process.pid
     end
 
-    # Wraps a legacy Net::HTTP object (as passed to the sub-clients in earlier versions) in an HttpClient.
+    # Wraps a Net::HTTP, as passed to the sub-clients by earlier versions.
     def self.wrap(client)
       return client if client.is_a?(HttpClient)
       unless client.is_a?(Net::HTTP)
@@ -97,8 +68,7 @@ module Copyleaks
     end
 
     # Sends one request on a pooled connection and returns the Net::HTTPResponse.
-    # When a block is given, it receives the response before the body is read, so the body
-    # can be streamed with response.read_body { |chunk| ... }.
+    # A block receives the response before the body is read, to stream it with read_body.
     def request(req, &block)
       conn = checkout
       reusable = false

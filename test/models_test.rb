@@ -14,8 +14,6 @@ class ModelsTest < Minitest::Test
     JSON.parse(model.to_json)
   end
 
-  # ---- submission properties ----
-
   def test_only_webhooks_is_required
     assert_equal({ 'webhooks' => { 'status' => WEBHOOK } }, json_of(Copyleaks::SubmissionProperties.new(webhooks)))
   end
@@ -179,8 +177,6 @@ class ModelsTest < Minitest::Test
     assert_equal({ 'copyleaksDb' => false }, json_of(Copyleaks::SubmissionIndexing.new(copyleaksDb: false)))
   end
 
-  # ---- response models ----
-
   def test_ai_image_response_new_fields
     payload = {
       'model' => 'ai-image-1-ultra',
@@ -247,8 +243,6 @@ class ModelsTest < Minitest::Test
     assert_nil JSON.parse(model.to_json)['scannedDocument']['creationTime']
   end
 
-  # ---- webhooks ----
-
   def test_completed_webhook_references_validation_and_internal_ai_data
     summary = { 'summary' => { 'total' => 5, 'academic' => 3, 'academicValidated' => 2, 'nonAcademicValidated' => 1 } }
     internal = [{ 'id' => 'i1', 'matchedWords' => 10, 'identicalWords' => 5, 'similarWords' => 3, 'paraphrasedWords' => 2,
@@ -294,8 +288,6 @@ class ModelsTest < Minitest::Test
     Copyleaks::NewResultsInternet.new(id: 'r1', title: 't', introduction: 'i', matchedWords: 3, metadata: metadata,
                                       url: 'https://example.com', scanId: 'legacy')
   end
-
-  # ---- transport helpers ----
 
   def test_multipart_form_body
     form = Copyleaks::MultipartForm.new('BOUNDARY')

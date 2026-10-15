@@ -5,7 +5,7 @@ module Copyleaks
   class TextModerationScannedDocument
     attr_accessor :scan_id, :total_words, :total_excluded, :actual_credits, :expected_credits, :creation_time
 
-    # @param creation_time [Time, String, nil] When the scan was created.
+    # @param creation_time [Time, String, nil]
     def initialize(scan_id: '', total_words: 0, total_excluded: 0, actual_credits: 0, expected_credits: 0, creation_time: nil)
       @scan_id = scan_id
       @total_words = total_words
@@ -26,7 +26,6 @@ module Copyleaks
       }.to_json(options)
     end
 
-    # @param json [Hash, String] A parsed Hash or a JSON String.
     def self.from_json(json)
       data = TextModerationJson.to_hash(json)
       return nil if data.nil?

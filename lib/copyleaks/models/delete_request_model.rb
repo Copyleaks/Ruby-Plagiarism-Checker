@@ -1,38 +1,13 @@
-#
-#  The MIT License(MIT)
-#
-#  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#  The above copyright notice and this permission notice shall be included in all
-#  copies or substantial portions of the Software.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#  SOFTWARE.
-# =
 require 'json'
 module Copyleaks
   class CopyleaksDeleteRequestModel
     attr_reader :scans, :purge, :completionWebhook, :headers
 
-    # @param [Array] scans The list of scans to delete (IdObject items).
-    # @param [Boolean] purge Delete all trace of the scan from Copyleaks server, including from internal database. A purged process will not be available as a result for previous scans.
-    #   Leave nil to omit the field (server default: false).
-    # @param [String] completionWebhook Allows you to register to a webhook that will be fired once the removal has been completed. Make sure that your endpoint is listening to a POST method (no body parameters were supplied).
-    #   Leave nil to omit the field.
-    # @param [Array<Array<String>>] headers Headers added to the completion webhook request, for example
-    #   [['Authorization', 'Bearer my-token']].
+    # @param [Array] scans IdObject items.
+    # @param [Boolean] purge Remove every trace of the scans, including from the internal database, so they are no
+    #   longer found as results of other scans. Server default: false.
+    # @param [String] completionWebhook Called with a POST and no body once the deletion is complete.
+    # @param [Array<Array<String>>] headers For the completion webhook, e.g. [['Authorization', 'Bearer my-token']].
     def initialize(scans, purge = nil, completionWebhook = nil, headers: nil)
       scans.each do |object_id|
         unless object_id.instance_of?(IdObject)

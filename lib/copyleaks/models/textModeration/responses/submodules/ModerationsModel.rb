@@ -14,7 +14,6 @@ module Copyleaks
       }.to_json(options)
     end
 
-    # @param json [Hash, String] A parsed Hash or a JSON String.
     def self.from_json(json)
       data = TextModerationJson.to_hash(json)
       return nil if data.nil?

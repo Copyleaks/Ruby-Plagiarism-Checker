@@ -1,34 +1,12 @@
- #The MIT License(MIT)
- #Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
- #Permission is hereby granted, free of charge, to any person obtaining a copy
- #of this software and associated documentation files (the "Software"), to deal
- #in the Software without restriction, including without limitation the rights
- #to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- #copies of the Software, and to permit persons to whom the Software is
- #furnished to do so, subject to the following conditions:
- #The above copyright notice and this permission notice shall be included in all
- #copies or substantial portions of the Software.
- #THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- #IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- #FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
- #AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- #LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- #SOFTWARE.
- #=
-
-
 module Copyleaks
   class Error
     attr_reader :code, :message, :type, :id, :url, :details
 
     # Every field is optional, so an error webhook from any API version can be loaded.
-    # @param [Integer] code - Error code that represents the reason for failure.
-    # @param [String] message - Error message that represents the reason for failure.
-    # @param [String] type - The error type, for example 'invalid_request_error' or 'payment_error'.
-    # @param [String] id - The machine-readable error identifier, for example 'insufficient_credits'.
-    # @param [String] url - A URL to the documentation page for this error.
-    # @param [Array<Hash>] details - The parameters that caused the error, each with param and message.
+    # @param [String] type For example 'invalid_request_error' or 'payment_error'.
+    # @param [String] id Machine-readable, for example 'insufficient_credits'.
+    # @param [String] url Documentation page for this error.
+    # @param [Array<Hash>] details The parameters that caused the error, each with param and message.
     def initialize(code: nil, message: nil, type: nil, id: nil, url: nil, details: nil, **_extra)
       raise 'Copyleaks::Error - code must be an Integer' unless code.nil? || code.is_a?(Integer)
       raise 'Copyleaks::Error - message must be a String' unless message.nil? || message.is_a?(String)
@@ -45,8 +23,7 @@ module Copyleaks
       @details = details
     end
 
-    # Builds the error from the 'error' object of a parsed webhook body (a Hash with String or Symbol keys).
-    # Returns nil when the value is not a Hash.
+    # json_hash is the 'error' object of a parsed webhook body (String or Symbol keys). nil for a non-Hash.
     def self.from_json(json_hash)
       return nil unless json_hash.is_a?(Hash)
 

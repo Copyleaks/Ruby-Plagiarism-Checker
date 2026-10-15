@@ -1,42 +1,15 @@
-#
-#  The MIT License(MIT)
-#
-#  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#  The above copyright notice and this permission notice shall be included in all
-#  copies or substantial portions of the Software.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#  SOFTWARE.
-# =
 module Copyleaks
   class CopyleaksExportModel
     attr_reader :completionWebhook, :completionWebhookHeaders, :results, :crawledVersion, :pdfReport, :maxRetries,
                 :developerPayload, :aiDetection, :writingFeedback, :overview
 
     # Only completionWebhook is required. Request at least one artifact to export.
-    # @param [String] completionWebhook This webhook event is triggered once the export is completed.
-    # @param [ExportResults[]] results An array of results to be exported. The equivalent of downloading results manually.
-    # @param [ExportCrawledVersion] crawledVersion Download the crawled version of the submitted text. The equivalent of downloading crawled version manually.
-    # @param [ExportPdfReport] pdfReport Download the PDF report. Allowed only when `properties.pdf.create` was set to true on the scan submission.
-    # @param [Integer] maxRetries How many retries to send before giving up. Using high value (12) may lead to a longer time until the completionWebhook being executed. A low value (1) may lead to errors while your service is temporary having problems.
-    # @param [String] developerPayload Add a custom developer payload that will then be provided on the Export-Completed webhook.
-    # @param [Array] completionWebhookHeaders Adds headers to the completion webhook.
-    # @param [ExportAiDetection] aiDetection Export the AI Content Detection report (keyword option).
-    # @param [ExportWritingFeedback] writingFeedback Export the Grammar Checker report (keyword option).
-    # @param [ExportOverview] overview Export the Gen-AI Overview report (keyword option).
+    # @param [String] completionWebhook Called once the export is completed.
+    # @param [ExportPdfReport] pdfReport Allowed only when properties.pdf.create was true on the scan.
+    # @param [Integer] maxRetries Upload retries before giving up. A high value (12) can delay the completion
+    #   webhook; a low value (1) can fail while your service has a temporary problem.
+    # @param [String] developerPayload Echoed in the Export-Completed webhook.
+    # @param [Array] completionWebhookHeaders Headers added to the completion webhook.
     def initialize(completionWebhook, results = nil, crawledVersion = nil, pdfReport = nil, maxRetries = nil,
                    developerPayload = nil, completionWebhookHeaders = nil,
                    aiDetection: nil, writingFeedback: nil, overview: nil)

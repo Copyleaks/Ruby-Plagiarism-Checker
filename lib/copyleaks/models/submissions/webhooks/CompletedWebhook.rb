@@ -1,29 +1,8 @@
- #The MIT License(MIT)
- #Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
- #Permission is hereby granted, free of charge, to any person obtaining a copy
- #of this software and associated documentation files (the "Software"), to deal
- #in the Software without restriction, including without limitation the rights
- #to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- #copies of the Software, and to permit persons to whom the Software is
- #furnished to do so, subject to the following conditions:
- #The above copyright notice and this permission notice shall be included in all
- #copies or substantial portions of the Software.
- #THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- #IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- #FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
- #AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- #LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- #SOFTWARE.
- #=
-
 module Copyleaks
   class CompletedWebhook < StatusWebhook
     attr_reader :results, :notifications, :scannedDocument, :referencesValidation
 
-    # @param [Hash] referencesValidation Citation Checker summary (summary.total, summary.academic,
-    #   summary.academicValidated, summary.nonAcademicValidated). Present when references.validate was
-    #   enabled for the scan.
+    # @param [Hash] referencesValidation Citation Checker summary. Present when references.validate was enabled.
     def initialize(results: nil, notifications: nil, scannedDocument: nil, referencesValidation: nil, **args)
       super(**args)
       @results = results
@@ -33,15 +12,9 @@ module Copyleaks
       @extra_fields = args # Store any additional fields here
     end
 
-    # Finds the AI text detection alert of this scan.
-    #
-    # Works whether notifications is the raw Hash from the webhook body (string or symbol keys)
-    # or a Copyleaks::Notifications object.
-    # Returns nil when the completed webhook contains no 'suspected-ai-text' alert.
-    #
-    # @return [Alerts, nil] The first alert whose code is Copyleaks::CopyleaksAlertCodes::SUSPECTED_AI_TEXT, or nil.
-    # @raise [ArgumentError, RuntimeError] When that alert Hash has no category or severity, or a field
-    #   has the wrong type (see Alerts.from_json). A missing title or message is allowed.
+    # The first 'suspected-ai-text' alert of this scan, or nil. notifications may be the raw webhook Hash
+    # (String or Symbol keys) or a Copyleaks::Notifications.
+    # @raise [ArgumentError, RuntimeError] When the alert lacks category or severity, or a field has the wrong type.
     def ai_detection_alert
       alerts = notification_alerts
       return nil unless alerts.is_a?(Array)
@@ -57,12 +30,8 @@ module Copyleaks
       nil
     end
 
-    # Decodes the AI text detection result of the 'suspected-ai-text' alert of this scan.
-    #
-    # Returns nil when the completed webhook contains no 'suspected-ai-text' alert, the alert has no data,
-    # or its data is not a JSON object.
-    #
-    # @return [CopyleaksAiTextDetectionResponseModel, nil] The decoded result, or nil.
+    # Decodes the 'suspected-ai-text' alert's result; nil when there is no such alert. See Alerts#ai_detection_result.
+    # @return [CopyleaksAiTextDetectionResponseModel, nil]
     # @raise [JSON::ParserError] When the alert's additionalData is not valid JSON.
     def ai_detection_result
       alert = ai_detection_alert
@@ -86,7 +55,7 @@ module Copyleaks
 
     private
 
-    # @return [Array, nil] The alerts of the notifications section, as received or as Alerts objects.
+    # @return [Array, nil] The notifications alerts, as received or as Alerts objects.
     def notification_alerts
       if @notifications.is_a?(Hash)
         @notifications.key?('alerts') ? @notifications['alerts'] : @notifications[:alerts]

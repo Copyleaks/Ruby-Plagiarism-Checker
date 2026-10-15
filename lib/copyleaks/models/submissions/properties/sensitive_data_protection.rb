@@ -1,37 +1,7 @@
-#
-#  The MIT License(MIT)
-#
-#  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#  The above copyright notice and this permission notice shall be included in all
-#  copies or substantial portions of the Software.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#  SOFTWARE.
-# =
 module Copyleaks
   class SubmissionSensitiveData
-    # @param [Boolean] driversLicense - Mask driver's license numbers from the scanned document with # characters. Available for users on a plan for 2500 pages or more.
-    # @param [Boolean] credentials - Mask credentials from the scanned document with # characters. Available for users on a plan for 2500 pages or more.
-    # @param [Boolean] passport - Mask passports from the scanned document with # characters. Available for users on a plan for 2500 pages or more.
-    # @param [Boolean] network - Mask network identifiers from the scanned document with # characters. Available for users on a plan for 2500 pages or more.
-    # @param [Boolean] url - Mask url from the scanned document with # characters. Available for users on a plan for 2500 pages or more.
-    # @param [Boolean] emailAddress - Mask email addresses from the scanned document with # characters. Available for users on a plan for 2500 pages or more.
-    # @param [Boolean] creditCard - Mask credit card numbers and credit card track numbers from the scanned document with # characters. Available for users on a plan for 2500 pages or more.
-    # @param [Boolean] phoneNumber - Mask phone numbers from the scanned document with # characters. Available for users on a plan for 2500 pages or more.
-    # Every argument is optional. An argument left nil is not sent, and the server default (false) applies.
+    # Each flag masks that kind of data in the scanned document with # characters (creditCard also masks track
+    # numbers). Needs a plan of 2500 pages or more. Arguments left nil are not sent (server default: false).
     def initialize(
       driversLicense = nil,
       credentials = nil,

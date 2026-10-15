@@ -1,31 +1,8 @@
-#
-#  The MIT License(MIT)
-#
-#  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#  The above copyright notice and this permission notice shall be included in all
-#  copies or substantial portions of the Software.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#  SOFTWARE.
-# =
 module Copyleaks
   class SubmissionScanningCopyleaksDB
-    # Both arguments are optional. An argument left nil is not sent, and the server default applies.
-    # @param [Boolean] includeMySubmissions When set to true: Copyleaks will also compare against content which was uploaded by YOU to the Copyleaks internal database. If true, it will also index the scan in the Copyleaks internal database.
-    # @param [Boolean] includeOthersSubmissions  When set to true: Copyleaks will also compare against content which was uploaded by OTHERS to the Copyleaks internal database. If true, it will also index the scan in the Copyleaks internal database.
+    # Arguments left nil are not sent. Either flag set to true also indexes the scan in the internal database.
+    # @param [Boolean] includeMySubmissions Also compare against content YOU uploaded to the internal database.
+    # @param [Boolean] includeOthersSubmissions Also compare against content OTHERS uploaded to the internal database.
     def initialize(includeMySubmissions = nil, includeOthersSubmissions = nil)
       @includeMySubmissions = includeMySubmissions
       @includeOthersSubmissions = includeOthersSubmissions

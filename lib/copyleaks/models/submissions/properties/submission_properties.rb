@@ -1,71 +1,20 @@
-#
-#  The MIT License(MIT)
-#
-#  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#  The above copyright notice and this permission notice shall be included in all
-#  copies or substantial portions of the Software.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#  SOFTWARE.
-# =
 module Copyleaks
+  # Scan settings. Only webhooks is required; arguments left nil are not sent, so the server default applies.
   class SubmissionProperties
     attr_reader :webhooks, :includeHtml, :developerPayload, :sandbox, :expiration, :sensitivityLevel, :cheatDetection,
                 :action, :author, :filters, :scanning, :indexing, :exclude, :pdf, :sensitiveDataProtection, :scanMethodAlgorithm,
                 :aiGeneratedText, :customMetadata, :writingFeedback, :displayLanguage, :aiSourceMatch,
                 :overview, :internalAiSourceMatch, :references, :scanTimeZone, :course, :assignment, :institution
 
-    # Only webhooks is required. Every other argument is optional: a value left nil is not sent,
-    # and the server default applies.
-    #
-    # @param [SubmissionWebhooks] webhooks - Check inner properties for more details.
-    # @param [Boolean] includeHtml - By default, Copyleaks will present the report in text format. If set to true, Copyleaks will also include html format.
-    # @param [String] developerPayload - Add custom developer payload that will then be provided on the webhooks (at most 512 characters).
-    # @param [Boolean] sandbox - You can test the integration with the Copyleaks API for free using the sandbox mode. You will be able to submit content for a scan and get back mock results, simulating the way Copyleaks will work to make sure that you successfully integrated with the API. Turn off this feature on production environment.
-    # @param [Integer] expiration - Specify the maximum life span of a scan in hours on the Copyleaks servers (1 to 2880, server default: 2880). When expired, the scan will be deleted and will no longer be accessible.
-    # @param [Integer] sensitivityLevel - You can control the level of plagiarism sensitivity that will be identified according to the speed of the scan. If you prefer a faster scan with the results that contains the highest amount of plagiarism choose 1, and if a slower, more comprehensive scan, that will also detect the smallest instances choose 5 (server default: 3).
-    # @param [Boolean] cheatDetection - When set to true the submitted document will be checked for cheating. If a cheating will be detected, a scan alert will be added to the completed webhook.
-    # @param [SubmissionActions] action - Types of content submission actions. Possible values: Scan: Start scan immediately. Check Credits: Check how many credits will be used for this scan. Index Only: Only index the file in the Copyleaks internal database. No credits will be used.
-    # @param [SubmissionAuthor] author - Check inner properties for more details.
-    # @param [SubmissionFilter] filters - Check inner properties for more details.
-    # @param [SubmissionScanning] scanning - Check inner properties for more details.
-    # @param [SubmissionIndexing] indexing - Check inner properties for more details.
-    # @param [SubmissionExclude] exclude - Check inner properties for more details.
-    # @param [SubmissionPDF] pdf - Check inner properties for more details.
-    # @param [SubmissionSensitiveData] sensitiveDataProtection - Check inner properties for more details.
-    # @param [SubmissionScanMethodAlgorithm] scanMethodAlgorithm - Check inner properties for more details.
-    # @param [SubmissionAiGeneratedText] aiGeneratedText - Check inner properties for more details.
-    # @param [SubmissionCustomMetadata] customMetadata - Add custom properties that will be attached to your document in a Copyleaks repository.
-    # @param [SubmissionWritingFeedback] writingFeedback - Check inner properties for more details.
-    # @param [String] displayLanguage - The language the PDF report is generated in.
-    #   Possible values: 'en', 'es', 'pt', 'fr', 'de', 'it'. Values are lowercase and case-sensitive ('EN' and 'en-US' are rejected).
-    #   Only takes effect when pdf.create is true.
-    #   Leave nil to omit the field and get the server default ('en').
-    # @param [SubmissionAiSourceMatch] aiSourceMatch - Check inner properties for more details.
-    #   AI Source Match currently only applies to documents detected as English.
-    #   Leave nil to omit the field and get the server default (disabled).
-    #
-    # Keyword options:
-    # @param [SubmissionOverview] overview - Gen-AI Overview: key insights from the scan data.
-    # @param [SubmissionInternalAiSourceMatch] internalAiSourceMatch - Find sources in the Copyleaks internal AI database.
-    # @param [SubmissionReferences] references - Citation Checker: validate the references in the text.
-    # @param [String] scanTimeZone - IANA time zone name for the scan time on the PDF report, for example 'America/New_York'.
-    # @param [SubmissionCourse] course - Course identifier, used for tracking analytics.
-    # @param [SubmissionAssignment] assignment - Assignment identifier, used for tracking analytics.
-    # @param [SubmissionInstitution] institution - Institution identifier, used for tracking analytics.
+    # @param [String] developerPayload Echoed in the webhooks, at most 512 characters.
+    # @param [Boolean] sandbox Free mock results for testing the integration. Turn it off in production.
+    # @param [Integer] expiration Hours the scan is kept before it is deleted, 1 to 2880 (server default 2880).
+    # @param [Integer] sensitivityLevel 1 (fastest) to 5 (slowest, finds the smallest matches); server default 3.
+    # @param [Boolean] cheatDetection Check for cheating; a detection adds a scan alert to the completed webhook.
+    # @param [SubmissionCustomMetadata] customMetadata Attached to your document in a Copyleaks repository.
+    # @param [String] displayLanguage PDF report language: 'en', 'es', 'pt', 'fr', 'de' or 'it', lowercase and
+    #   case-sensitive. Only applies when pdf.create is true (server default 'en').
+    # @param [String] scanTimeZone IANA time zone for the scan time on the PDF report, e.g. 'America/New_York'.
     def initialize(
       webhooks, includeHtml = nil, developerPayload = nil, sandbox = nil, expiration = nil,
       sensitivityLevel = nil, cheatDetection = nil, action = nil, author = nil, filters = nil,

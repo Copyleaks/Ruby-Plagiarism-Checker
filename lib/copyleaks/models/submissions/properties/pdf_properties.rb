@@ -1,40 +1,11 @@
-#
-#  The MIT License(MIT)
-#
-#  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#  The above copyright notice and this permission notice shall be included in all
-#  copies or substantial portions of the Software.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#  SOFTWARE.
-# =
 module Copyleaks
   class SubmissionPDF
-    # Every argument is optional. An argument left nil is not sent, and the server default applies.
-    # @param [Boolean] create Add a request to generate a customizable export of the scan report, in a pdf format. Set to true in order to generate a pdf report for this scan.
-    # @param [String] title Customize the title for the PDF report.
-    # @param [String] largeLogo Customize the logo image in the PDF report.
-    # @param [Boolean] rtl When set to true the text in the report will be aligned from right to left.
-    # @param [SubmissionPdfVersion] version - Deprecated: use reportVersion. PDF version to generate.
-    # @param [SubmissionPdfColors] colors - Customizable colors.
-    # @param [String] reportVersion - PDF report version to generate. Overrides version when both are supplied.
-    #   Possible values (SubmissionPdfReportVersion): 'v1', 'v2', 'v3', 'latest'. Values are lowercase and case-sensitive ('V3' is rejected).
-    #   Only takes effect when create is true.
-    #   Leave nil to omit the field and get the server default.
-
+    # Arguments left nil are not sent, so the server default applies.
+    # @param [Boolean] create Generate a PDF report for this scan.
+    # @param [String] largeLogo The logo image in the PDF report.
+    # @param [Boolean] rtl Align the report text right to left.
+    # @param [SubmissionPdfVersion] version Deprecated: use reportVersion.
+    # @param [String] reportVersion See SubmissionPdfReportVersion. Overrides version; applies only when create is true.
     def initialize(
       create = nil,
       title = nil,

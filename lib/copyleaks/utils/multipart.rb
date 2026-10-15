@@ -1,31 +1,7 @@
-#
-#  The MIT License(MIT)
-#
-#  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#  The above copyright notice and this permission notice shall be included in all
-#  copies or substantial portions of the Software.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#  SOFTWARE.
-# =
 require 'securerandom'
 
 module Copyleaks
-  # Builds a multipart/form-data request body in memory.
-  # The file is sent as raw bytes, without the base64 overhead of the JSON endpoints.
+  # Builds a multipart/form-data body in memory. Files go as raw bytes, without base64 overhead.
   class MultipartForm
     CRLF = "\r\n".b.freeze
 
@@ -57,8 +33,7 @@ module Copyleaks
       self
     end
 
-    # Adds a file field. data is a binary String or an IO that responds to #read.
-    # An IO is rewound first when it can be, so the same request can be sent again.
+    # data is a binary String or an IO. An IO is rewound first when possible, so the request can be resent.
     def add_file(name, data, filename, content_type = nil)
       bytes = data.respond_to?(:read) ? read_io(data) : data
       raise ArgumentError, "Copyleaks::MultipartForm - #{name} - file data must be a String or an IO" unless bytes.is_a?(String)
