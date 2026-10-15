@@ -6,7 +6,8 @@ module Copyleaks
     # @param [Boolean] relatedMeaningEnabled Match paraphrased content (server default: true).
     # @param [Integer] minCopiedWords Only results with at least this many copied words.
     # @param [Boolean] safeSearch Block explicit adult content from results; not 100% effective (server default: false).
-    # @param [String[]] domains Included or excluded, depending on domainsMode (server default: EXCLUDE).
+    # @param [String[]] domains Included or excluded, depending on domainsMode.
+    # @param [Integer] domainsMode SubmissionFilterDomainsMode INCLUDE or EXCLUDE (server default: EXCLUDE).
     # @param [Boolean] allowSameDomain Allow results from the submitted URL's domain (server default: false).
     def initialize(
       identicalEnabled = nil,
