@@ -51,7 +51,7 @@ The gem is now published as `copyleaks`. Versions up to 4.1.1 were published as 
   - Error webhook: `type`, `id`, `url` and `details` in `Copyleaks::Error`.
   - Failed asynchronous AI Image and AI Video Detection scans: `Copyleaks::CopyleaksAiImageDetectionResponseModel` and `Copyleaks::CopyleaksAiVideoDetectionResponseModel` have `error` (a `Copyleaks::Error`) and `developer_payload`, and `from_json` reads both. When a scan fails, the webhook has an `error` instead of a result, so check `error` first. `Copyleaks::Error.from_json(hash)` builds the error from a webhook `error` Hash.
 - **Connection settings.** `Copyleaks::API.new` accepts `open_timeout:`, `read_timeout:`, `write_timeout:`, `keep_alive_timeout:`, `pool_size:`, `identity_server_uri:` and `api_server_uri:`. `api.close` closes idle connections.
-- **Retry information.** `Copyleaks::RateLimitException` and `Copyleaks::UnderMaintenanceException` now carry the HTTP `response`, and `retry_after` returns the `Retry-After` header.
+- **Retry information.** `Copyleaks::RateLimitException` and `Copyleaks::UnderMaintenanceException` now carry the HTTP `response`, and `retry_after` returns the `Retry-After` header. All three API exceptions, `CommandException` included, now extend `Copyleaks::CopyleaksApiException`, which has `response` and `retry_after`.
 - **Streamed usage history.** Pass a block to `get_usages_history_csv` to receive the CSV in chunks instead of one String.
 - **Tests.** The repository has an offline test suite: `rake test`.
 
@@ -98,5 +98,5 @@ The gem is now published as `copyleaks`. Versions up to 4.1.1 were published as 
 - **AI Image Detection:** `CopyleaksAiImageDetectionRequestModel#to_hash` now uses the key `filename` (was `fileName`) and leaves out `nil` fields. A `sandbox` that is not `true`, `false` or `nil` raises `ArgumentError`.
 - **Delete requests:** `Copyleaks::CopyleaksDeleteRequestModel#completionWebhook` returns `nil` (was `''`) when no webhook is set, and `purge` is sent only when you set it.
 - **Login tokens:** `verify_auth_token`, and every call that checks the token, raises `Copyleaks::AuthExpiredException` 5 minutes before the token's expiry time. Log in again when it does.
-- **Stricter types:** `Copyleaks::SubmissionScanning` raises when `internet` is not `true`, `false` or `nil`.
+- **Stricter types:** `Copyleaks::SubmissionScanning` raises when `internet` is not `true`, `false` or `nil`. `Copyleaks::ExportPdfReport` and `Copyleaks::ExportCrawledVersion` raise `RuntimeError` when `headers` is not `nil` or an Array of `[name, value]` String pairs (4.x sent any value).
 - **Sub-clients:** if you build `AIDetectionClient`, `AIImageDetectionClient`, `TextModerationClient` or `WritingAssistantClient` yourself, they now use a `Copyleaks::HttpClient`. A `Net::HTTP` object is still accepted. Using `api.ai_detection_client` and the other accessors needs no change.

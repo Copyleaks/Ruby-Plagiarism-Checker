@@ -381,6 +381,16 @@ class ApiTest < Minitest::Test
     assert_empty @server.requests
   end
 
+  def test_api_calls_check_the_token_through_verify_auth_token
+    now = Time.now.utc
+    expired = Copyleaks::CopyleaksAuthToken.new((now - 60).iso8601, 't', (now - 3600).iso8601)
+    checked = []
+    api.define_singleton_method(:verify_auth_token) { |t| checked << t }
+    api.get_credits_balance(expired)
+    assert_equal [expired], checked
+    assert_equal 1, @server.requests.size
+  end
+
   def test_per_client_server_uris_do_not_change_the_global_config
     api.get_credits_balance(token)
     assert_equal 'https://api.copyleaks.com', Copyleaks::Config.api_server_uri

@@ -31,7 +31,7 @@ module Copyleaks
       as_json.to_json(*args)
     end
 
-    # @param json [Hash, String] A parsed Hash (String or Symbol keys) or a JSON String.
+    # @param json [Hash, String] A parsed Hash (String or Symbol keys) or a JSON String; invalid JSON raises JSON::ParserError.
     def self.from_json(json)
       data = TextModerationJson.to_hash(json)
       return nil if data.nil?

@@ -353,6 +353,7 @@ class ModelsTest < Minitest::Test
       assert_equal({ 'endpoint' => 'https://example.com/e', 'verb' => 'POST', 'headers' => [%w[A B]] }, json_of(target))
       error = assert_raises(RuntimeError) { klass.new(1, 'POST') }
       assert_equal "Copyleaks::#{klass.name.split('::').last} - endpoint - endpoint must be of type String", error.message
+      assert_raises(RuntimeError) { klass.new('u', 'POST', { 'A' => 'B' }) }
     end
     # The export model still accepts only the matching class.
     assert_raises(RuntimeError) { Copyleaks::CopyleaksExportModel.new(WEBHOOK, nil, Copyleaks::ExportPdfReport.new('u', 'POST')) }
