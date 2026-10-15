@@ -21,7 +21,7 @@ module Copyleaks
       if !mask_type.nil? && !mask_type.is_a?(String)
         raise ArgumentError, 'Copyleaks::CopyleaksAiImageDetectionAsyncRequestModel - mask_type must be a String'
       end
-      unless CopyleaksAsyncWebhooksModel.headers_valid?(headers)
+      unless Utils.headers_valid?(headers)
         raise ArgumentError, 'Copyleaks::CopyleaksAiImageDetectionAsyncRequestModel - headers must be an Array of [name, value] String pairs'
       end
       if !sandbox.nil? && ![true, false].include?(sandbox)

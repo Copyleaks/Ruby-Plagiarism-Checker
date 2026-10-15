@@ -1,41 +1,21 @@
-module Copyleaks
-  # Metadata about an AI Text Detection scan.
-  class CopyleaksAiTextDetectionScannedDocumentModel
-    attr_accessor :scan_id, :total_words, :total_excluded, :actual_credits, :expected_credits, :creation_time
+require_relative '../../textModeration/responses/submodules/TextModerationScannedDocument.rb'
 
+module Copyleaks
+  # Metadata about an AI Text Detection scan. Unlike the base class, fields default to nil, creation_time stays
+  # the ISO 8601 String, and unset fields are left out of the JSON.
+  class CopyleaksAiTextDetectionScannedDocumentModel < TextModerationScannedDocument
     def initialize(scan_id: nil, total_words: nil, total_excluded: nil, actual_credits: nil, expected_credits: nil,
                    creation_time: nil)
-      @scan_id = scan_id
-      @total_words = total_words
-      @total_excluded = total_excluded
-      @actual_credits = actual_credits
-      @expected_credits = expected_credits
-      @creation_time = creation_time
+      super
     end
 
-    def self.from_json(json_hash)
-      return nil unless json_hash.is_a?(Hash)
-
-      new(
-        scan_id: json_hash['scanId'],
-        total_words: json_hash['totalWords'],
-        total_excluded: json_hash['totalExcluded'],
-        # The API sends actualCredits; credits is accepted too.
-        actual_credits: json_hash.key?('actualCredits') ? json_hash['actualCredits'] : json_hash['credits'],
-        expected_credits: json_hash['expectedCredits'],
-        creation_time: json_hash['creationTime']
-      )
+    def self.parse_creation_time(value)
+      value
     end
+    private_class_method :parse_creation_time
 
-    def to_json(*args)
-      {
-        'scanId' => @scan_id,
-        'totalWords' => @total_words,
-        'totalExcluded' => @total_excluded,
-        'actualCredits' => @actual_credits,
-        'expectedCredits' => @expected_credits,
-        'creationTime' => @creation_time
-      }.compact.to_json(*args)
+    def as_json(*_args)
+      super.compact
     end
   end
 end

@@ -18,7 +18,7 @@ module Copyleaks
       raise ArgumentError, 'Copyleaks::CopyleaksAiVideoDetectionRequestModel - url must be a String' unless url.is_a?(String)
       raise ArgumentError, 'Copyleaks::CopyleaksAiVideoDetectionRequestModel - filename must be a String' unless filename.is_a?(String)
       raise ArgumentError, 'Copyleaks::CopyleaksAiVideoDetectionRequestModel - model must be a String' unless model.is_a?(String)
-      unless CopyleaksAsyncWebhooksModel.headers_valid?(headers)
+      unless Utils.headers_valid?(headers)
         raise ArgumentError, 'Copyleaks::CopyleaksAiVideoDetectionRequestModel - headers must be an Array of [name, value] String pairs'
       end
       if !verb.nil? && !VERBS.include?(verb)

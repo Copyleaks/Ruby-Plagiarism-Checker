@@ -1,9 +1,10 @@
 module Copyleaks
+  # An object with a String id. Base of SubmissionCourse, SubmissionAssignment and SubmissionInstitution.
   class IdObject
     attr_reader :id
 
     def initialize(id)
-      raise 'Copyleaks::IdObject - id - id must be of type String' unless id.instance_of?(String)
+      raise "Copyleaks::#{self.class.name.split('::').last} - id - id must be of type String" unless id.instance_of?(String)
 
       @id = id
     end

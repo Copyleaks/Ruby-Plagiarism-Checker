@@ -33,6 +33,11 @@ module Copyleaks
       @developer_payload = developer_payload
     end
 
+    # Always true.
+    def multipart?
+      true
+    end
+
     # @return [Copyleaks::MultipartForm] Fields: image (file), filename, sandbox, developerPayload.
     def to_multipart
       form = MultipartForm.new

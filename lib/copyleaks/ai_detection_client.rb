@@ -10,25 +10,18 @@ module Copyleaks
     # @param [NaturalLanguageSubmissionModel] submission
     # @return [Hash] For typed access use CopyleaksAiTextDetectionResponseModel.from_json(result).
     def submit_natural_language(authToken, scanId, submission)
-      raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
-      if submission.nil? || !submission.instance_of?(Copyleaks::NaturalLanguageSubmissionModel)
-        raise 'submission is Invalid, must be instance of type Copyleaks::NaturalLanguageSubmissionModel'
-      end
-
-      ClientUtils.verify_auth_token(authToken)
-
-      path = "/v2/writer-detector/#{ClientUtils.escape_path(scanId)}/check"
-      ClientUtils.send_request(@api_client, :post, path, 'submit_natural_language', auth_token: authToken, json: submission)
+      ClientUtils.send_authorized(@api_client, :post, '/v2/writer-detector/%s/check', 'submit_natural_language',
+                                  authToken, ids: { 'scanId' => scanId },
+                                  model: [submission, NaturalLanguageSubmissionModel,
+                                          'submission is Invalid, must be instance of type Copyleaks::NaturalLanguageSubmissionModel'])
     end
 
     # Returns the credit balance available for AI Text Detection.
     # For more info: https://docs.copyleaks.com/reference/actions/writer-detector/credits
     # @return [Hash] For example { 'credits' => 382 }.
     def get_credits_balance(authToken)
-      ClientUtils.verify_auth_token(authToken)
-
-      ClientUtils.send_request(@api_client, :get, '/v2/writer-detector/credits', 'get_ai_text_credits_balance',
-                               auth_token: authToken)
+      ClientUtils.send_authorized(@api_client, :get, '/v2/writer-detector/credits', 'get_ai_text_credits_balance',
+                                  authToken)
     end
   end
 end

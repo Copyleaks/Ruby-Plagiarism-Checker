@@ -54,6 +54,34 @@ module Copyleaks
       handle_response(http_client.request(request), used_by)
     end
 
+    # Checks the arguments and the token, sends the request and returns the parsed response.
+    # path: each %s is replaced, in order, by a percent-encoded ids value.
+    # ids: path arguments by name, e.g. { 'scanId' => scanId }; each must be a String.
+    # model: [body, Class, error message]. The body is sent as JSON, or as multipart/form-data when body.multipart?.
+    def self.send_authorized(http_client, method, path, used_by, auth_token, ids: {}, model: nil)
+      verify_arguments(auth_token, ids: ids, model: model)
+
+      path = format(path, *ids.values.map { |id| escape_path(id) })
+      body = model&.first
+      if body.respond_to?(:multipart?) && body.multipart?
+        send_request(http_client, method, path, used_by, auth_token: auth_token, multipart: body.to_multipart)
+      else
+        send_request(http_client, method, path, used_by, auth_token: auth_token, json: body)
+      end
+    end
+
+    # Raises RuntimeError for an id that is not a String or a body of the wrong class, then checks the token.
+    def self.verify_arguments(auth_token, ids: {}, model: nil)
+      ids.each do |name, value|
+        raise "#{name} is Invalid, must be instance of String" unless value.instance_of?(String)
+      end
+      unless model.nil?
+        body, type, message = model
+        raise message unless body.instance_of?(type)
+      end
+      verify_auth_token(auth_token)
+    end
+
     # Percent-encodes one path segment (scan id, export id, ...) so it cannot change the request path.
     # Only RFC 3986 unreserved characters are kept; every other byte, UTF-8 included, becomes %XX.
     def self.escape_path(segment)

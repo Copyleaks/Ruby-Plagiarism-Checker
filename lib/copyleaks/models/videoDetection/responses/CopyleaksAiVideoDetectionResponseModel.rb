@@ -1,3 +1,5 @@
+require_relative '../../imageDetection/responses/CopyleaksAiImageDetectionScannedDocumentModel.rb'
+
 module Copyleaks
   # Time ranges of one track (positions and lengths are in milliseconds).
   class CopyleaksAiVideoDetectionRangesModel
@@ -112,39 +114,10 @@ module Copyleaks
     end
   end
 
-  # Metadata about the video scan.
-  class CopyleaksAiVideoDetectionScannedVideoModel
-    attr_accessor :scan_id, :actual_credits, :expected_credits, :creation_time
-
-    def initialize(scan_id: nil, actual_credits: nil, expected_credits: nil, creation_time: nil)
-      @scan_id = scan_id
-      @actual_credits = actual_credits
-      @expected_credits = expected_credits
-      @creation_time = creation_time
-    end
-
-    def self.from_json(json_hash)
-      return nil unless json_hash.is_a?(Hash)
-
-      new(
-        scan_id: json_hash['scanId'],
-        actual_credits: json_hash['actualCredits'],
-        expected_credits: json_hash['expectedCredits'],
-        creation_time: json_hash['creationTime']
-      )
-    end
-
+  # Metadata about the video scan. Same fields as the image model; unset fields are left out of the JSON.
+  class CopyleaksAiVideoDetectionScannedVideoModel < CopyleaksAiImageDetectionScannedDocumentModel
     def as_json(*_args)
-      {
-        'scanId' => @scan_id,
-        'actualCredits' => @actual_credits,
-        'expectedCredits' => @expected_credits,
-        'creationTime' => @creation_time
-      }.reject { |_k, v| v.nil? }
-    end
-
-    def to_json(*args)
-      as_json.to_json(*args)
+      super.reject { |_k, v| v.nil? }
     end
   end
 

@@ -11,21 +11,10 @@ module Copyleaks
     # @param [CopyleaksAiImageDetectionRequestModel] submission
     # @return [Hash] For typed access use CopyleaksAiImageDetectionResponseModel.from_json(result).
     def submit_(authToken, scanId, submission)
-      raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
-      if submission.nil? || !submission.instance_of?(Copyleaks::CopyleaksAiImageDetectionRequestModel)
-        raise 'submission is Invalid, must be instance of type Copyleaks::CopyleaksAiImageDetectionRequestModel'
-      end
-
-      ClientUtils.verify_auth_token(authToken)
-
-      path = "/v1/ai-image-detector/#{ClientUtils.escape_path(scanId)}/check"
-      if submission.multipart?
-        ClientUtils.send_request(@api_client, :post, path, 'submit_image_detection', auth_token: authToken,
-                                 multipart: submission.to_multipart)
-      else
-        ClientUtils.send_request(@api_client, :post, path, 'submit_image_detection', auth_token: authToken,
-                                 json: submission)
-      end
+      ClientUtils.send_authorized(@api_client, :post, '/v1/ai-image-detector/%s/check', 'submit_image_detection',
+                                  authToken, ids: { 'scanId' => scanId },
+                                  model: [submission, CopyleaksAiImageDetectionRequestModel,
+                                          'submission is Invalid, must be instance of type Copyleaks::CopyleaksAiImageDetectionRequestModel'])
     end
 
     # Same as submit_.
@@ -37,16 +26,10 @@ module Copyleaks
     # @param [CopyleaksAiImageDetectionAsyncRequestModel] submission
     # @return [Hash, nil] Usually empty.
     def submit_async(authToken, scanId, submission)
-      raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
-      if submission.nil? || !submission.instance_of?(Copyleaks::CopyleaksAiImageDetectionAsyncRequestModel)
-        raise 'submission is Invalid, must be instance of type Copyleaks::CopyleaksAiImageDetectionAsyncRequestModel'
-      end
-
-      ClientUtils.verify_auth_token(authToken)
-
-      path = "/v1/ai-image-detector-async/#{ClientUtils.escape_path(scanId)}/submit"
-      ClientUtils.send_request(@api_client, :put, path, 'submit_image_detection_async', auth_token: authToken,
-                               json: submission)
+      ClientUtils.send_authorized(@api_client, :put, '/v1/ai-image-detector-async/%s/submit', 'submit_image_detection_async',
+                                  authToken, ids: { 'scanId' => scanId },
+                                  model: [submission, CopyleaksAiImageDetectionAsyncRequestModel,
+                                          'submission is Invalid, must be instance of type Copyleaks::CopyleaksAiImageDetectionAsyncRequestModel'])
     end
   end
 end

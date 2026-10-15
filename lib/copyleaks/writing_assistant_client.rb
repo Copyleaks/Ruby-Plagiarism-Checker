@@ -17,13 +17,10 @@ module Copyleaks
     # For more info: https://docs.copyleaks.com/reference/actions/writing-assistant/check
     # @param [WritingAssistantSubmissionModel] submission
     def submit_text(authToken, scanId, submission)
-      raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
-      raise 'submission is invalid, must be an instance of WritingAssistantSubmissionModel' if submission.nil? || !submission.instance_of?(Copyleaks::WritingAssistantSubmissionModel)
-
-      ClientUtils.verify_auth_token(authToken)
-
-      path = "/v1/writing-feedback/#{ClientUtils.escape_path(scanId)}/check"
-      ClientUtils.send_request(@api_client, :post, path, 'submit_writing_assistant', auth_token: authToken, json: submission)
+      ClientUtils.send_authorized(@api_client, :post, '/v1/writing-feedback/%s/check', 'submit_writing_assistant',
+                                  authToken, ids: { 'scanId' => scanId },
+                                  model: [submission, WritingAssistantSubmissionModel,
+                                          'submission is invalid, must be an instance of WritingAssistantSubmissionModel'])
     end
   end
 end

@@ -352,6 +352,22 @@ class ApiTest < Minitest::Test
     assert_nil Copyleaks::UnderMaintenanceException.new.response
   end
 
+  def test_api_exceptions_share_a_base_class
+    [Copyleaks::CommandException, Copyleaks::RateLimitException, Copyleaks::UnderMaintenanceException].each do |klass|
+      assert_operator klass, :<, Copyleaks::CopyleaksApiException
+      assert_operator klass, :<, RuntimeError
+    end
+    @server.respond { |_req| [429, { 'Retry-After' => '5' }, ''] }
+    error = assert_raises(Copyleaks::CopyleaksApiException) { api.get_credits_balance(token) }
+    assert_instance_of Copyleaks::RateLimitException, error
+    assert_equal 'Too many requests. Please wait before calling again.', error.message
+
+    @server.respond { |_req| [400, { 'Retry-After' => '1' }, '{}'] }
+    error = assert_raises(RuntimeError) { api.get_credits_balance(token) }
+    assert_instance_of Copyleaks::CommandException, error
+    assert_equal '1', error.retry_after
+  end
+
   def test_expired_tokens_are_rejected_before_any_request
     now = Time.now.utc
     expired = Copyleaks::CopyleaksAuthToken.new((now - 60).iso8601, 't', (now - 3600).iso8601)

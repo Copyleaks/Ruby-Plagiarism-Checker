@@ -23,7 +23,7 @@ module Copyleaks
         raise 'Copyleaks::CopyleaksDeleteRequestModel - completionWebhook - completionWebhook must be of type String'
       end
 
-      unless headers.nil? || (headers.instance_of?(Array) && headers.all? { |pair| pair.instance_of?(Array) && pair.length == 2 && pair.all? { |part| part.instance_of?(String) } })
+      unless Utils.headers_valid?(headers)
         raise 'Copyleaks::CopyleaksDeleteRequestModel - headers - headers must be an Array of String Array pairs'
       end
 

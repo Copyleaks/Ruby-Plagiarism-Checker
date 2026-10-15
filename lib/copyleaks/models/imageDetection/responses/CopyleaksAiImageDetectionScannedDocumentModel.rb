@@ -20,7 +20,7 @@ module Copyleaks
     end
 
     def self.from_json(json_hash)
-      return nil if json_hash.nil?
+      return nil unless json_hash.is_a?(Hash)
 
       new(
         scan_id: json_hash['scanId'],
@@ -30,13 +30,17 @@ module Copyleaks
       )
     end
 
-    def to_json(*args)
+    def as_json(*_args)
       {
         'scanId' => @scan_id,
         'actualCredits' => @actual_credits,
         'expectedCredits' => @expected_credits,
         'creationTime' => @creation_time
-      }.to_json(*args)
+      }
+    end
+
+    def to_json(*args)
+      as_json.to_json(*args)
     end
   end
 end

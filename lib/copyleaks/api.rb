@@ -87,43 +87,28 @@ module Copyleaks
     # Starts a scan of a file, given as a CopyleaksFileSubmissionModel.
     # For more info: https://docs.copyleaks.com/reference/actions/authenticity/submit-file
     def submit_file(authToken, scanId, submission)
-      raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
-      if submission.nil? || !submission.instance_of?(CopyleaksFileSubmissionModel)
-        raise 'submission is Invalid, must be instance of type CopyleaksFileSubmissionModel'
-      end
-
-      verify_auth_token(authToken)
-
-      path = "/v3/scans/submit/file/#{ClientUtils.escape_path(scanId)}"
-      ClientUtils.send_request(@api_client, :put, path, 'submit_file', auth_token: authToken, json: submission)
+      ClientUtils.send_authorized(@api_client, :put, '/v3/scans/submit/file/%s', 'submit_file', authToken,
+                                  ids: { 'scanId' => scanId },
+                                  model: [submission, CopyleaksFileSubmissionModel,
+                                          'submission is Invalid, must be instance of type CopyleaksFileSubmissionModel'])
     end
 
     # Starts an OCR scan of an image file, given as a CopyleaksFileOcrSubmissionModel.
     # For more info: https://docs.copyleaks.com/reference/actions/authenticity/submit-ocr
     def submit_file_ocr(authToken, scanId, submission)
-      raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
-      if submission.nil? || !submission.instance_of?(CopyleaksFileOcrSubmissionModel)
-        raise 'submission is Invalid, must be instance of type CopyleaksFileOcrSubmissionModel'
-      end
-
-      verify_auth_token(authToken)
-
-      path = "/v3/scans/submit/ocr/#{ClientUtils.escape_path(scanId)}"
-      ClientUtils.send_request(@api_client, :put, path, 'submit_file_ocr', auth_token: authToken, json: submission)
+      ClientUtils.send_authorized(@api_client, :put, '/v3/scans/submit/ocr/%s', 'submit_file_ocr', authToken,
+                                  ids: { 'scanId' => scanId },
+                                  model: [submission, CopyleaksFileOcrSubmissionModel,
+                                          'submission is Invalid, must be instance of type CopyleaksFileOcrSubmissionModel'])
     end
 
     # Starts a scan of a URL, given as a CopyleaksURLSubmissionModel.
     # For more info: https://docs.copyleaks.com/reference/actions/authenticity/submit-url
     def submit_url(authToken, scanId, submission)
-      raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
-      if submission.nil? || !submission.instance_of?(CopyleaksURLSubmissionModel)
-        raise 'submission is Invalid, must be instance of CopyleaksURLSubmissionModel'
-      end
-
-      verify_auth_token(authToken)
-
-      path = "/v3/scans/submit/url/#{ClientUtils.escape_path(scanId)}"
-      ClientUtils.send_request(@api_client, :put, path, 'submit_url', auth_token: authToken, json: submission)
+      ClientUtils.send_authorized(@api_client, :put, '/v3/scans/submit/url/%s', 'submit_url', authToken,
+                                  ids: { 'scanId' => scanId },
+                                  model: [submission, CopyleaksURLSubmissionModel,
+                                          'submission is Invalid, must be instance of CopyleaksURLSubmissionModel'])
     end
 
     # Exports a scan's artifacts to your server.
@@ -131,59 +116,39 @@ module Copyleaks
     # @param [String] exportId A new id for this export.
     # @param [CopyleaksExportModel] model Which artifacts to export, and where.
     def export(authToken, scanId, exportId, model)
-      raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
-      raise 'exportId is Invalid, must be instance of String' if exportId.nil? || !exportId.instance_of?(String)
-      if model.nil? || !model.instance_of?(CopyleaksExportModel)
-        raise 'model is Invalid, must be instance of type CopyleaksExportModel'
-      end
-
-      verify_auth_token(authToken)
-
-      path = "/v3/downloads/#{ClientUtils.escape_path(scanId)}/export/#{ClientUtils.escape_path(exportId)}"
-      ClientUtils.send_request(@api_client, :post, path, 'export', auth_token: authToken, json: model)
+      ClientUtils.send_authorized(@api_client, :post, '/v3/downloads/%s/export/%s', 'export', authToken,
+                                  ids: { 'scanId' => scanId, 'exportId' => exportId },
+                                  model: [model, CopyleaksExportModel,
+                                          'model is Invalid, must be instance of type CopyleaksExportModel'])
     end
 
     # Starts scans that were submitted for a price check; data is a CopyleaksStartRequestModel.
     # For more info: https://docs.copyleaks.com/reference/actions/authenticity/start
     def start(authToken, data)
-      if data.nil? || !data.instance_of?(CopyleaksStartRequestModel)
-        raise 'data is Invalid, must be instance of type CopyleaksStartRequestModel'
-      end
-
-      verify_auth_token(authToken)
-
-      ClientUtils.send_request(@api_client, :patch, '/v3/scans/start', 'start', auth_token: authToken, json: data)
+      ClientUtils.send_authorized(@api_client, :patch, '/v3/scans/start', 'start', authToken,
+                                  model: [data, CopyleaksStartRequestModel,
+                                          'data is Invalid, must be instance of type CopyleaksStartRequestModel'])
     end
 
     # Deletes scans; data is a CopyleaksDeleteRequestModel.
     # For more info: https://docs.copyleaks.com/reference/actions/authenticity/delete
     def delete(authToken, data)
-      if data.nil? || !data.instance_of?(CopyleaksDeleteRequestModel)
-        raise 'data is Invalid, must be instance of CopyleaksDeleteRequestModel'
-      end
-
-      verify_auth_token(authToken)
-
-      ClientUtils.send_request(@api_client, :patch, '/v3.1/scans/delete', 'delete', auth_token: authToken, json: data)
+      ClientUtils.send_authorized(@api_client, :patch, '/v3.1/scans/delete', 'delete', authToken,
+                                  model: [data, CopyleaksDeleteRequestModel,
+                                          'data is Invalid, must be instance of CopyleaksDeleteRequestModel'])
     end
 
     # Resends the status webhooks of an existing scan.
     # For more info: https://docs.copyleaks.com/reference/actions/authenticity/resend-webhook
     def resend_webhook(authToken, scanId)
-      raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
-
-      verify_auth_token(authToken)
-
-      path = "/v3/scans/#{ClientUtils.escape_path(scanId)}/webhooks/resend"
-      ClientUtils.send_request(@api_client, :post, path, 'resend_webhook', auth_token: authToken)
+      ClientUtils.send_authorized(@api_client, :post, '/v3/scans/%s/webhooks/resend', 'resend_webhook', authToken,
+                                  ids: { 'scanId' => scanId })
     end
 
     # Returns the account's credit balance.
     # For more info: https://docs.copyleaks.com/reference/actions/admin/check-credits
     def get_credits_balance(authToken)
-      verify_auth_token(authToken)
-
-      ClientUtils.send_request(@api_client, :get, '/v3/scans/credits', 'get_credits_balance', auth_token: authToken)
+      ClientUtils.send_authorized(@api_client, :get, '/v3/scans/credits', 'get_credits_balance', authToken)
     end
 
     # Returns the usage history between two dates as CSV.
@@ -193,10 +158,7 @@ module Copyleaks
     # @yield [String] Optional. Streams the CSV in chunks, so a long history is never held in memory.
     # @return [String, nil] The CSV text, or nil when a block is given.
     def get_usages_history_csv(authToken, startDate, endDate, &block)
-      raise 'startDate is Invalid, must be instance of String' if startDate.nil? || !startDate.instance_of?(String)
-      raise 'endDate is Invalid, must be instance of String' if endDate.nil? || !endDate.instance_of?(String)
-
-      verify_auth_token(authToken)
+      ClientUtils.verify_arguments(authToken, ids: { 'startDate' => startDate, 'endDate' => endDate })
 
       path = "/v3/scans/usages/history?#{URI.encode_www_form(start: startDate, end: endDate)}"
       request = ClientUtils.build_request(:get, path, auth_token: authToken)
@@ -257,10 +219,8 @@ module Copyleaks
         raise 'repositoryId is Invalid, must be a non-empty String'
       end
 
-      verify_auth_token(authToken)
-
-      path = "/v3/repositories/repository/#{ClientUtils.escape_path(repositoryId)}/info"
-      ClientUtils.send_request(@api_client, :get, path, 'get_repository_info', auth_token: authToken)
+      ClientUtils.send_authorized(@api_client, :get, '/v3/repositories/repository/%s/info', 'get_repository_info',
+                                  authToken, ids: { 'repositoryId' => repositoryId })
     end
 
     # Returns the Copyleaks API release notes.

@@ -15,7 +15,7 @@ module Copyleaks
       if !verb.nil? && !VERBS.include?(verb)
         raise "Copyleaks::CopyleaksURLSubmissionModel - verb - verb must be one of #{VERBS.join(', ')}"
       end
-      unless headers.nil? || (headers.instance_of?(Array) && headers.all? { |pair| pair.instance_of?(Array) && pair.length == 2 && pair.all? { |part| part.instance_of?(String) } })
+      unless Utils.headers_valid?(headers)
         raise 'Copyleaks::CopyleaksURLSubmissionModel - headers - headers must be an Array of String Array pairs'
       end
 

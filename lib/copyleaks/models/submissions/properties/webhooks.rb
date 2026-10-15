@@ -13,10 +13,10 @@ module Copyleaks
       unless newResult.nil? || newResult.instance_of?(String)
         raise 'Copyleaks::SubmissionWebhooks - newResult - newResult must be of type String'
       end
-      unless header_format_valid?(statusHeaders)
+      unless Utils.headers_valid?(statusHeaders)
         raise 'Copyleaks::SubmissionWebhooks - statusHeaders - statusHeaders must be an Array of String Array pairs'
       end
-      unless header_format_valid?(newResultHeaders)
+      unless Utils.headers_valid?(newResultHeaders)
         raise 'Copyleaks::SubmissionWebhooks - newResultHeaders - newResultHeaders must be an Array of String Array pairs'
       end
 
@@ -37,17 +37,6 @@ module Copyleaks
 
     def to_json(*options)
       as_json(*options).to_json(*options)
-    end
-
-    private
-
-    def header_format_valid?(header)
-      return true if header.nil?
-      return false unless header.instance_of?(Array)
-
-      header.all? do |pair|
-        pair.instance_of?(Array) && pair.length == 2 && pair[0].instance_of?(String) && pair[1].instance_of?(String)
-      end
     end
   end
 end

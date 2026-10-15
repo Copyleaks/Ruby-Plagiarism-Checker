@@ -17,7 +17,7 @@ module Copyleaks
         raise 'Copyleaks::CopyleaksExportModel - completionWebhook - completionWebhook must be of type String'
       end
 
-      unless header_format_valid?(completionWebhookHeaders)
+      unless Utils.headers_valid?(completionWebhookHeaders)
         raise 'Copyleaks::CopyleaksExportModel - completionWebhookHeaders - completionWebhookHeaders must be an Array of String Array pairs'
       end
 
@@ -82,17 +82,6 @@ module Copyleaks
 
     def to_json(*options)
       as_json(*options).to_json(*options)
-    end
-
-    private
-
-    def header_format_valid?(header)
-      return true if header.nil?
-      return false unless header.instance_of?(Array)
-
-      header.all? do |pair|
-        pair.instance_of?(Array) && pair.length == 2 && pair[0].instance_of?(String) && pair[1].instance_of?(String)
-      end
     end
   end
 end

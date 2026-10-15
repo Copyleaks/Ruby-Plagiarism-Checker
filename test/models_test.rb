@@ -212,9 +212,6 @@ class ModelsTest < Minitest::Test
     assert_equal 42, model.scanned_document.total_words
     assert_equal 1, model.scanned_document.actual_credits
     assert_equal payload['scannedDocument'], JSON.parse(model.to_json)['scannedDocument']
-
-    legacy = Copyleaks::CopyleaksAiTextDetectionScannedDocumentModel.from_json('scanId' => 's', 'credits' => 3)
-    assert_equal 3, legacy.actual_credits
   end
 
   def test_text_moderation_response_from_a_hash_with_model_version
@@ -313,5 +310,75 @@ class ModelsTest < Minitest::Test
     assert_equal 'abc-123_x.y~', Copyleaks::ClientUtils.escape_path('abc-123_x.y~')
     assert_equal '%2F%3F%23%25%20%2B%22%3C%3E%7B%7D%7C%2A', Copyleaks::ClientUtils.escape_path('/?#% +"<>{}|*')
     assert_equal 'caf%C3%A9', Copyleaks::ClientUtils.escape_path('café')
+  end
+
+  def test_headers_validation
+    assert Copyleaks::Utils.headers_valid?(nil)
+    assert Copyleaks::Utils.headers_valid?([%w[A B], %w[C D]])
+    refute Copyleaks::Utils.headers_valid?({ 'A' => 'B' })
+    refute Copyleaks::Utils.headers_valid?([%w[A B C]])
+    refute Copyleaks::Utils.headers_valid?([['A', 1]])
+  end
+
+  def test_video_scan_info_reuses_the_image_scanned_document
+    video = Copyleaks::CopyleaksAiVideoDetectionScannedVideoModel.from_json('scanId' => 's', 'actualCredits' => 1)
+    assert_kind_of Copyleaks::CopyleaksAiImageDetectionScannedDocumentModel, video
+    assert_equal({ 'scanId' => 's', 'actualCredits' => 1 }, json_of(video))
+    assert_nil Copyleaks::CopyleaksAiVideoDetectionScannedVideoModel.from_json('not a hash')
+
+    image = Copyleaks::CopyleaksAiImageDetectionScannedDocumentModel.from_json('scanId' => 's', 'actualCredits' => 1)
+    assert_instance_of Copyleaks::CopyleaksAiImageDetectionScannedDocumentModel, image
+    assert_equal({ 'scanId' => 's', 'actualCredits' => 1, 'expectedCredits' => nil, 'creationTime' => nil }, json_of(image))
+  end
+
+  def test_ai_text_scanned_document_reuses_the_text_moderation_one
+    payload = { 'scanId' => 's', 'totalWords' => 3, 'creationTime' => '2026-01-01T00:00:00.5Z' }
+    text = Copyleaks::CopyleaksAiTextDetectionScannedDocumentModel.from_json(payload)
+    assert_kind_of Copyleaks::TextModerationScannedDocument, text
+    assert_equal '2026-01-01T00:00:00.5Z', text.creation_time
+    assert_equal payload, json_of(text)
+    assert_equal({}, json_of(Copyleaks::CopyleaksAiTextDetectionScannedDocumentModel.new))
+
+    moderation = Copyleaks::TextModerationScannedDocument.from_json(payload.merge('creationTime' => '2026-01-01T00:00:00Z'))
+    assert_equal Time.utc(2026, 1, 1), moderation.creation_time
+    assert_equal '2026-01-01T00:00:00Z', json_of(moderation)['creationTime']
+    assert_nil json_of(moderation)['actualCredits']
+    assert_equal 0, Copyleaks::TextModerationScannedDocument.new.total_words
+  end
+
+  def test_export_pdf_report_and_crawled_version_are_export_targets
+    [Copyleaks::ExportPdfReport, Copyleaks::ExportCrawledVersion].each do |klass|
+      assert_operator klass, :<, Copyleaks::ExportTarget
+      target = klass.new('https://example.com/e', 'POST', [%w[A B]])
+      assert_equal({ 'endpoint' => 'https://example.com/e', 'verb' => 'POST', 'headers' => [%w[A B]] }, json_of(target))
+      error = assert_raises(RuntimeError) { klass.new(1, 'POST') }
+      assert_equal "Copyleaks::#{klass.name.split('::').last} - endpoint - endpoint must be of type String", error.message
+    end
+    # The export model still accepts only the matching class.
+    assert_raises(RuntimeError) { Copyleaks::CopyleaksExportModel.new(WEBHOOK, nil, Copyleaks::ExportPdfReport.new('u', 'POST')) }
+  end
+
+  def test_id_and_enable_properties_share_a_base_class
+    { Copyleaks::SubmissionCourse => 'c', Copyleaks::SubmissionAssignment => 'a', Copyleaks::SubmissionInstitution => 'i' }.each do |klass, id|
+      assert_operator klass, :<, Copyleaks::IdObject
+      assert_equal id, klass.new(id).id
+      assert_equal({ 'id' => id }, json_of(klass.new(id)))
+      error = assert_raises(RuntimeError) { klass.new(5) }
+      assert_equal "Copyleaks::#{klass.name.split('::').last} - id - id must be of type String", error.message
+    end
+    assert_equal 'Copyleaks::IdObject - id - id must be of type String',
+                 assert_raises(RuntimeError) { Copyleaks::IdObject.new(nil) }.message
+
+    [Copyleaks::SubmissionAiSourceMatch, Copyleaks::SubmissionInternalAiSourceMatch,
+     Copyleaks::SubmissionAiGeneratedTextExplain].each do |klass|
+      assert_operator klass, :<, Copyleaks::SubmissionEnableFlag
+      assert_equal false, klass.new(false).enable
+      assert_equal({ 'enable' => false }, json_of(klass.new(false)))
+      assert_equal({}, json_of(klass.new))
+      error = assert_raises(RuntimeError) { klass.new('yes') }
+      assert_equal "Copyleaks::#{klass.name.split('::').last} - enable - enable must be of type Boolean", error.message
+    end
+    # A shared base class does not make the properties interchangeable.
+    assert_raises(RuntimeError) { Copyleaks::SubmissionProperties.new(webhooks, course: Copyleaks::SubmissionAssignment.new('a')) }
   end
 end

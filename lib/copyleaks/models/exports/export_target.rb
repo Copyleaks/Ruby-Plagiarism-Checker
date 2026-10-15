@@ -1,5 +1,6 @@
 module Copyleaks
   # Where Copyleaks uploads one exported artifact: an HTTP endpoint, a verb and optional headers.
+  # Base of ExportPdfReport, ExportCrawledVersion, ExportAiDetection, ExportWritingFeedback and ExportOverview.
   class ExportTarget
     attr_reader :endpoint, :verb, :headers
 
@@ -8,7 +9,7 @@ module Copyleaks
     def initialize(endpoint, verb, headers = nil)
       raise "Copyleaks::#{self.class.name.split('::').last} - endpoint - endpoint must be of type String" unless endpoint.instance_of?(String)
       raise "Copyleaks::#{self.class.name.split('::').last} - verb - verb must be of type String" unless verb.instance_of?(String)
-      unless headers.nil? || (headers.instance_of?(Array) && headers.all? { |pair| pair.instance_of?(Array) && pair.length == 2 && pair.all? { |part| part.instance_of?(String) } })
+      unless Utils.headers_valid?(headers)
         raise "Copyleaks::#{self.class.name.split('::').last} - headers - headers must be an Array of String Array pairs"
       end
 

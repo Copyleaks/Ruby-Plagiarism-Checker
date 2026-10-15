@@ -11,16 +11,10 @@ module Copyleaks
     # @param [CopyleaksAiVideoDetectionRequestModel] submission
     # @return [Hash, nil] Usually empty.
     def submit(authToken, scanId, submission)
-      raise 'scanId is Invalid, must be instance of String' if scanId.nil? || !scanId.instance_of?(String)
-      if submission.nil? || !submission.instance_of?(Copyleaks::CopyleaksAiVideoDetectionRequestModel)
-        raise 'submission is Invalid, must be instance of type Copyleaks::CopyleaksAiVideoDetectionRequestModel'
-      end
-
-      ClientUtils.verify_auth_token(authToken)
-
-      path = "/v1/ai-video-detector/#{ClientUtils.escape_path(scanId)}/submit"
-      ClientUtils.send_request(@api_client, :post, path, 'submit_video_detection', auth_token: authToken,
-                               json: submission)
+      ClientUtils.send_authorized(@api_client, :post, '/v1/ai-video-detector/%s/submit', 'submit_video_detection',
+                                  authToken, ids: { 'scanId' => scanId },
+                                  model: [submission, CopyleaksAiVideoDetectionRequestModel,
+                                          'submission is Invalid, must be instance of type Copyleaks::CopyleaksAiVideoDetectionRequestModel'])
     end
   end
 end
