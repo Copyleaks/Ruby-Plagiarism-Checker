@@ -1,38 +1,35 @@
-#
-#  The MIT License(MIT)
-#
-#  Copyright(c) 2023 Copyleaks LTD (https://copyleaks.com)
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#  The above copyright notice and this permission notice shall be included in all
-#  copies or substantial portions of the Software.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#  SOFTWARE.
-# =
 module Copyleaks
   class SubmissionAiGeneratedText
-    # @param [Boolean] detect Detects whether the text was written by an AI.
-    def initialize(
-      detect = false
-    )
+    attr_reader :detect, :sensitivity, :explain
+
+    # Fields left nil are not sent, so the server default applies.
+    # @param [Boolean] detect Detect AI-written text (server default: false).
+    # @param [Integer] sensitivity 1 to 3, default 2: 1 finds unedited AI text, 3 also heavily edited AI text.
+    # @param [SubmissionAiGeneratedTextExplain, Boolean] explain AI Logic explanations.
+    #   true is the same as SubmissionAiGeneratedTextExplain.new(true).
+    def initialize(detect = nil, sensitivity: nil, explain: nil)
+      if !detect.nil? && ![true, false].include?(detect)
+        raise 'Copyleaks::SubmissionAiGeneratedText - detect - detect must be of type Boolean'
+      end
+      if !sensitivity.nil? && !(sensitivity.is_a?(Integer) && sensitivity.between?(1, 3))
+        raise 'Copyleaks::SubmissionAiGeneratedText - sensitivity - sensitivity must be an Integer from 1 to 3'
+      end
+
+      explain = SubmissionAiGeneratedTextExplain.new(explain) if [true, false].include?(explain)
+      if !explain.nil? && !explain.instance_of?(SubmissionAiGeneratedTextExplain)
+        raise 'Copyleaks::SubmissionAiGeneratedText - explain - explain must be of type SubmissionAiGeneratedTextExplain'
+      end
+
       @detect = detect
+      @sensitivity = sensitivity
+      @explain = explain
     end
 
     def as_json(*_args)
       {
-        detect: @detect
+        detect: @detect,
+        sensitivity: @sensitivity,
+        explain: @explain
       }.select { |_k, v| !v.nil? }
     end
 
