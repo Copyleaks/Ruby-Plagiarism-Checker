@@ -1,29 +1,29 @@
 require 'json'
+
 module Copyleaks
+  class TextModerationsLegend
+    attr_accessor :index, :id
 
-class TextModerationsLegend
-  attr_accessor :index, :id
+    def initialize(index: 0, id: '')
+      @index = index
+      @id = id
+    end
 
-  # @param index [integer] The numerical index of the label.
-  # @param id [string] A unique string identifier for the label. This ID serves as a machine-readable way to identify the label type.
-  def initialize(index: 0, id: '')
-    @index = index
-    @id = id
+    def to_json(options = {})
+      {
+        index: @index,
+        id: @id
+      }.to_json(options)
+    end
+
+    def self.from_json(json)
+      data = TextModerationJson.to_hash(json)
+      return nil if data.nil?
+
+      new(
+        index: TextModerationJson.get(data, 'index'),
+        id: TextModerationJson.get(data, 'id')
+      )
+    end
   end
-
-  def to_json(options = {})
-    {
-      index: @index,
-      id: @id
-    }.to_json(options)
-  end
-
-  def self.from_json(json_string)
-    data = JSON.parse(json_string, symbolize_names: true)
-    new(
-      index: data[:index],
-      id: data[:id]
-    )
-  end
-end
 end
