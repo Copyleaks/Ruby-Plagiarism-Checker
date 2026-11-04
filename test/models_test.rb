@@ -66,6 +66,79 @@ class ModelsTest < Minitest::Test
     assert_equal({ 'id' => 'author-1' }, json['author'])
   end
 
+  def test_original_arguments_as_keywords
+    assert_equal({ 'webhooks' => { 'status' => WEBHOOK } }, json_of(Copyleaks::SubmissionProperties.new(webhooks: webhooks)))
+
+    keyword_props = Copyleaks::SubmissionProperties.new(
+      webhooks: webhooks, includeHtml: true, developerPayload: 'payload', sandbox: true, expiration: 60,
+      sensitivityLevel: 1, cheatDetection: true, action: Copyleaks::SubmissionActions::SCAN,
+      author: Copyleaks::SubmissionAuthor.new('author-1'),
+      filters: Copyleaks::SubmissionFilter.new(true, true, true),
+      scanning: Copyleaks::SubmissionScanning.new(true),
+      indexing: Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
+      exclude: Copyleaks::SubmissionExclude.new(true),
+      pdf: Copyleaks::SubmissionPDF.new(true),
+      sensitiveDataProtection: Copyleaks::SubmissionSensitiveData.new(false),
+      scanMethodAlgorithm: Copyleaks::SubmissionScanMethodAlgorithm::MAXIMUM_RESULTS,
+      aiGeneratedText: Copyleaks::SubmissionAiGeneratedText.new(true),
+      customMetadata: [Copyleaks::SubmissionCustomMetadata.new('k', 'v')],
+      writingFeedback: Copyleaks::SubmissionWritingFeedback.new(true),
+      displayLanguage: 'fr',
+      aiSourceMatch: Copyleaks::SubmissionAiSourceMatch.new(true),
+      scanTimeZone: 'America/New_York'
+    )
+    positional_props = Copyleaks::SubmissionProperties.new(
+      webhooks, true, 'payload', true, 60, 1, true, Copyleaks::SubmissionActions::SCAN,
+      Copyleaks::SubmissionAuthor.new('author-1'),
+      Copyleaks::SubmissionFilter.new(true, true, true),
+      Copyleaks::SubmissionScanning.new(true),
+      Copyleaks::SubmissionIndexing.new([Copyleaks::SubmissionRepository.new('repo-1')]),
+      Copyleaks::SubmissionExclude.new(true),
+      Copyleaks::SubmissionPDF.new(true),
+      Copyleaks::SubmissionSensitiveData.new(false),
+      Copyleaks::SubmissionScanMethodAlgorithm::MAXIMUM_RESULTS,
+      Copyleaks::SubmissionAiGeneratedText.new(true),
+      [Copyleaks::SubmissionCustomMetadata.new('k', 'v')],
+      Copyleaks::SubmissionWritingFeedback.new(true),
+      'fr',
+      Copyleaks::SubmissionAiSourceMatch.new(true),
+      scanTimeZone: 'America/New_York'
+    )
+    assert_equal 22, json_of(keyword_props).size
+    assert_equal json_of(positional_props), json_of(keyword_props)
+
+    # Setting one option no longer needs nil placeholders.
+    props = Copyleaks::SubmissionProperties.new(webhooks: webhooks, aiGeneratedText: Copyleaks::SubmissionAiGeneratedText.new(true))
+    assert_equal({ 'webhooks' => { 'status' => WEBHOOK }, 'aiGeneratedText' => { 'detect' => true } }, json_of(props))
+    assert_equal true, props.aiGeneratedText.detect
+  end
+
+  def test_positional_and_keyword_arguments_can_be_mixed
+    props = Copyleaks::SubmissionProperties.new(webhooks, nil, 'payload', expiration: 24)
+    assert_equal({ 'webhooks' => { 'status' => WEBHOOK }, 'developerPayload' => 'payload', 'expiration' => 24 }, json_of(props))
+  end
+
+  def test_keyword_arguments_are_type_checked
+    assert_raises(RuntimeError) { Copyleaks::SubmissionProperties.new }
+    assert_raises(RuntimeError) { Copyleaks::SubmissionProperties.new(sandbox: true) }
+    assert_raises(RuntimeError) { Copyleaks::SubmissionProperties.new(webhooks: WEBHOOK) }
+    assert_raises(RuntimeError) { Copyleaks::SubmissionProperties.new(webhooks: webhooks, sandbox: 'yes') }
+    assert_raises(RuntimeError) { Copyleaks::SubmissionProperties.new(webhooks: webhooks, expiration: '24') }
+    assert_raises(RuntimeError) { Copyleaks::SubmissionProperties.new(webhooks: webhooks, customMetadata: ['k']) }
+  end
+
+  def test_an_argument_given_twice_raises
+    error = assert_raises(ArgumentError) { Copyleaks::SubmissionProperties.new(webhooks, webhooks: webhooks) }
+    assert_match(/webhooks - given both by position and as a keyword/, error.message)
+    assert_raises(ArgumentError) { Copyleaks::SubmissionProperties.new(webhooks, nil, nil, true, sandbox: false) }
+    assert_raises(ArgumentError) { Copyleaks::SubmissionProperties.new(webhooks, nil, includeHtml: true) }
+  end
+
+  def test_too_many_positional_arguments_raise
+    error = assert_raises(ArgumentError) { Copyleaks::SubmissionProperties.new(webhooks, *Array.new(21)) }
+    assert_equal 'wrong number of arguments (given 22, expected 0..21)', error.message
+  end
+
   def test_new_property_keywords
     props = Copyleaks::SubmissionProperties.new(
       webhooks,

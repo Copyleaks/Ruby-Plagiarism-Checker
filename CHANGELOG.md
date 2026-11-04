@@ -2,6 +2,17 @@
 
 All notable changes to the Copyleaks Ruby SDK are listed here.
 
+## Unreleased
+
+### Added
+
+- **Keyword arguments for every `Copyleaks::SubmissionProperties` argument.** `Copyleaks::SubmissionProperties.new(webhooks: webhooks, aiGeneratedText: Copyleaks::SubmissionAiGeneratedText.new(true))` sets only what you need, without `nil` placeholders. Only `webhooks` is required. The positional form keeps working, and both forms can be mixed. An argument given both by position and as a keyword raises `ArgumentError`.
+- **`submit` on the AI Image Detection client.** `api.ai_image_detection_client.submit` is an alias of `submit_`, the synchronous check that returns the result. `submit_` and `check` keep working.
+
+### Changed
+
+- `Copyleaks::SubmissionProperties.new` called with no arguments raises the same `RuntimeError` as a `nil` `webhooks` (`webhooks must be of type SubmissionWebhooks`), instead of Ruby's `ArgumentError` for a missing argument.
+
 ## 5.0.0
 
 The gem is now published as `copyleaks`. Versions up to 4.1.1 were published as `plagiarism-checker`. The Ruby code you write does not change: `require 'copyleaks'` and the `Copyleaks` module are the same as before. Read the upgrade notes below.
