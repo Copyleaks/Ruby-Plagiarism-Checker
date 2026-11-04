@@ -295,6 +295,17 @@ class ApiTest < Minitest::Test
                    'maskType' => 'heatmap', 'objectDetection' => [{ 'object' => 'face' }, { 'object' => 'hand' }] }, json_body(req))
   end
 
+  def test_ai_image_submit_is_an_alias_of_submit_
+    model = Copyleaks::CopyleaksAiImageDetectionRequestModel.new('aGVsbG8=', 'image.png', 'ai-image-1-ultra', true)
+    api.ai_image_detection_client.submit(token, 'scan1', model)
+
+    req = @server.last_request
+    assert_equal 'POST', req.method
+    assert_equal '/v1/ai-image-detector/scan1/check', req.path
+    assert_equal({ 'base64' => 'aGVsbG8=', 'filename' => 'image.png', 'model' => 'ai-image-1-ultra', 'sandbox' => true },
+                 json_body(req))
+  end
+
   def test_ai_image_check_defaults_omit_unset_fields
     model = Copyleaks::CopyleaksAiImageDetectionRequestModel.new('aGVsbG8=', 'image.png', 'ai-image-1-ultra')
     assert_equal({ 'base64' => 'aGVsbG8=', 'filename' => 'image.png', 'model' => 'ai-image-1-ultra' }, json_of(model))
