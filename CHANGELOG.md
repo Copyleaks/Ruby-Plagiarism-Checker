@@ -2,6 +2,16 @@
 
 All notable changes to the Copyleaks Ruby SDK are listed here.
 
+## Unreleased
+
+### Added
+
+- **API error details.** `Copyleaks::CopyleaksApiException` (and so `CommandException`, `RateLimitException` and `UnderMaintenanceException`) reads the error envelope of the response body, described at https://docs.copyleaks.com/using-the-apis/api-errors/.
+  - `error_type`, `error_id`, `error_code` (an Integer; a numeric String is converted), `error_message` and `error_url`. Each is `nil` when the field is missing or has the wrong type, or when the body is not an error envelope.
+  - `error_details`: an Array of `Copyleaks::CopyleaksApiErrorDetail`, each with `param` and `message`. Empty when the body has no details or they are malformed; entries that are not objects are dropped.
+  - Constants `Copyleaks::CopyleaksErrorTypes::INVALID_REQUEST_ERROR`, `AUTHENTICATION_ERROR`, `PAYMENT_ERROR` and `API_ERROR`. `error_type` stays a String, so a new type is returned as is.
+  - The readers never raise. Exception messages, classes and retry behaviour do not change.
+
 ## 5.0.0
 
 The gem is now published as `copyleaks`. Versions up to 4.1.1 were published as `plagiarism-checker`. The Ruby code you write does not change: `require 'copyleaks'` and the `Copyleaks` module are the same as before. Read the upgrade notes below.
