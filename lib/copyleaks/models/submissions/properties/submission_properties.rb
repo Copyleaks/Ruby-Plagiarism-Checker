@@ -1,11 +1,26 @@
 module Copyleaks
   # Scan settings. Only webhooks is required; arguments left nil are not sent, so the server default applies.
+  #
+  # Every argument can be passed as a keyword:
+  #   SubmissionProperties.new(webhooks: SubmissionWebhooks.new(url), sandbox: true)
+  # The positional form, SubmissionProperties.new(webhooks, includeHtml, developerPayload, ...), still works, in the
+  # order of POSITIONAL_ARGUMENTS below. Both forms can be mixed. A nil on either side counts as not given, so a nil
+  # placeholder never overrides a keyword; giving the same argument a value both ways raises ArgumentError.
   class SubmissionProperties
     attr_reader :webhooks, :includeHtml, :developerPayload, :sandbox, :expiration, :sensitivityLevel, :cheatDetection,
                 :action, :author, :filters, :scanning, :indexing, :exclude, :pdf, :sensitiveDataProtection, :scanMethodAlgorithm,
                 :aiGeneratedText, :customMetadata, :writingFeedback, :displayLanguage, :aiSourceMatch,
                 :overview, :internalAiSourceMatch, :references, :scanTimeZone, :course, :assignment, :institution
 
+    # The arguments that can also be passed by position, in their positional order.
+    POSITIONAL_ARGUMENTS = %i[
+      webhooks includeHtml developerPayload sandbox expiration sensitivityLevel cheatDetection action author filters
+      scanning indexing exclude pdf sensitiveDataProtection scanMethodAlgorithm aiGeneratedText customMetadata
+      writingFeedback displayLanguage aiSourceMatch
+    ].freeze
+    private_constant :POSITIONAL_ARGUMENTS
+
+    # @param [SubmissionWebhooks] webhooks Required.
     # @param [String] developerPayload Echoed in the webhooks, at most 512 characters.
     # @param [Boolean] sandbox Free mock results for testing the integration. Turn it off in production.
     # @param [Integer] expiration Hours the scan is kept before it is deleted, 1 to 2880 (server default 2880).
@@ -16,14 +31,39 @@ module Copyleaks
     #   case-sensitive. Only applies when pdf.create is true (server default 'en').
     # @param [String] scanTimeZone IANA time zone for the scan time on the PDF report, e.g. 'America/New_York'.
     def initialize(
-      webhooks, includeHtml = nil, developerPayload = nil, sandbox = nil, expiration = nil,
-      sensitivityLevel = nil, cheatDetection = nil, action = nil, author = nil, filters = nil,
-      scanning = nil, indexing = nil, exclude = nil, pdf = nil, sensitiveDataProtection = nil,
-      scanMethodAlgorithm = nil, aiGeneratedText = nil, customMetadata = nil, writingFeedback = nil,
-      displayLanguage = nil, aiSourceMatch = nil,
+      *positional,
+      webhooks: nil, includeHtml: nil, developerPayload: nil, sandbox: nil, expiration: nil,
+      sensitivityLevel: nil, cheatDetection: nil, action: nil, author: nil, filters: nil,
+      scanning: nil, indexing: nil, exclude: nil, pdf: nil, sensitiveDataProtection: nil,
+      scanMethodAlgorithm: nil, aiGeneratedText: nil, customMetadata: nil, writingFeedback: nil,
+      displayLanguage: nil, aiSourceMatch: nil,
       overview: nil, internalAiSourceMatch: nil, references: nil, scanTimeZone: nil,
       course: nil, assignment: nil, institution: nil
     )
+      if positional.length > POSITIONAL_ARGUMENTS.length
+        raise ArgumentError, "wrong number of arguments (given #{positional.length}, expected 0..#{POSITIONAL_ARGUMENTS.length})"
+      end
+
+      # As in 5.0.0, where webhooks was a required positional argument: calling without it is an ArgumentError
+      if positional.empty? && webhooks.nil?
+        raise ArgumentError, "wrong number of arguments (given 0, expected 1..#{POSITIONAL_ARGUMENTS.length}); " \
+                             'pass webhooks first or as webhooks:'
+      end
+
+      # Ruby can't declare one name as both a positional and a keyword parameter, so positional values are copied
+      # into the keyword locals of the same name. The validation below then reads one set of locals for both forms.
+      scope = binding
+      positional.each_with_index do |value, index|
+        next if value.nil? # a nil placeholder counts as not given, so it never overrides a keyword
+
+        name = POSITIONAL_ARGUMENTS[index]
+        unless scope.local_variable_get(name).nil?
+          raise ArgumentError, "Copyleaks::SubmissionProperties - #{name} - given both by position and as a keyword"
+        end
+
+        scope.local_variable_set(name, value)
+      end
+
       unless webhooks.instance_of?(SubmissionWebhooks)
         raise 'Copyleaks::SubmissionProperties - webhooks - webhooks must be of type SubmissionWebhooks'
       end

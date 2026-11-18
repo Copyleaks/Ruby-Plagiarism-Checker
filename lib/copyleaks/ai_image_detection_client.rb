@@ -17,8 +17,9 @@ module Copyleaks
                                           'submission is Invalid, must be instance of type Copyleaks::CopyleaksAiImageDetectionRequestModel'])
     end
 
-    # Same as submit_.
+    # Same as submit_ (synchronous check).
     alias check submit_
+    alias submit submit_
 
     # Submits an image URL for AI detection (asynchronous). The server answers 201 Created and later
     # posts the result, shaped like CopyleaksAiImageDetectionResponseModel, to the request's webhook.

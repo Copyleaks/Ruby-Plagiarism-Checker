@@ -16,7 +16,7 @@ module CopyleaksExamples
       true                                                      # sandbox
     )
     
-    res = copyleaks.ai_image_detection_client.submit_(authToken, scanId, model)
+    res = copyleaks.ai_image_detection_client.submit(authToken, scanId, model)
     logInfo('AI Image Detection - submit_image', res)
   rescue StandardError => e
     puts "Error in test_image_detection: #{e.message}"

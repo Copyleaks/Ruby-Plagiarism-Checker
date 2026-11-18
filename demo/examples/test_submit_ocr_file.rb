@@ -53,21 +53,21 @@ module CopyleaksExamples
     )
     
     properties = Copyleaks::SubmissionProperties.new(
-      webhooks,                                                 # webhooks
-      true,                                                     # includeHtml
-      'developer_payloads_test',                                # customFields
-      true,                                                     # sandbox
-      60,                                                       # expiration
-      1,                                                        # sensitivityLevel
-      true,                                                     # cheatDetection
-      Copyleaks::SubmissionActions::SCAN,                       # action
-      author,                                                   # author
-      filter,                                                   # filters
-      scanning,                                                 # scanning
-      indexing,                                                 # indexing
-      exclude,                                                  # exclude
-      pdf,                                                      # pdf
-      sensitive_data                                            # sensitiveDataProtection
+      webhooks: webhooks,
+      includeHtml: true,
+      developerPayload: 'developer_payloads_test',
+      sandbox: true,
+      expiration: 60,
+      sensitivityLevel: 1,
+      cheatDetection: true,
+      action: Copyleaks::SubmissionActions::SCAN,
+      author: author,
+      filters: filter,
+      scanning: scanning,
+      indexing: indexing,
+      exclude: exclude,
+      pdf: pdf,
+      sensitiveDataProtection: sensitive_data
     )
     
     submisson = Copyleaks::CopyleaksFileOcrSubmissionModel.new(
