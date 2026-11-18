@@ -2,7 +2,7 @@
 
 All notable changes to the Copyleaks Ruby SDK are listed here.
 
-## Unreleased
+## 5.1.0
 
 ### Added
 
