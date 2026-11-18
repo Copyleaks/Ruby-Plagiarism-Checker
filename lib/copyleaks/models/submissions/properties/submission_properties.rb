@@ -4,7 +4,8 @@ module Copyleaks
   # Every argument can be passed as a keyword:
   #   SubmissionProperties.new(webhooks: SubmissionWebhooks.new(url), sandbox: true)
   # The positional form, SubmissionProperties.new(webhooks, includeHtml, developerPayload, ...), still works, in the
-  # order of POSITIONAL_ARGUMENTS below. Both forms can be mixed, as long as no argument is given twice.
+  # order of POSITIONAL_ARGUMENTS below. Both forms can be mixed. A nil on either side counts as not given, so a nil
+  # placeholder never overrides a keyword; giving the same argument a value both ways raises ArgumentError.
   class SubmissionProperties
     attr_reader :webhooks, :includeHtml, :developerPayload, :sandbox, :expiration, :sensitivityLevel, :cheatDetection,
                 :action, :author, :filters, :scanning, :indexing, :exclude, :pdf, :sensitiveDataProtection, :scanMethodAlgorithm,
@@ -43,10 +44,18 @@ module Copyleaks
         raise ArgumentError, "wrong number of arguments (given #{positional.length}, expected 0..#{POSITIONAL_ARGUMENTS.length})"
       end
 
+      # As in 5.0.0, where webhooks was a required positional argument: calling without it is an ArgumentError
+      if positional.empty? && webhooks.nil?
+        raise ArgumentError, "wrong number of arguments (given 0, expected 1..#{POSITIONAL_ARGUMENTS.length}); " \
+                             'pass webhooks first or as webhooks:'
+      end
+
       # Ruby can't declare one name as both a positional and a keyword parameter, so positional values are copied
       # into the keyword locals of the same name. The validation below then reads one set of locals for both forms.
       scope = binding
       positional.each_with_index do |value, index|
+        next if value.nil? # a nil placeholder counts as not given, so it never overrides a keyword
+
         name = POSITIONAL_ARGUMENTS[index]
         unless scope.local_variable_get(name).nil?
           raise ArgumentError, "Copyleaks::SubmissionProperties - #{name} - given both by position and as a keyword"

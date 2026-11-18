@@ -118,9 +118,15 @@ class ModelsTest < Minitest::Test
     assert_equal({ 'webhooks' => { 'status' => WEBHOOK }, 'developerPayload' => 'payload', 'expiration' => 24 }, json_of(props))
   end
 
+  def test_no_webhooks_at_all_raises_argument_error_as_in_5_0_0
+    error = assert_raises(ArgumentError) { Copyleaks::SubmissionProperties.new }
+    assert_match(/\Awrong number of arguments \(given 0, expected 1\.\.21\)/, error.message)
+    assert_raises(ArgumentError) { Copyleaks::SubmissionProperties.new(sandbox: true) }
+    # A nil webhooks given by position is still the type error, as in 5.0.0
+    assert_raises(RuntimeError) { Copyleaks::SubmissionProperties.new(nil) }
+  end
+
   def test_keyword_arguments_are_type_checked
-    assert_raises(RuntimeError) { Copyleaks::SubmissionProperties.new }
-    assert_raises(RuntimeError) { Copyleaks::SubmissionProperties.new(sandbox: true) }
     assert_raises(RuntimeError) { Copyleaks::SubmissionProperties.new(webhooks: WEBHOOK) }
     assert_raises(RuntimeError) { Copyleaks::SubmissionProperties.new(webhooks: webhooks, sandbox: 'yes') }
     assert_raises(RuntimeError) { Copyleaks::SubmissionProperties.new(webhooks: webhooks, expiration: '24') }
@@ -131,7 +137,20 @@ class ModelsTest < Minitest::Test
     error = assert_raises(ArgumentError) { Copyleaks::SubmissionProperties.new(webhooks, webhooks: webhooks) }
     assert_match(/webhooks - given both by position and as a keyword/, error.message)
     assert_raises(ArgumentError) { Copyleaks::SubmissionProperties.new(webhooks, nil, nil, true, sandbox: false) }
-    assert_raises(ArgumentError) { Copyleaks::SubmissionProperties.new(webhooks, nil, includeHtml: true) }
+  end
+
+  def test_a_nil_on_either_side_counts_as_not_given
+    props = Copyleaks::SubmissionProperties.new(webhooks, nil, includeHtml: true)
+    assert_equal({ 'webhooks' => { 'status' => WEBHOOK }, 'includeHtml' => true }, json_of(props))
+    props = Copyleaks::SubmissionProperties.new(webhooks, nil, nil, true, sandbox: nil)
+    assert_equal({ 'webhooks' => { 'status' => WEBHOOK }, 'sandbox' => true }, json_of(props))
+  end
+
+  def test_positional_names_are_the_first_keyword_parameters
+    positional = Copyleaks::SubmissionProperties.const_get(:POSITIONAL_ARGUMENTS)
+    keywords = Copyleaks::SubmissionProperties.instance_method(:initialize).parameters
+                                              .select { |type, _| type == :key }.map(&:last)
+    assert_equal keywords.first(positional.length), positional
   end
 
   def test_too_many_positional_arguments_raise
