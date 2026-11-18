@@ -6,6 +6,11 @@ All notable changes to the Copyleaks Ruby SDK are listed here.
 
 ### Added
 
+- **API error details.** `Copyleaks::CopyleaksApiException` (and so `CommandException`, `RateLimitException` and `UnderMaintenanceException`) reads the error envelope of the response body, described at https://docs.copyleaks.com/using-the-apis/api-errors/.
+  - `error_type`, `error_id`, `error_code` (an Integer; a numeric String is converted), `error_message` and `error_url`. Each is `nil` when the field is missing or has the wrong type, or when the body is not an error envelope.
+  - `error_details`: an Array of `Copyleaks::CopyleaksApiErrorDetail`, each with `param` and `message`. Empty when the body has no details or they are malformed; entries that are not objects are dropped.
+  - Constants `Copyleaks::CopyleaksErrorTypes::INVALID_REQUEST_ERROR`, `AUTHENTICATION_ERROR`, `PAYMENT_ERROR` and `API_ERROR`. `error_type` stays a String, so a new type is returned as is.
+  - The readers never raise. Exception messages, classes and retry behaviour do not change.
 - **Keyword arguments for every `Copyleaks::SubmissionProperties` argument.** `Copyleaks::SubmissionProperties.new(webhooks: webhooks, aiGeneratedText: Copyleaks::SubmissionAiGeneratedText.new(true))` sets only what you need, without `nil` placeholders. Only `webhooks` is required. The positional form keeps working, and both forms can be mixed. An argument given both by position and as a keyword raises `ArgumentError`.
 - **`submit` on the AI Image Detection client.** `api.ai_image_detection_client.submit` is an alias of `submit_`, the synchronous check that returns the result. `submit_` and `check` keep working.
 

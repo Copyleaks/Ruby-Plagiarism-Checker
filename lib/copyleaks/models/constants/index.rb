@@ -4,6 +4,7 @@ require_relative 'CopyleaksAiImageDetectionModels.rb'
 require_relative 'CopyleaksAiImageMaskTypes.rb'
 require_relative 'CopyleaksAiVideoDetectionModels.rb'
 require_relative 'CopyleaksAlertCodes.rb'
+require_relative 'CopyleaksErrorTypes.rb'
 
 
 module Copyleaks

@@ -60,6 +60,7 @@ copyleaks = Copyleaks::API.new(
 - `Copyleaks::RateLimitException` (HTTP 429) and `Copyleaks::UnderMaintenanceException` (HTTP 503): retry later with exponential backoff. `e.retry_after` returns the `Retry-After` header when the server sends one.
 - `Copyleaks::AuthExpiredException`: the login token has expired, or expires within 5 minutes. Log in again.
 - `Copyleaks::CommandException`, `RateLimitException` and `UnderMaintenanceException` all extend `Copyleaks::CopyleaksApiException`, so one `rescue Copyleaks::CopyleaksApiException => e` catches any API error response.
+- `Copyleaks::CopyleaksApiException` reads the [error envelope](https://docs.copyleaks.com/using-the-apis/api-errors/) of the response body: `e.error_type` (compare with `Copyleaks::CopyleaksErrorTypes::INVALID_REQUEST_ERROR`, `AUTHENTICATION_ERROR`, `PAYMENT_ERROR` or `API_ERROR`), `e.error_id`, `e.error_code` (Integer), `e.error_message`, `e.error_url` and `e.error_details` (`Copyleaks::CopyleaksApiErrorDetail` objects with `param` and `message`). A missing field is `nil`; `error_details` is then `[]`.
 - `Net::OpenTimeout`, `Net::ReadTimeout`, `Net::WriteTimeout` and socket errors: the request did not complete.
 
 ## 💡 Usage Examples
